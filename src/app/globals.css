@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------ */
+/* Design tokens — "grandmaster's study": walnut, ink, brass, aged     */
+/* verdigris, rosewood. Grounded in the physical materials of a real   */
+/* chess set and board rather than a generic dark-SaaS palette.        */
+/* ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Surfaces — warm near-black ink, not blue-black */
+  --color-bg-deepest: #0b0a08;
+  --color-bg-surface: #131110;
+  --color-bg-elevated: #1c1815;
+  --color-bg-elevated-hover: #262019;
+
+  /* Borders — brass-tinted, never cool grey */
+  --color-border-subtle: #221d17;
+  --color-border-default: #3a3122;
+  --color-border-strong: #55492f;
+
+  /* Text — warm ivory / parchment, never pure white or blue-grey */
+  --color-text-primary: #f4ecd8;
+  --color-text-secondary: #b9ac91;
+  --color-text-muted: #7d735d;
+
+  /* Accent: brass/gold — primary actions, correct moves, mastery */
+  --color-accent-gold: #c9a256;
+  --color-accent-gold-bright: #e8c579;
+  --color-accent-gold-dim: #332711;
+
+  /* Accent: aged verdigris — secondary interactive, active nav, info */
+  --color-accent-teal: #4f9484;
+  --color-accent-teal-bright: #7fc0af;
+  --color-accent-teal-dim: #142621;
+
+  /* Accent: rosewood garnet — mistakes, destructive */
+  --color-accent-garnet: #b8503f;
+  --color-accent-garnet-bright: #dd8069;
+  --color-accent-garnet-dim: #2c1611;
+
+  /* Board — real maple / walnut, the visual centerpiece */
+  --color-board-light: #e8d9b5;
+  --color-board-dark: #7a4c2c;
+
+  --shadow-panel: 0 1px 0 0 rgba(232, 197, 121, 0.05) inset, 0 10px 28px -14px rgba(0, 0, 0, 0.75);
+  --shadow-board: 0 1px 0 0 rgba(232, 197, 121, 0.12) inset, 0 24px 48px -20px rgba(0, 0, 0, 0.85);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-deepest);
+  background-image:
+    radial-gradient(ellipse 900px 520px at 50% -8%, rgba(201, 162, 86, 0.08), transparent 60%),
+    radial-gradient(ellipse 1200px 800px at 50% 110%, rgba(0, 0, 0, 0.5), transparent 60%);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif-display {
+  font-family: var(--font-serif);
+  font-feature-settings: "ss01" 1, "liga" 1;
+}
+
+/* Board squares — the checker pattern, kept out of per-square inline
+   styles so BoardWrapper stays a plain grid of divs. */
+.board-square-light {
+  background-color: var(--color-board-light);
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.12), transparent 55%);
+}
+.board-square-dark {
+  background-color: var(--color-board-dark);
+  background-image: linear-gradient(155deg, rgba(255, 255, 255, 0.06), transparent 55%);
+}
+
+/* Faint wood-grain texture on elevated wood surfaces (board frame). */
+.wood-grain {
+  background-image:
+    repeating-linear-gradient(
+      92deg,
+      rgba(0, 0, 0, 0.16) 0px,
+      rgba(0, 0, 0, 0.16) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    linear-gradient(160deg, #3a2313, #1c1108 55%, #2a1a0d);
+}
+
+/* Respect reduced-motion preference across the app. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visible keyboard focus ring, consistent app-wide */
+:focus-visible {
+  outline: 2px solid var(--color-accent-gold-bright);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Slim scrollbars for the HUD panels */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-strong);
+  border-radius: 999px;
+}
+
+/* react-chessboard sits inside the wooden bezel; keep it flush. */
+[data-boardid="movetrainer-board"],
+#movetrainer-board {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+input[type="range"] {
+  accent-color: var(--color-accent-gold);
+  max-width: 96px;
 }
