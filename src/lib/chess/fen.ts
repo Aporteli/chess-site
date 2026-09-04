@@ -13,7 +13,58 @@ export function fullFen(fen: string): string {
   if (parts.length >= 6) return parts.slice(0, 6).join(" ");
   if (parts.length === 4) return `${parts.join(" ")} 0 1`;
   if (parts.length === 5) return `${parts.join(" ")} 1`;
+  if (parts.length === 3) return `${parts.join(" ")} - 0 1`;
+  if (parts.length === 2) return `${parts.join(" ")} - - 0 1`;
+  if (parts.length === 1) return `${parts[0]} w - - 0 1`;
   return fen.trim();
+}
+
+const FEN_IN_TEXT =
+  /(?:[rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+(?:\s+[wb](?:\s+(?:-|[KQkq]+)(?:\s+(?:-|[a-h][36])(?:\s+\d+(?:\s+\d+)?)?)?)?)?/;
+
+/** Pull a legal FEN out of model output (markdown, extra prose, partial fields). */
+export function tryParseFen(raw: string): string | null {
+  const cleaned = raw.replace(/```(?:fen)?/gi, " ").replace(/\s+/g, " ").trim();
+  const match = cleaned.match(FEN_IN_TEXT);
+  if (!match) return null;
+  try {
+    return new Chess(fullFen(match[0])).fen();
+  } catch {
+    return null;
+  }
+}
+
+/** Convert 8 rows of 8 chars (KQRBNPkqrbnp.) into a FEN placement + defaults. */
+export function gridToFen(rows: string[]): string | null {
+  if (rows.length !== 8) return null;
+
+  const ranks: string[] = [];
+  for (const row of rows) {
+    if (row.length !== 8) return null;
+    let out = "";
+    let empty = 0;
+    for (const ch of row) {
+      if (ch === "." || ch === "1") {
+        empty++;
+      } else if (/^[KQRBNPkqrbnp]$/.test(ch)) {
+        if (empty) {
+          out += String(empty);
+          empty = 0;
+        }
+        out += ch;
+      } else {
+        return null;
+      }
+    }
+    if (empty) out += String(empty);
+    ranks.push(out);
+  }
+
+  try {
+    return new Chess(fullFen(`${ranks.join("/")} w - - 0 1`)).fen();
+  } catch {
+    return null;
+  }
 }
 
 export const START_FEN = DEFAULT_POSITION;

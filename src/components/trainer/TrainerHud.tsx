@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Keyboard, Upload } from "lucide-react";
+import { Camera, Download, Keyboard, Upload } from "lucide-react";
 import { useTrainer } from "@/lib/trainer/context";
 import { SrsProgress } from "./SrsProgress";
 import { MoveList } from "./MoveList";
@@ -17,6 +17,7 @@ import { TranspositionAlert } from "./TranspositionAlert";
 import { PgnDialog } from "./PgnDialog";
 import { KeyboardCheatsheet } from "./KeyboardCheatsheet";
 import { BoardSettingsPanel } from "./BoardSettings";
+import { UploadBoardModal } from "@/components/board/UploadBoardModal";
 
 function OpeningHeaderCard() {
   const { openingMeta } = useTrainer();
@@ -47,9 +48,12 @@ function OpeningHeaderCard() {
 }
 
 export function TrainerHud() {
-  const { mode } = useTrainer();
+  const { mode, loadCustomFen } = useTrainer();
   const [pgn, setPgn] = useState<"import" | "export" | null>(null);
   const [keys, setKeys] = useState(false);
+  const [isUploadBoardOpen, setIsUploadBoardOpen] = useState(false);
+
+  const handlePositionLoaded = (fen: string) => loadCustomFen(fen, "Scanned Book Position");
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -65,6 +69,7 @@ export function TrainerHud() {
       <MasterReference />
       <RepertoireBar />
       {mode === "study" && <BoardSettingsPanel />}
+
       <div className="flex gap-2">
         <button
           onClick={() => setPgn("import")}
@@ -73,6 +78,16 @@ export function TrainerHud() {
           <Upload className="h-3.5 w-3.5" />
           Import
         </button>
+
+        {/* Scan Board */}
+        <button
+          onClick={() => setIsUploadBoardOpen(true)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border-default bg-bg-elevated px-2 py-2 text-[12px] text-text-secondary hover:text-accent-gold-bright"
+        >
+          <Camera className="h-3.5 w-3.5" />
+          Scan Book
+        </button>
+
         <button
           onClick={() => setPgn("export")}
           className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border-default bg-bg-elevated px-2 py-2 text-[12px] text-text-secondary hover:text-accent-gold-bright"
@@ -80,6 +95,7 @@ export function TrainerHud() {
           <Download className="h-3.5 w-3.5" />
           Export
         </button>
+
         <button
           onClick={() => setKeys(true)}
           className="grid h-9 w-9 place-items-center rounded-lg border border-border-default bg-bg-elevated text-text-muted hover:text-accent-teal-bright"
@@ -88,11 +104,19 @@ export function TrainerHud() {
           <Keyboard className="h-3.5 w-3.5" />
         </button>
       </div>
+
       <div className="pt-1">
         <ActionToolbar />
       </div>
+
       <PgnDialog open={pgn !== null} mode={pgn ?? "import"} onClose={() => setPgn(null)} />
       <KeyboardCheatsheet open={keys} onClose={() => setKeys(false)} />
+      
+      <UploadBoardModal
+        isOpen={isUploadBoardOpen}
+        onClose={() => setIsUploadBoardOpen(false)}
+        onPositionLoaded={handlePositionLoaded}
+      />
     </div>
   );
 }

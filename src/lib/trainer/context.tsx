@@ -4,9 +4,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Arrow } from 'react-chessboard';
 import {
   addSanMove,
+  chessFromFen,
   deleteSubtree,
   dueCounts,
   emptyChapter,
+  fenTurn,
   exportChapterPgn,
   exportRepertoirePgn,
   findInRepertoire,
@@ -75,6 +77,7 @@ export interface DrillSession {
   sessionOver: boolean;
   line: string[];
   completedLeaves: string[];
+  
 }
 
 interface PendingPromo {
@@ -152,6 +155,7 @@ interface TrainerContextValue {
   setArrows: (arrows: Arrow[]) => void;
   toggleHighlight: (square: string) => void;
   clearMarks: () => void;
+  loadCustomFen: (fen: string, name?: string) => boolean;
 }
 
 const TrainerContext = createContext<TrainerContextValue | null>(null);
@@ -693,6 +697,41 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
     updateChapter(promoteMainline(chapter, node.id));
   }, [chapter, node, updateChapter]);
 
+  const loadCustomFen = useCallback(
+    (customFen: string, name = 'Book Position') => {
+      if (!repertoire) return false;
+      let startFen: string;
+      try {
+        startFen = chessFromFen(customFen).fen();
+      } catch {
+        return false;
+      }
+
+      const ch = emptyChapter(name, { startFen });
+      const nextRep: Repertoire = {
+        ...repertoire,
+        chapters: [...repertoire.chapters, ch],
+        updatedAt: Date.now(),
+      };
+
+      setStore((prev) => ({
+        ...prev,
+        repertoires: replaceRepertoire(prev.repertoires, nextRep),
+      }));
+      setChapterId(ch.id);
+      setPath([ch.rootId]);
+      setSelectedSquare(null);
+      setArrows([]);
+      setUserHighlights({});
+      setModeState('study');
+      setDrill(null);
+      setFlipped(fenTurn(startFen) === 'b');
+      saveSession({ repertoireId: repertoire.id, chapterId: ch.id });
+      return true;
+    },
+    [repertoire],
+  );
+
   const importPgnText = useCallback(
     (pgn: string, asNewChapter = true) => {
       if (!repertoire) return { ok: false, message: 'No repertoire selected.' };
@@ -1095,6 +1134,7 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
             setUserHighlights({});
             setSelectedSquare(null);
           },
+          loadCustomFen,
         }
       : null;
 
