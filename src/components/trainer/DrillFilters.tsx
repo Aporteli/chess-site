@@ -25,7 +25,7 @@ export function DrillFilters() {
   };
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-3">
+    <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="mb-2 flex items-baseline justify-between">
         <h3 className="font-serif-display text-[15px] text-text-primary">Queue</h3>
         {drill && (

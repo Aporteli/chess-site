@@ -13,7 +13,7 @@ export function MasterReference() {
   );
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-4">
+    <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
       <div className="mb-2.5 flex items-baseline justify-between border-b border-border-subtle pb-2.5">
         <h3 className="font-serif-display text-[15px] text-text-primary">Master book</h3>
         <span className="font-mono text-[10.5px] text-text-muted">

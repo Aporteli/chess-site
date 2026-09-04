@@ -377,3 +377,73 @@ export function sortedChildren(chapter: Chapter, nodeId: string): TreeNode[] {
     return (b.weight ?? 0) - (a.weight ?? 0);
   });
 }
+
+/** აბრუნებს ყველა ფოთლის (ბოლო სვლების) ID-ს, რომელიც ამ კვანძიდან იშლება */
+export function getLeafIdsUnder(chapter: Chapter, nodeId: string): string[] {
+  const leaves: string[] = [];
+  const walk = (id: string) => {
+    const node = chapter.nodes[id];
+    if (!node || node.children.length === 0) {
+      leaves.push(id);
+      return;
+    }
+    for (const childId of node.children) {
+      walk(childId);
+    }
+  };
+  walk(nodeId);
+  return leaves;
+}
+
+/** 
+ * ირჩევს მოწინააღმდეგის პასუხს მხოლოდ იმ შტოებიდან, 
+ * რომლებშიც ჯერ კიდევ არის დარჩენილი გაუვლელი ფოთლები.
+ */
+export function pickUnvisitedOpponentReply(
+  chapter: Chapter,
+  nodeId: string,
+  completedLeaves: Set<string>,
+): TreeNode | undefined {
+  const kids = childNodes(chapter, nodeId);
+  if (kids.length === 0) return undefined;
+
+  // ვფილტრავთ იმ ბავშვებს, რომელთა ქვეშაც კიდევ არის გაუვლელი ფოთლები
+  const viableKids = kids.filter((kid) => {
+    const leaves = getLeafIdsUnder(chapter, kid.id);
+    return leaves.some((leafId) => !completedLeaves.has(leafId));
+  });
+
+  // თუ ყველა გავლილია (ნაკლებად მოსალოდნელი), ჩვეულებრივად აირჩიოს რანდომი
+  const pool = viableKids.length > 0 ? viableKids : kids;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/**
+ * პოულობს უახლოეს წინაპარ კვანძს (Deepest Ancestor Branch),
+ * რომელსაც კიდევ აქვს დარჩენილი გაუვლელი შტოები.
+ */
+export function findNearestUnvisitedFork(
+  chapter: Chapter,
+  leafId: string,
+  completedLeaves: Set<string>,
+): string | null {
+  const startNode = chapter.nodes[leafId] as TreeNode | undefined;
+  let currentId: string | null = startNode?.parentId ?? null;
+
+  while (currentId) {
+    const node: TreeNode | undefined = chapter.nodes[currentId];
+    if (!node) break;
+
+    // ვამოწმებთ, აქვს თუ არა ამ კვანძს გაუვლელი შტო
+    const leaves = getLeafIdsUnder(chapter, currentId);
+    const hasUnvisited = leaves.some((id) => !completedLeaves.has(id));
+
+    if (hasUnvisited) {
+      return currentId;
+    }
+
+    currentId = node.parentId;
+  }
+
+  return null;
+}

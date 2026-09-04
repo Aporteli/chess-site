@@ -16,7 +16,7 @@ export function HintBox() {
   return (
     <div
       className={[
-        "relative overflow-hidden rounded-xl border-l-2 border-y border-r p-4 pl-5",
+        " hidden relative overflow-hidden rounded-xl border-l-2 border-y border-r p-4 pl-5",
         style.border,
         style.bg,
       ].join(" ")}

@@ -12,6 +12,7 @@ import {
   findInRepertoire,
   findTranspositions,
   formatLine,
+  getLeafIdsUnder,
   getNode,
   gradeFromAttempt,
   importPgn,
@@ -32,6 +33,7 @@ import {
   patchNode,
   pickOpponentReply,
   pickTrainingLine,
+  pickUnvisitedOpponentReply,
   playMove,
   playSfx,
   promoteMainline,
@@ -45,6 +47,7 @@ import {
   sfxForMove,
   srsLevel,
   uid,
+  findNearestUnvisitedFork,
   type BoardSettings,
   type Chapter,
   type DrillCard,
@@ -70,8 +73,8 @@ export interface DrillSession {
   correctLines: number;
   opponentThinking: boolean;
   sessionOver: boolean;
-  /** Node ids from the current position's ancestor root to a leaf. */
   line: string[];
+  completedLeaves: string[];
 }
 
 interface PendingPromo {
@@ -169,6 +172,7 @@ function emptyDrill(filter: DrillFilter): DrillSession {
     opponentThinking: false,
     sessionOver: false,
     line: [],
+    completedLeaves: [],
   };
 }
 
@@ -199,7 +203,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
   const pathRef = useRef<string[]>([]);
   const nodeRef = useRef<TreeNode | undefined>(undefined);
   const scheduleRef = useRef<(fromNodeId: string, session: DrillSession) => void>(() => {});
-  const lastLineLeafRef = useRef<string | null>(null);
   const setPremove = useCallback((next: { from: string; to: string; promotion?: string } | null) => {
     premoveRef.current = next;
     setPremoveState(next);
@@ -219,7 +222,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
   }, [chapter, repertoire, path, node]);
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect -- hydrate persisted study from localStorage */
     const loaded = loadStore();
     setStore(loaded);
     const session = loadSession();
@@ -233,7 +235,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
     }
     setSettingsState(loadSettings());
     setReady(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   useEffect(() => {
@@ -277,10 +278,15 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
     (session: DrillSession, visited: string[]) => {
       const ch = chapterRef.current;
       const rep = repertoireRef.current;
-      if (!ch || !rep) {
-        setDrill({ ...session, lineComplete: true, opponentThinking: false });
-        return;
-      }
+      if (!ch || !rep) return;
+
+      const leafId = visited[visited.length - 1] ?? ch.rootId;
+      const nextCompleted = Array.from(new Set([...session.completedLeaves, leafId]));
+      const completedSet = new Set(nextCompleted);
+
+      // ვეძებთ უახლოეს წინაპარ განშტოებას, რომელსაც დარჩა გაუვლელი შტო
+      const forkNodeId = findNearestUnvisitedFork(ch, leafId, completedSet);
+
       let nextCh = ch;
       const grade = gradeFromAttempt({
         mistakes: session.mistakes,
@@ -293,23 +299,66 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
           nextCh = applySrs(nextCh, id, grade);
         }
       }
+      if (nextCh !== ch) updateChapter(nextCh);
+
       const reviewed = session.reviewed + 1;
       const correctLines = session.correctLines + (grade === 'again' ? 0 : 1);
+      flashStatus(grade === 'again' ? 'mistake' : 'correct');
+
+      // თუ აღარცერთ წინაპარს არ აქვს გაუვლელი შტო -> მთელი ხე ამოწურულია!
+      if (!forkNodeId) {
+        setDrill({
+          ...session,
+          reviewed,
+          correctLines,
+          completedLeaves: nextCompleted,
+          lineComplete: true,
+          sessionOver: true,
+          opponentThinking: false,
+          mistakes: 0,
+          hintLevel: 0,
+          usedSolution: false,
+          awaitingRetry: false,
+        });
+        return;
+      }
+
       setDrill({
         ...session,
         reviewed,
         correctLines,
+        completedLeaves: nextCompleted,
         lineComplete: true,
-        sessionOver: false,
-        mistakes: 0,
-        hintLevel: 0,
-        usedSolution: false,
-        awaitingRetry: false,
         opponentThinking: false,
       });
-      lastLineLeafRef.current = visited[visited.length - 1] ?? null;
-      if (nextCh !== ch) updateChapter(nextCh);
-      flashStatus(grade === 'again' ? 'mistake' : 'correct');
+
+      // 600 მილიწამში ავდივართ პირდაპირ იმ განშტოების კვანძზე
+      setTimeout(() => {
+        const currentCh = chapterRef.current ?? ch;
+        const currentRep = repertoireRef.current ?? rep;
+
+        setPath(pathToNode(currentCh, forkNodeId));
+
+        const updatedSession: DrillSession = {
+          ...session,
+          reviewed,
+          correctLines,
+          completedLeaves: nextCompleted,
+          lineComplete: false,
+          awaitingRetry: false,
+          opponentThinking: false,
+          mistakes: 0,
+          hintLevel: 0,
+          usedSolution: false,
+        };
+        setDrill(updatedSession);
+
+        const forkNode = getNode(currentCh, forkNodeId);
+        // თუ ამ კვანძზე კომპიუტერის რიგია, კომპიუტერი თავისით აკეთებს სვლას:
+        if (!isOurTurn(forkNode.fen, currentRep.side) && forkNode.children.length > 0) {
+          scheduleRef.current(forkNode.id, updatedSession);
+        }
+      }, 600);
     },
     [applySrs, flashStatus, updateChapter],
   );
@@ -320,15 +369,17 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
       const rep = repertoireRef.current;
       if (!ch || !rep) return;
 
-      const nextMoveNode = pickOpponentReply(ch, fromNodeId, session.line);
+      const completedSet = new Set(session.completedLeaves);
+      const nextMoveNode = pickUnvisitedOpponentReply(ch, fromNodeId, completedSet);
+
       if (!nextMoveNode) {
-        // No opponent replies at all — the user's last move was the end of the line.
         finishPractice(session, pathToNode(ch, fromNodeId));
         return;
       }
 
       setDrill({ ...session, opponentThinking: true, lineComplete: false });
       if (replyTimer.current) clearTimeout(replyTimer.current);
+
       replyTimer.current = setTimeout(() => {
         const latest = chapterRef.current ?? ch;
         const side = repertoireRef.current?.side ?? rep.side;
@@ -338,12 +389,11 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
         playSfx(sfxForMove(chosen.move!.flags), settings.sound);
         setDrill((d) => (d ? { ...d, opponentThinking: false, lineComplete: false } : d));
 
-        // Stay on this branch. End only at a real leaf — never just because
-        // a variation was chosen. If it is our turn, wait for the next book move.
         if (chosen.children.length === 0) {
           finishPractice(session, pathToNode(latest, chosen.id));
           return;
         }
+
         if (!isOurTurn(chosen.fen, side)) {
           scheduleRef.current(chosen.id, session);
         }
@@ -370,25 +420,29 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
       setArrows([]);
       setUserHighlights({});
       setPromotion(null);
+
       const card: DrillCard = {
         chapterId: ch.id,
         nodeId: ch.rootId,
         parentId: ch.rootId,
         reason: 'chapter',
       };
-      const line = pickTrainingLine(ch, ch.rootId, lastLineLeafRef.current);
-      lastLineLeafRef.current = line[line.length - 1] ?? null;
+
       const session: DrillSession = {
-        ...emptyDrill("chapter"),
+        ...emptyDrill('chapter'),
         queue: [card],
         sessionOver: false,
         lineComplete: false,
         opponentThinking: false,
-        line: [],
+        completedLeaves: [],
       };
       setDrill(session);
+
+      // თუ ჩვენი სვლა არაა (ანუ შავები ვართ და თეთრები იწყებენ):
       const root = getNode(ch, ch.rootId);
-      if (!isOurTurn(root.fen, repertoire.side) && root.children.length > 0) {
+      const isUserTurn = isOurTurn(root.fen, repertoire.side);
+
+      if (!isUserTurn && root.children.length > 0) {
         scheduleOpponent(root.id, session);
       }
     },
@@ -541,8 +595,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
         return true;
       }
 
-      // Practice / drill — any book child is valid; opponent replies automatically.
-      // Practice / drill — any book child is valid; opponent replies automatically.
       if (!drill || drill.lineComplete) return false;
       if (!isOurTurn(node.fen, repertoire.side)) return false;
 
@@ -570,11 +622,9 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
       };
       setDrill(nextSession);
 
-      // If no further moves exist in the repertoire for either side:
       if (existing.children.length === 0) {
         finishPractice(nextSession, pathToNode(chapter, existing.id));
       } else {
-        // Automatically trigger opponent's reply
         scheduleOpponent(existing.id, nextSession);
       }
       return true;
@@ -667,7 +717,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
             message: `Imported ${chapters.length} chapter${chapters.length > 1 ? 's' : ''}.`,
           };
         }
-        // Merge into current chapter from root
         const merged = importPgn(pgn, chapter.name)[0];
         if (!merged) return { ok: false, message: 'Could not parse PGN.' };
         setStore((prev) => ({
@@ -827,7 +876,6 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
     try {
       if (!inCheck(fen)) return null;
       const file = fen.split(' ')[0];
-      // Find king of side to move
       const turn = fen.split(' ')[1];
       const king = turn === 'w' ? 'K' : 'k';
       const ranks = file?.split('/') ?? [];
@@ -919,7 +967,9 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
       return {
         side: repertoire.side,
         kind: 'success',
-        text: 'End of this variation. Start Training again — a different branch will be chosen.',
+        text: drill.sessionOver
+          ? 'All lines completed! Entire tree practiced.'
+          : 'Variation completed! Preparing next unvisited line...',
       };
     }
     if (drill.opponentThinking) {
@@ -986,7 +1036,29 @@ export function TrainerProvider({ children }: { children: React.ReactNode }) {
           goEnd,
           goBack,
           goForward,
-          flipBoard: () => setFlipped((v) => !v),
+          flipBoard: () => {
+            if (!repertoire) return;
+            const nextSide: Side = repertoire.side === 'white' ? 'black' : 'white';
+            setFlipped(nextSide === 'black');
+
+            // ვანახლებთ რეპერტუარის ფერს
+            const nextRep: Repertoire = {
+              ...repertoire,
+              side: nextSide,
+              updatedAt: Date.now(),
+            };
+            setStore((prev) => ({
+              ...prev,
+              repertoires: replaceRepertoire(prev.repertoires, nextRep),
+            }));
+
+            // თუ Drill რეჟიმში ვართ, ახალი ფერით თავიდან ვიწყებთ
+            if (mode === 'drill') {
+              setTimeout(() => {
+                startPractice();
+              }, 50);
+            }
+          },
           restartLine: () => {
             if (mode === 'drill') startPractice();
             else goStart();

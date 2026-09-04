@@ -21,8 +21,7 @@ export function SrsProgress() {
   const dashOffset = CIRCUMFERENCE * (1 - pct);
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-4">
-      <div className="mb-3.5 flex items-baseline justify-between">
+<div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-4">      <div className="mb-3.5 flex items-baseline justify-between">
         <h3 className="font-serif-display text-[15px] text-text-primary">Line mastery</h3>
         <span className="font-mono text-[10.5px] tracking-wide text-text-muted">
           {String(level).padStart(2, "0")} / {String(srsState.maxLevel).padStart(2, "0")}

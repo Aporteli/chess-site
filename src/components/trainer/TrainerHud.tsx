@@ -21,7 +21,7 @@ import { BoardSettingsPanel } from "./BoardSettings";
 function OpeningHeaderCard() {
   const { openingMeta } = useTrainer();
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
+    <div className="hidden relative overflow-hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
       <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-accent-gold/70 via-accent-gold-bright to-accent-gold/70" />
       <div className="mb-2.5 flex items-center gap-2">
         <span className="rounded-md border border-accent-gold/25 bg-accent-gold-dim px-2 py-0.5 font-mono text-[11px] font-medium text-accent-gold-bright">

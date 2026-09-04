@@ -11,7 +11,7 @@ export function RepertoireBar() {
   const [name, setName] = useState("");
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-3">
+    <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-serif-display text-[13px] text-text-secondary">Repertoire</h3>
         <button

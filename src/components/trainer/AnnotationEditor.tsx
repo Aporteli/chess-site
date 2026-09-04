@@ -15,7 +15,7 @@ export function AnnotationEditor() {
   };
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-4">
+    <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
       <div className="mb-2.5 flex items-baseline justify-between">
         <h3 className="font-serif-display text-[15px] text-text-primary">Annotations</h3>
         {node.move && (
