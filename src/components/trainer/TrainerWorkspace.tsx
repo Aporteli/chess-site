@@ -5,7 +5,43 @@ import { BoardWrapper } from "@/components/board/BoardWrapper";
 import { TrainerHud } from "@/components/trainer/TrainerHud";
 import { MOVE_NAGS } from "@/lib/chess";
 import { useTrainer } from "@/lib/trainer/context";
-import { StockfishProvider } from "@/lib/chess/use-stockfish";
+import { StockfishProvider, useStockfishEngine } from "@/lib/chess/use-stockfish";
+import StockfishDashboard from "@/components/stockfish/StockfishDashboard";
+
+function TrainerEnginePanel() {
+  const t = useTrainer();
+  const engine = useStockfishEngine();
+  const turn = (t.fen.split(" ")[1] || "w") as "w" | "b";
+  const moveNumber = Number(t.fen.split(" ")[5] || 1);
+
+  return (
+    <StockfishDashboard
+      evalScore={engine.evaluation}
+      isAnalyzing={engine.isThinking}
+      onStart={() => engine.evaluatePosition(t.fen)}
+      onStop={engine.stop}
+      settings={engine.settings}
+      limits={engine.limits}
+      depth={engine.depth}
+      nps={engine.nps}
+      onSettingsChange={engine.commitSettings}
+      analysisLines={engine.lines}
+      turn={turn}
+      moveNumber={moveNumber}
+      fen={t.fen}
+      onPlayMove={(ucis) => {
+        for (const uci of ucis) {
+          const ok = t.playUserMove(
+            uci.slice(0, 2),
+            uci.slice(2, 4),
+            uci[4],
+          );
+          if (!ok) break;
+        }
+      }}
+    />
+  );
+}
 
 export function TrainerWorkspace() {
   const t = useTrainer();
@@ -71,7 +107,8 @@ export function TrainerWorkspace() {
           </p>
         </section>
 
-        <aside className="w-full shrink-0 lg:w-[360px] xl:w-[400px]">
+        <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-[360px] xl:w-[400px]">
+          <TrainerEnginePanel />
           <TrainerHud />
         </aside>
       </div>
