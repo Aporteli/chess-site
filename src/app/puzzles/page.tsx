@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Puzzle as PuzzleIcon, Loader2, Lightbulb, Volume2, VolumeX, FlipVertical2, RotateCcw } from "lucide-react";
+import {
+  Puzzle as PuzzleIcon,
+  Loader2,
+  Lightbulb,
+  Volume2,
+  VolumeX,
+  FlipVertical2,
+  RotateCcw,
+} from "lucide-react";
 import { Chess } from "chess.js";
 import { Chessboard, type Arrow } from "react-chessboard";
 import { AppShell } from "@/components/layout/AppShell";
@@ -18,15 +26,25 @@ type PuzzleData = {
 const BOARD_STYLE = {
   lightSquareStyle: {
     backgroundColor: "var(--color-board-light, #e8d9b5)",
-    backgroundImage: "linear-gradient(155deg, rgba(255,255,255,0.12), transparent 55%)",
+    backgroundImage:
+      "linear-gradient(155deg, rgba(255,255,255,0.12), transparent 55%)",
   },
   darkSquareStyle: {
     backgroundColor: "var(--color-board-dark, #7a4c2c)",
-    backgroundImage: "linear-gradient(155deg, rgba(255,255,255,0.06), transparent 55%)",
+    backgroundImage:
+      "linear-gradient(155deg, rgba(255,255,255,0.06), transparent 55%)",
   },
   dropSquareStyle: { boxShadow: "inset 0 0 0 3px rgba(201, 162, 86, 0.7)" },
-  darkSquareNotationStyle: { color: "rgba(243, 230, 200, 0.82)", fontSize: "10px", fontWeight: 600 },
-  lightSquareNotationStyle: { color: "rgba(90, 61, 32, 0.72)", fontSize: "10px", fontWeight: 600 },
+  darkSquareNotationStyle: {
+    color: "rgba(243, 230, 200, 0.82)",
+    fontSize: "10px",
+    fontWeight: 600,
+  },
+  lightSquareNotationStyle: {
+    color: "rgba(90, 61, 32, 0.72)",
+    fontSize: "10px",
+    fontWeight: 600,
+  },
   boardStyle: { width: "100%", height: "100%", borderRadius: 0 },
 };
 
@@ -57,11 +75,19 @@ function lineIndex(startFen: string, boardFen: string, solution: string[]) {
   return -1;
 }
 
-function sfx(move: { captured?: string; flags: string; promotion?: string }, game: Chess, sound: boolean) {
+function sfx(
+  move: { captured?: string; flags: string; promotion?: string },
+  game: Chess,
+  sound: boolean,
+) {
   playSfx(
     sfxForMove({
       capture: move.captured !== undefined,
-      castle: move.flags.includes("k") ? "k" : move.flags.includes("q") ? "q" : null,
+      castle: move.flags.includes("k")
+        ? "k"
+        : move.flags.includes("q")
+          ? "q"
+          : null,
       check: game.inCheck(),
       mate: game.isCheckmate(),
       promotion: move.promotion !== undefined,
@@ -117,7 +143,9 @@ export default function PuzzlesPage() {
       setPuzzle(data);
       setBoardFen(data.fen);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to generate puzzle.");
+      setError(
+        err instanceof Error ? err.message : "Failed to generate puzzle.",
+      );
     } finally {
       setLoading(false);
     }
@@ -135,7 +163,10 @@ export default function PuzzlesPage() {
 
       const game = new Chess(boardFen);
       const idx = lineIndex(puzzle.fen, boardFen, puzzle.solution);
-      const expected = idx >= 0 ? puzzle.solution[idx]?.toLowerCase() : puzzle.solution[ply]?.toLowerCase();
+      const expected =
+        idx >= 0
+          ? puzzle.solution[idx]?.toLowerCase()
+          : puzzle.solution[ply]?.toLowerCase();
       const piece = game.get(sourceSquare as Parameters<Chess["get"]>[0]);
       const needsPromo =
         piece?.type === "p" &&
@@ -190,10 +221,17 @@ export default function PuzzlesPage() {
     [boardFen, ply, puzzle, sans, sound],
   );
 
-  const playerSide = (puzzle?.fen.split(" ")[1] === "b" ? "black" : "white") as "white" | "black";
-  const orientation = flipped ? (playerSide === "white" ? "black" : "white") : playerSide;
+  const playerSide = (puzzle?.fen.split(" ")[1] === "b" ? "black" : "white") as
+    | "white"
+    | "black";
+  const orientation = flipped
+    ? playerSide === "white"
+      ? "black"
+      : "white"
+    : playerSide;
 
-  const hintIdx = puzzle && boardFen ? lineIndex(puzzle.fen, boardFen, puzzle.solution) : -1;
+  const hintIdx =
+    puzzle && boardFen ? lineIndex(puzzle.fen, boardFen, puzzle.solution) : -1;
   const hintUci = puzzle && hintIdx >= 0 ? puzzle.solution[hintIdx] : undefined;
   const hintFrom = hintUci?.slice(0, 2);
   const hintTo = hintUci?.slice(2, 4);
@@ -201,10 +239,14 @@ export default function PuzzlesPage() {
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
     if (hintLevel >= 1 && hintFrom) {
-      styles[hintFrom] = { boxShadow: "inset 0 0 0 3px rgba(232, 197, 121, 0.95)" };
+      styles[hintFrom] = {
+        boxShadow: "inset 0 0 0 3px rgba(232, 197, 121, 0.95)",
+      };
     }
     if (hintLevel >= 2 && hintTo) {
-      styles[hintTo] = { boxShadow: "inset 0 0 0 3px rgba(127, 192, 175, 0.95)" };
+      styles[hintTo] = {
+        boxShadow: "inset 0 0 0 3px rgba(127, 192, 175, 0.95)",
+      };
     }
     return styles;
   }, [hintFrom, hintLevel, hintTo]);
@@ -223,12 +265,23 @@ export default function PuzzlesPage() {
       squareStyles,
       arrows:
         hintLevel >= 2 && hintFrom && hintTo
-          ? ([{ startSquare: hintFrom, endSquare: hintTo, color: "#e8c579" }] as Arrow[])
+          ? ([
+              { startSquare: hintFrom, endSquare: hintTo, color: "#e8c579" },
+            ] as Arrow[])
           : [],
       ...BOARD_STYLE,
       onPieceDrop: handlePieceDrop,
     }),
-    [boardFen, handlePieceDrop, hintFrom, hintLevel, hintTo, orientation, puzzle, squareStyles],
+    [
+      boardFen,
+      handlePieceDrop,
+      hintFrom,
+      hintLevel,
+      hintTo,
+      orientation,
+      puzzle,
+      squareStyles,
+    ],
   );
 
   const statusTone =
@@ -253,7 +306,9 @@ export default function PuzzlesPage() {
                 <div className="flex min-w-0 items-center gap-2">
                   <PuzzleIcon className="h-4 w-4 shrink-0 text-accent-gold-bright" />
                   <span className="truncate font-serif text-sm text-text-primary">
-                    {puzzle ? `Find the best move for ${playerSide}` : "Chess Puzzles"}
+                    {puzzle
+                      ? `Find the best move for ${playerSide}`
+                      : "Chess Puzzles"}
                   </span>
                 </div>
                 <div className="flex shrink-0 items-center gap-1.5">
@@ -263,7 +318,11 @@ export default function PuzzlesPage() {
                     onClick={() => setSound((s) => !s)}
                     className="grid h-8 w-8 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition hover:border-accent-gold/50 hover:text-accent-gold-bright"
                   >
-                    {sound ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                    {sound ? (
+                      <Volume2 className="h-4 w-4" />
+                    ) : (
+                      <VolumeX className="h-4 w-4" />
+                    )}
                   </button>
                   <button
                     type="button"
@@ -304,9 +363,12 @@ export default function PuzzlesPage() {
                     ) : (
                       <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-bg-elevated px-6 text-center">
                         <PuzzleIcon className="h-10 w-10 text-accent-gold/50" />
-                        <p className="font-serif text-lg text-text-secondary">No puzzle yet</p>
+                        <p className="font-serif text-lg text-text-secondary">
+                          No puzzle yet
+                        </p>
                         <p className="max-w-xs font-mono text-xs text-text-muted">
-                          Generate a tactic from a FEN or leave it blank for a random position.
+                          Generate a tactic from a FEN or leave it blank for a
+                          random position.
                         </p>
                       </div>
                     )}
@@ -318,7 +380,9 @@ export default function PuzzlesPage() {
 
           <aside className="flex min-h-0 flex-col gap-3 xl:col-span-5 xl:h-full xl:overflow-y-auto">
             <div className="rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
-              <h2 className="font-serif text-lg text-accent-gold-bright">Generate</h2>
+              <h2 className="font-serif text-lg text-accent-gold-bright">
+                Generate
+              </h2>
               <p className="mt-1 font-mono text-[11px] text-text-muted">
                 Optional starting FEN. Blank position uses a random tactic.
               </p>
@@ -372,15 +436,26 @@ export default function PuzzlesPage() {
             <div className="rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-text-muted">Status</p>
-                  <p className={cn("mt-1 inline-flex rounded-md border px-2 py-0.5 font-mono text-xs", statusTone)}>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
+                    Status
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-1 inline-flex rounded-md border px-2 py-0.5 font-mono text-xs",
+                      statusTone,
+                    )}
+                  >
                     {status ?? (puzzle ? "Your move" : "Waiting")}
                   </p>
                 </div>
                 {puzzle && (
                   <div className="text-right">
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-text-muted">Rating</p>
-                    <p className="mt-0.5 font-serif text-2xl text-accent-gold-bright">{puzzle.rating}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
+                      Rating
+                    </p>
+                    <p className="mt-0.5 font-serif text-2xl text-accent-gold-bright">
+                      {puzzle.rating}
+                    </p>
                   </div>
                 )}
               </div>
@@ -400,7 +475,9 @@ export default function PuzzlesPage() {
                   </button>
                   {hintLevel >= 1 && hintFrom && (
                     <span className="font-mono text-xs text-text-muted">
-                      {hintLevel === 1 ? `from ${hintFrom}` : `${hintFrom} → ${hintTo}`}
+                      {hintLevel === 1
+                        ? `from ${hintFrom}`
+                        : `${hintFrom} → ${hintTo}`}
                     </span>
                   )}
                 </div>
@@ -408,11 +485,15 @@ export default function PuzzlesPage() {
             </div>
 
             <div className="flex min-h-[10rem] flex-1 flex-col rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
-              <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">Move list</h2>
+              <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
+                Move list
+              </h2>
               <div className="mt-2 flex min-h-0 flex-1 flex-wrap content-start gap-1.5 font-mono text-xs">
                 {!puzzle || sans.length === 0 ? (
                   <span className="italic text-text-muted">
-                    {puzzle ? "Play the winning line on the board." : "Moves will appear here."}
+                    {puzzle
+                      ? "Play the winning line on the board."
+                      : "Moves will appear here."}
                   </span>
                 ) : (
                   sans.map((san, index) => {

@@ -18,6 +18,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  * 
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
+/**
+ * Model Play
+ * A saved chess game / play belonging to a user.
+ */
+export type Play = $Result.DefaultSelection<Prisma.$PlayPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -149,6 +154,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.play`: Exposes CRUD operations for the **Play** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Plays
+    * const plays = await prisma.play.findMany()
+    * ```
+    */
+  get play(): Prisma.PlayDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -596,7 +611,8 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    User: 'User'
+    User: 'User',
+    Play: 'Play'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -612,7 +628,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user"
+      modelProps: "user" | "play"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -687,6 +703,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      Play: {
+        payload: Prisma.$PlayPayload<ExtArgs>
+        fields: Prisma.PlayFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlayFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlayFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          findFirst: {
+            args: Prisma.PlayFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlayFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          findMany: {
+            args: Prisma.PlayFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>[]
+          }
+          create: {
+            args: Prisma.PlayCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          createMany: {
+            args: Prisma.PlayCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlayCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>[]
+          }
+          delete: {
+            args: Prisma.PlayDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          update: {
+            args: Prisma.PlayUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlayDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlayUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlayUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlayUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlayPayload>
+          }
+          aggregate: {
+            args: Prisma.PlayAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlay>
+          }
+          groupBy: {
+            args: Prisma.PlayGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlayGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlayCountArgs<ExtArgs>
+            result: $Utils.Optional<PlayCountAggregateOutputType> | number
           }
         }
       }
@@ -814,6 +904,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    play?: PlayOmit
   }
 
   /* Types for Logging */
@@ -888,6 +979,36 @@ export namespace Prisma {
    * Count Types
    */
 
+
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    plays: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    plays?: boolean | UserCountOutputTypeCountPlaysArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPlaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayWhereInput
+  }
 
 
   /**
@@ -1058,6 +1179,8 @@ export namespace Prisma {
     name?: boolean
     password?: boolean
     createdAt?: boolean
+    plays?: boolean | User$playsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1085,10 +1208,18 @@ export namespace Prisma {
   }
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "createdAt", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    plays?: boolean | User$playsArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      plays: Prisma.$PlayPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       email: string
@@ -1489,6 +1620,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    plays<T extends User$playsArgs<ExtArgs> = {}>(args?: Subset<T, User$playsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1540,6 +1672,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1558,6 +1694,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1575,6 +1715,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -1624,6 +1768,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -1671,6 +1819,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which Users to fetch.
      */
@@ -1720,6 +1872,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The data needed to create a User.
      */
     data: XOR<UserCreateInput, UserUncheckedCreateInput>
@@ -1767,6 +1923,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to update a User.
      */
@@ -1834,6 +1994,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -1860,6 +2024,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -1880,6 +2048,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.plays
+   */
+  export type User$playsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    where?: PlayWhereInput
+    orderBy?: PlayOrderByWithRelationInput | PlayOrderByWithRelationInput[]
+    cursor?: PlayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlayScalarFieldEnum | PlayScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1891,6 +2083,1167 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Play
+   */
+
+  export type AggregatePlay = {
+    _count: PlayCountAggregateOutputType | null
+    _min: PlayMinAggregateOutputType | null
+    _max: PlayMaxAggregateOutputType | null
+  }
+
+  export type PlayMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    source: string | null
+    white: string | null
+    black: string | null
+    result: string | null
+    pgn: string | null
+    startFen: string | null
+    currentFen: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlayMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    source: string | null
+    white: string | null
+    black: string | null
+    result: string | null
+    pgn: string | null
+    startFen: string | null
+    currentFen: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlayCountAggregateOutputType = {
+    id: number
+    userId: number
+    title: number
+    source: number
+    white: number
+    black: number
+    result: number
+    pgn: number
+    startFen: number
+    currentFen: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlayMinAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    source?: true
+    white?: true
+    black?: true
+    result?: true
+    pgn?: true
+    startFen?: true
+    currentFen?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlayMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    source?: true
+    white?: true
+    black?: true
+    result?: true
+    pgn?: true
+    startFen?: true
+    currentFen?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlayCountAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    source?: true
+    white?: true
+    black?: true
+    result?: true
+    pgn?: true
+    startFen?: true
+    currentFen?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Play to aggregate.
+     */
+    where?: PlayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plays to fetch.
+     */
+    orderBy?: PlayOrderByWithRelationInput | PlayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Plays
+    **/
+    _count?: true | PlayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlayMaxAggregateInputType
+  }
+
+  export type GetPlayAggregateType<T extends PlayAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlay]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlay[P]>
+      : GetScalarType<T[P], AggregatePlay[P]>
+  }
+
+
+
+
+  export type PlayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayWhereInput
+    orderBy?: PlayOrderByWithAggregationInput | PlayOrderByWithAggregationInput[]
+    by: PlayScalarFieldEnum[] | PlayScalarFieldEnum
+    having?: PlayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlayCountAggregateInputType | true
+    _min?: PlayMinAggregateInputType
+    _max?: PlayMaxAggregateInputType
+  }
+
+  export type PlayGroupByOutputType = {
+    id: string
+    userId: string
+    title: string | null
+    source: string
+    white: string | null
+    black: string | null
+    result: string
+    pgn: string
+    startFen: string
+    currentFen: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PlayCountAggregateOutputType | null
+    _min: PlayMinAggregateOutputType | null
+    _max: PlayMaxAggregateOutputType | null
+  }
+
+  type GetPlayGroupByPayload<T extends PlayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlayGroupByOutputType[P]>
+            : GetScalarType<T[P], PlayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    source?: boolean
+    white?: boolean
+    black?: boolean
+    result?: boolean
+    pgn?: boolean
+    startFen?: boolean
+    currentFen?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["play"]>
+
+  export type PlaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    source?: boolean
+    white?: boolean
+    black?: boolean
+    result?: boolean
+    pgn?: boolean
+    startFen?: boolean
+    currentFen?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["play"]>
+
+  export type PlaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    source?: boolean
+    white?: boolean
+    black?: boolean
+    result?: boolean
+    pgn?: boolean
+    startFen?: boolean
+    currentFen?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["play"]>
+
+  export type PlaySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    source?: boolean
+    white?: boolean
+    black?: boolean
+    result?: boolean
+    pgn?: boolean
+    startFen?: boolean
+    currentFen?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "source" | "white" | "black" | "result" | "pgn" | "startFen" | "currentFen" | "createdAt" | "updatedAt", ExtArgs["result"]["play"]>
+  export type PlayInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PlayIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PlayIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PlayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Play"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      title: string | null
+      source: string
+      white: string | null
+      black: string | null
+      /**
+       * Chess result: "1-0", "0-1", "1/2-1/2", or "*" while in progress.
+       */
+      result: string
+      pgn: string
+      startFen: string
+      currentFen: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["play"]>
+    composites: {}
+  }
+
+  type PlayGetPayload<S extends boolean | null | undefined | PlayDefaultArgs> = $Result.GetResult<Prisma.$PlayPayload, S>
+
+  type PlayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlayCountAggregateInputType | true
+    }
+
+  export interface PlayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Play'], meta: { name: 'Play' } }
+    /**
+     * Find zero or one Play that matches the filter.
+     * @param {PlayFindUniqueArgs} args - Arguments to find a Play
+     * @example
+     * // Get one Play
+     * const play = await prisma.play.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlayFindUniqueArgs>(args: SelectSubset<T, PlayFindUniqueArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Play that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlayFindUniqueOrThrowArgs} args - Arguments to find a Play
+     * @example
+     * // Get one Play
+     * const play = await prisma.play.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlayFindUniqueOrThrowArgs>(args: SelectSubset<T, PlayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Play that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayFindFirstArgs} args - Arguments to find a Play
+     * @example
+     * // Get one Play
+     * const play = await prisma.play.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlayFindFirstArgs>(args?: SelectSubset<T, PlayFindFirstArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Play that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayFindFirstOrThrowArgs} args - Arguments to find a Play
+     * @example
+     * // Get one Play
+     * const play = await prisma.play.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlayFindFirstOrThrowArgs>(args?: SelectSubset<T, PlayFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Plays that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Plays
+     * const plays = await prisma.play.findMany()
+     * 
+     * // Get first 10 Plays
+     * const plays = await prisma.play.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playWithIdOnly = await prisma.play.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlayFindManyArgs>(args?: SelectSubset<T, PlayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Play.
+     * @param {PlayCreateArgs} args - Arguments to create a Play.
+     * @example
+     * // Create one Play
+     * const Play = await prisma.play.create({
+     *   data: {
+     *     // ... data to create a Play
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlayCreateArgs>(args: SelectSubset<T, PlayCreateArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Plays.
+     * @param {PlayCreateManyArgs} args - Arguments to create many Plays.
+     * @example
+     * // Create many Plays
+     * const play = await prisma.play.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlayCreateManyArgs>(args?: SelectSubset<T, PlayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Plays and returns the data saved in the database.
+     * @param {PlayCreateManyAndReturnArgs} args - Arguments to create many Plays.
+     * @example
+     * // Create many Plays
+     * const play = await prisma.play.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Plays and only return the `id`
+     * const playWithIdOnly = await prisma.play.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlayCreateManyAndReturnArgs>(args?: SelectSubset<T, PlayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Play.
+     * @param {PlayDeleteArgs} args - Arguments to delete one Play.
+     * @example
+     * // Delete one Play
+     * const Play = await prisma.play.delete({
+     *   where: {
+     *     // ... filter to delete one Play
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlayDeleteArgs>(args: SelectSubset<T, PlayDeleteArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Play.
+     * @param {PlayUpdateArgs} args - Arguments to update one Play.
+     * @example
+     * // Update one Play
+     * const play = await prisma.play.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlayUpdateArgs>(args: SelectSubset<T, PlayUpdateArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Plays.
+     * @param {PlayDeleteManyArgs} args - Arguments to filter Plays to delete.
+     * @example
+     * // Delete a few Plays
+     * const { count } = await prisma.play.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlayDeleteManyArgs>(args?: SelectSubset<T, PlayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Plays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Plays
+     * const play = await prisma.play.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlayUpdateManyArgs>(args: SelectSubset<T, PlayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Plays and returns the data updated in the database.
+     * @param {PlayUpdateManyAndReturnArgs} args - Arguments to update many Plays.
+     * @example
+     * // Update many Plays
+     * const play = await prisma.play.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Plays and only return the `id`
+     * const playWithIdOnly = await prisma.play.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlayUpdateManyAndReturnArgs>(args: SelectSubset<T, PlayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Play.
+     * @param {PlayUpsertArgs} args - Arguments to update or create a Play.
+     * @example
+     * // Update or create a Play
+     * const play = await prisma.play.upsert({
+     *   create: {
+     *     // ... data to create a Play
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Play we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlayUpsertArgs>(args: SelectSubset<T, PlayUpsertArgs<ExtArgs>>): Prisma__PlayClient<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Plays.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayCountArgs} args - Arguments to filter Plays to count.
+     * @example
+     * // Count the number of Plays
+     * const count = await prisma.play.count({
+     *   where: {
+     *     // ... the filter for the Plays we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlayCountArgs>(
+      args?: Subset<T, PlayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Play.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlayAggregateArgs>(args: Subset<T, PlayAggregateArgs>): Prisma.PrismaPromise<GetPlayAggregateType<T>>
+
+    /**
+     * Group by Play.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlayGroupByArgs['orderBy'] }
+        : { orderBy?: PlayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Play model
+   */
+  readonly fields: PlayFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Play.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Play model
+   */
+  interface PlayFieldRefs {
+    readonly id: FieldRef<"Play", 'String'>
+    readonly userId: FieldRef<"Play", 'String'>
+    readonly title: FieldRef<"Play", 'String'>
+    readonly source: FieldRef<"Play", 'String'>
+    readonly white: FieldRef<"Play", 'String'>
+    readonly black: FieldRef<"Play", 'String'>
+    readonly result: FieldRef<"Play", 'String'>
+    readonly pgn: FieldRef<"Play", 'String'>
+    readonly startFen: FieldRef<"Play", 'String'>
+    readonly currentFen: FieldRef<"Play", 'String'>
+    readonly createdAt: FieldRef<"Play", 'DateTime'>
+    readonly updatedAt: FieldRef<"Play", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Play findUnique
+   */
+  export type PlayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter, which Play to fetch.
+     */
+    where: PlayWhereUniqueInput
+  }
+
+  /**
+   * Play findUniqueOrThrow
+   */
+  export type PlayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter, which Play to fetch.
+     */
+    where: PlayWhereUniqueInput
+  }
+
+  /**
+   * Play findFirst
+   */
+  export type PlayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter, which Play to fetch.
+     */
+    where?: PlayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plays to fetch.
+     */
+    orderBy?: PlayOrderByWithRelationInput | PlayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Plays.
+     */
+    cursor?: PlayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Plays.
+     */
+    distinct?: PlayScalarFieldEnum | PlayScalarFieldEnum[]
+  }
+
+  /**
+   * Play findFirstOrThrow
+   */
+  export type PlayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter, which Play to fetch.
+     */
+    where?: PlayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plays to fetch.
+     */
+    orderBy?: PlayOrderByWithRelationInput | PlayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Plays.
+     */
+    cursor?: PlayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Plays.
+     */
+    distinct?: PlayScalarFieldEnum | PlayScalarFieldEnum[]
+  }
+
+  /**
+   * Play findMany
+   */
+  export type PlayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter, which Plays to fetch.
+     */
+    where?: PlayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plays to fetch.
+     */
+    orderBy?: PlayOrderByWithRelationInput | PlayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Plays.
+     */
+    cursor?: PlayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plays from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plays.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Plays.
+     */
+    distinct?: PlayScalarFieldEnum | PlayScalarFieldEnum[]
+  }
+
+  /**
+   * Play create
+   */
+  export type PlayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Play.
+     */
+    data: XOR<PlayCreateInput, PlayUncheckedCreateInput>
+  }
+
+  /**
+   * Play createMany
+   */
+  export type PlayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Plays.
+     */
+    data: PlayCreateManyInput | PlayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Play createManyAndReturn
+   */
+  export type PlayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * The data used to create many Plays.
+     */
+    data: PlayCreateManyInput | PlayCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Play update
+   */
+  export type PlayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Play.
+     */
+    data: XOR<PlayUpdateInput, PlayUncheckedUpdateInput>
+    /**
+     * Choose, which Play to update.
+     */
+    where: PlayWhereUniqueInput
+  }
+
+  /**
+   * Play updateMany
+   */
+  export type PlayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Plays.
+     */
+    data: XOR<PlayUpdateManyMutationInput, PlayUncheckedUpdateManyInput>
+    /**
+     * Filter which Plays to update
+     */
+    where?: PlayWhereInput
+    /**
+     * Limit how many Plays to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Play updateManyAndReturn
+   */
+  export type PlayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * The data used to update Plays.
+     */
+    data: XOR<PlayUpdateManyMutationInput, PlayUncheckedUpdateManyInput>
+    /**
+     * Filter which Plays to update
+     */
+    where?: PlayWhereInput
+    /**
+     * Limit how many Plays to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Play upsert
+   */
+  export type PlayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Play to update in case it exists.
+     */
+    where: PlayWhereUniqueInput
+    /**
+     * In case the Play found by the `where` argument doesn't exist, create a new Play with this data.
+     */
+    create: XOR<PlayCreateInput, PlayUncheckedCreateInput>
+    /**
+     * In case the Play was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlayUpdateInput, PlayUncheckedUpdateInput>
+  }
+
+  /**
+   * Play delete
+   */
+  export type PlayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
+    /**
+     * Filter which Play to delete.
+     */
+    where: PlayWhereUniqueInput
+  }
+
+  /**
+   * Play deleteMany
+   */
+  export type PlayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Plays to delete
+     */
+    where?: PlayWhereInput
+    /**
+     * Limit how many Plays to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Play without action
+   */
+  export type PlayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Play
+     */
+    select?: PlaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Play
+     */
+    omit?: PlayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayInclude<ExtArgs> | null
   }
 
 
@@ -1917,6 +3270,24 @@ export namespace Prisma {
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const PlayScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    title: 'title',
+    source: 'source',
+    white: 'white',
+    black: 'black',
+    result: 'result',
+    pgn: 'pgn',
+    startFen: 'startFen',
+    currentFen: 'currentFen',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlayScalarFieldEnum = (typeof PlayScalarFieldEnum)[keyof typeof PlayScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -2002,6 +3373,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
+    plays?: PlayListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -2010,6 +3382,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    plays?: PlayOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -2021,6 +3394,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
+    plays?: PlayListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -2045,12 +3419,103 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
+  export type PlayWhereInput = {
+    AND?: PlayWhereInput | PlayWhereInput[]
+    OR?: PlayWhereInput[]
+    NOT?: PlayWhereInput | PlayWhereInput[]
+    id?: StringFilter<"Play"> | string
+    userId?: StringFilter<"Play"> | string
+    title?: StringNullableFilter<"Play"> | string | null
+    source?: StringFilter<"Play"> | string
+    white?: StringNullableFilter<"Play"> | string | null
+    black?: StringNullableFilter<"Play"> | string | null
+    result?: StringFilter<"Play"> | string
+    pgn?: StringFilter<"Play"> | string
+    startFen?: StringFilter<"Play"> | string
+    currentFen?: StringNullableFilter<"Play"> | string | null
+    createdAt?: DateTimeFilter<"Play"> | Date | string
+    updatedAt?: DateTimeFilter<"Play"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PlayOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrderInput | SortOrder
+    source?: SortOrder
+    white?: SortOrderInput | SortOrder
+    black?: SortOrderInput | SortOrder
+    result?: SortOrder
+    pgn?: SortOrder
+    startFen?: SortOrder
+    currentFen?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PlayWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlayWhereInput | PlayWhereInput[]
+    OR?: PlayWhereInput[]
+    NOT?: PlayWhereInput | PlayWhereInput[]
+    userId?: StringFilter<"Play"> | string
+    title?: StringNullableFilter<"Play"> | string | null
+    source?: StringFilter<"Play"> | string
+    white?: StringNullableFilter<"Play"> | string | null
+    black?: StringNullableFilter<"Play"> | string | null
+    result?: StringFilter<"Play"> | string
+    pgn?: StringFilter<"Play"> | string
+    startFen?: StringFilter<"Play"> | string
+    currentFen?: StringNullableFilter<"Play"> | string | null
+    createdAt?: DateTimeFilter<"Play"> | Date | string
+    updatedAt?: DateTimeFilter<"Play"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type PlayOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrderInput | SortOrder
+    source?: SortOrder
+    white?: SortOrderInput | SortOrder
+    black?: SortOrderInput | SortOrder
+    result?: SortOrder
+    pgn?: SortOrder
+    startFen?: SortOrder
+    currentFen?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlayCountOrderByAggregateInput
+    _max?: PlayMaxOrderByAggregateInput
+    _min?: PlayMinOrderByAggregateInput
+  }
+
+  export type PlayScalarWhereWithAggregatesInput = {
+    AND?: PlayScalarWhereWithAggregatesInput | PlayScalarWhereWithAggregatesInput[]
+    OR?: PlayScalarWhereWithAggregatesInput[]
+    NOT?: PlayScalarWhereWithAggregatesInput | PlayScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Play"> | string
+    userId?: StringWithAggregatesFilter<"Play"> | string
+    title?: StringNullableWithAggregatesFilter<"Play"> | string | null
+    source?: StringWithAggregatesFilter<"Play"> | string
+    white?: StringNullableWithAggregatesFilter<"Play"> | string | null
+    black?: StringNullableWithAggregatesFilter<"Play"> | string | null
+    result?: StringWithAggregatesFilter<"Play"> | string
+    pgn?: StringWithAggregatesFilter<"Play"> | string
+    startFen?: StringWithAggregatesFilter<"Play"> | string
+    currentFen?: StringNullableWithAggregatesFilter<"Play"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Play"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Play"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
     name?: string | null
     password?: string | null
     createdAt?: Date | string
+    plays?: PlayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -2059,6 +3524,7 @@ export namespace Prisma {
     name?: string | null
     password?: string | null
     createdAt?: Date | string
+    plays?: PlayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -2067,6 +3533,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plays?: PlayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -2075,6 +3542,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plays?: PlayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -2099,6 +3567,110 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayCreateInput = {
+    id?: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPlaysInput
+  }
+
+  export type PlayUncheckedCreateInput = {
+    id?: string
+    userId: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlayUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPlaysNestedInput
+  }
+
+  export type PlayUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayCreateManyInput = {
+    id?: string
+    userId: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlayUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -2142,9 +3714,19 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type PlayListRelationFilter = {
+    every?: PlayWhereInput
+    some?: PlayWhereInput
+    none?: PlayWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type PlayOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -2221,6 +3803,70 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type PlayCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    source?: SortOrder
+    white?: SortOrder
+    black?: SortOrder
+    result?: SortOrder
+    pgn?: SortOrder
+    startFen?: SortOrder
+    currentFen?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    source?: SortOrder
+    white?: SortOrder
+    black?: SortOrder
+    result?: SortOrder
+    pgn?: SortOrder
+    startFen?: SortOrder
+    currentFen?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    source?: SortOrder
+    white?: SortOrder
+    black?: SortOrder
+    result?: SortOrder
+    pgn?: SortOrder
+    startFen?: SortOrder
+    currentFen?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlayCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
+    createMany?: PlayCreateManyUserInputEnvelope
+    connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+  }
+
+  export type PlayUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
+    createMany?: PlayCreateManyUserInputEnvelope
+    connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -2231,6 +3877,48 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type PlayUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
+    upsert?: PlayUpsertWithWhereUniqueWithoutUserInput | PlayUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlayCreateManyUserInputEnvelope
+    set?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    disconnect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    delete?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    update?: PlayUpdateWithWhereUniqueWithoutUserInput | PlayUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlayUpdateManyWithWhereWithoutUserInput | PlayUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlayScalarWhereInput | PlayScalarWhereInput[]
+  }
+
+  export type PlayUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
+    upsert?: PlayUpsertWithWhereUniqueWithoutUserInput | PlayUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlayCreateManyUserInputEnvelope
+    set?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    disconnect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    delete?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+    update?: PlayUpdateWithWhereUniqueWithoutUserInput | PlayUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlayUpdateManyWithWhereWithoutUserInput | PlayUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlayScalarWhereInput | PlayScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutPlaysInput = {
+    create?: XOR<UserCreateWithoutPlaysInput, UserUncheckedCreateWithoutPlaysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlaysInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPlaysNestedInput = {
+    create?: XOR<UserCreateWithoutPlaysInput, UserUncheckedCreateWithoutPlaysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlaysInput
+    upsert?: UserUpsertWithoutPlaysInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlaysInput, UserUpdateWithoutPlaysInput>, UserUncheckedUpdateWithoutPlaysInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -2340,6 +4028,182 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type PlayCreateWithoutUserInput = {
+    id?: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlayUncheckedCreateWithoutUserInput = {
+    id?: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlayCreateOrConnectWithoutUserInput = {
+    where: PlayWhereUniqueInput
+    create: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlayCreateManyUserInputEnvelope = {
+    data: PlayCreateManyUserInput | PlayCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlayUpsertWithWhereUniqueWithoutUserInput = {
+    where: PlayWhereUniqueInput
+    update: XOR<PlayUpdateWithoutUserInput, PlayUncheckedUpdateWithoutUserInput>
+    create: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlayUpdateWithWhereUniqueWithoutUserInput = {
+    where: PlayWhereUniqueInput
+    data: XOR<PlayUpdateWithoutUserInput, PlayUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PlayUpdateManyWithWhereWithoutUserInput = {
+    where: PlayScalarWhereInput
+    data: XOR<PlayUpdateManyMutationInput, PlayUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PlayScalarWhereInput = {
+    AND?: PlayScalarWhereInput | PlayScalarWhereInput[]
+    OR?: PlayScalarWhereInput[]
+    NOT?: PlayScalarWhereInput | PlayScalarWhereInput[]
+    id?: StringFilter<"Play"> | string
+    userId?: StringFilter<"Play"> | string
+    title?: StringNullableFilter<"Play"> | string | null
+    source?: StringFilter<"Play"> | string
+    white?: StringNullableFilter<"Play"> | string | null
+    black?: StringNullableFilter<"Play"> | string | null
+    result?: StringFilter<"Play"> | string
+    pgn?: StringFilter<"Play"> | string
+    startFen?: StringFilter<"Play"> | string
+    currentFen?: StringNullableFilter<"Play"> | string | null
+    createdAt?: DateTimeFilter<"Play"> | Date | string
+    updatedAt?: DateTimeFilter<"Play"> | Date | string
+  }
+
+  export type UserCreateWithoutPlaysInput = {
+    id?: string
+    email: string
+    name?: string | null
+    password?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserUncheckedCreateWithoutPlaysInput = {
+    id?: string
+    email: string
+    name?: string | null
+    password?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserCreateOrConnectWithoutPlaysInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPlaysInput, UserUncheckedCreateWithoutPlaysInput>
+  }
+
+  export type UserUpsertWithoutPlaysInput = {
+    update: XOR<UserUpdateWithoutPlaysInput, UserUncheckedUpdateWithoutPlaysInput>
+    create: XOR<UserCreateWithoutPlaysInput, UserUncheckedCreateWithoutPlaysInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPlaysInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPlaysInput, UserUncheckedUpdateWithoutPlaysInput>
+  }
+
+  export type UserUpdateWithoutPlaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserUncheckedUpdateWithoutPlaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayCreateManyUserInput = {
+    id?: string
+    title?: string | null
+    source?: string
+    white?: string | null
+    black?: string | null
+    result?: string
+    pgn?: string
+    startFen?: string
+    currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlayUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlayUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    white?: NullableStringFieldUpdateOperationsInput | string | null
+    black?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    pgn?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

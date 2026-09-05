@@ -13,4 +13,27 @@ model User {
   name      String?
   password  String?
   createdAt DateTime @default(now())
+  plays     Play[]
+}
+
+/// A saved chess game / play belonging to a user.
+model Play {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title      String?
+  source     String   @default("analysis")
+  white      String?
+  black      String?
+  /// Chess result: "1-0", "0-1", "1/2-1/2", or "*" while in progress.
+  result     String   @default("*")
+  pgn        String   @default("")
+  startFen   String   @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+  currentFen String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, createdAt])
 }

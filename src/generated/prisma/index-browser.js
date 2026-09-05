@@ -128,6 +128,21 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PlayScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  source: 'source',
+  white: 'white',
+  black: 'black',
+  result: 'result',
+  pgn: 'pgn',
+  startFen: 'startFen',
+  currentFen: 'currentFen',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -145,7 +160,8 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Play: 'Play'
 };
 
 /**

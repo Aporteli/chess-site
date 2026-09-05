@@ -20,6 +20,7 @@ const HREF: Partial<Record<NavKey, string>> = {
   puzzles: "/puzzles",
   analysis: "/analysis",
   courses: "/courses",
+  profile: "/profile",
 };
 
 const ICONS: Record<NavKey, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
@@ -165,18 +166,44 @@ export function Sidebar({
         <div className="space-y-1 border-t border-border-subtle px-3 py-3">
           {secondaryNavItems.map((item) => {
             const Icon = ICONS[item.key];
+            const isActive = item.key === activeKey;
+            const href = HREF[item.key];
+            const className = [
+              "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-[13.5px] font-medium transition-colors",
+              collapsed ? "justify-center" : "",
+              isActive
+                ? "border-accent-gold/20 bg-accent-gold-dim text-accent-gold-bright"
+                : href
+                  ? "border-transparent text-text-secondary hover:border-border-default hover:bg-bg-elevated hover:text-text-primary"
+                  : "cursor-not-allowed border-transparent text-text-muted",
+            ].join(" ");
+
             return (
-              <button
-                key={item.key}
-                title={collapsed ? item.label : undefined}
-                className={[
-                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium text-text-secondary transition-colors hover:bg-bg-elevated hover:text-text-primary",
-                  collapsed ? "justify-center" : "",
-                ].join(" ")}
-              >
-                <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
-                {!collapsed && <span className="truncate">{item.label}</span>}
-              </button>
+              <div key={item.key} className="group relative">
+                {isActive && (
+                  <span className="absolute -left-3 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-accent-gold" />
+                )}
+                {href ? (
+                  <Link
+                    href={href}
+                    onClick={onCloseMobile}
+                    title={collapsed ? item.label : undefined}
+                    className={className}
+                  >
+                    <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+                    {!collapsed && <span className="truncate">{item.label}</span>}
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    title={collapsed ? item.label : undefined}
+                    className={className}
+                  >
+                    <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
+                    {!collapsed && <span className="truncate">{item.label}</span>}
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>

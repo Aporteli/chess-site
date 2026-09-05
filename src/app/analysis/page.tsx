@@ -9,11 +9,13 @@ import {
   Camera,
   FlipVertical2,
   RotateCcw,
+  Save,
   Undo2,
   Redo2,
   Volume2,
   VolumeX,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { AppShell } from "@/components/layout/AppShell";
 import { UploadBoardModal } from "@/components/board/UploadBoardModal";
 import { useStockfish } from "@/lib/chess/use-stockfish";
@@ -28,6 +30,12 @@ export default function AnalysisPage() {
   const [sound, setSound] = useState(true);
   const [arrows, setArrows] = useState<Arrow[]>([]);
   const [isUploadBoardOpen, setIsUploadBoardOpen] = useState(false);
+  const [startFen, setStartFen] = useState(game.fen());
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">(
+    "idle",
+  );
+  const [saveMessage, setSaveMessage] = useState("");
+  const { status } = useSession();
 
   const {
     bestMove,
@@ -55,6 +63,7 @@ export default function AnalysisPage() {
         setHistory([]);
         setUndoneMoves([]);
         setArrows([]);
+        setStartFen(loadedFen);
         evaluatePosition(loadedFen);
         return true;
       } catch {
@@ -162,7 +171,53 @@ export default function AnalysisPage() {
     setHistory([]);
     setUndoneMoves([]);
     setArrows([]);
+    setStartFen(startFen);
     evaluatePosition(startFen);
+  };
+
+  const handleSavePlay = async () => {
+    if (status !== "authenticated") {
+      setSaveState("error");
+      setSaveMessage("Sign in first, then save from Analysis.");
+      return;
+    }
+
+    setSaveState("saving");
+    setSaveMessage("");
+
+    const result = game.isCheckmate()
+      ? game.turn() === "w"
+        ? "0-1"
+        : "1-0"
+      : game.isDraw()
+        ? "1/2-1/2"
+        : "*";
+
+    try {
+      const res = await fetch("/api/plays", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: `Analysis · ${history.length} moves`,
+          source: "analysis",
+          result,
+          pgn: game.pgn(),
+          startFen,
+          currentFen: fen,
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      if (!res.ok) {
+        setSaveState("error");
+        setSaveMessage(data?.error ?? "Could not save play.");
+        return;
+      }
+      setSaveState("saved");
+      setSaveMessage("Saved. Open Profile to see it.");
+    } catch {
+      setSaveState("error");
+      setSaveMessage("Could not save play.");
+    }
   };
 
   const handleFlip = () => setFlipped((prev) => !prev);
@@ -172,7 +227,42 @@ export default function AnalysisPage() {
   };
 
   useEffect(() => {
-    evaluatePosition(fen);
+    const playId = new URLSearchParams(window.location.search).get("play");
+    if (!playId) {
+      evaluatePosition(fen);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const res = await fetch(`/api/plays?id=${encodeURIComponent(playId)}`);
+      const data = (await res.json().catch(() => null)) as {
+        play?: { pgn?: string; startFen?: string };
+      } | null;
+      if (cancelled || !res.ok || !data?.play) {
+        evaluatePosition(fen);
+        return;
+      }
+
+      try {
+        const loaded = new Chess(data.play.startFen || undefined);
+        if (data.play.pgn) loaded.loadPgn(data.play.pgn);
+        const loadedFen = loaded.fen();
+        setGame(loaded);
+        setFen(loadedFen);
+        setHistory(loaded.history());
+        setUndoneMoves([]);
+        setArrows([]);
+        setStartFen(data.play.startFen || loadedFen);
+        evaluatePosition(loadedFen);
+      } catch {
+        evaluatePosition(fen);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -327,15 +417,38 @@ export default function AnalysisPage() {
           {/* მარჯვენა მხარე: მართვის პანელი */}
           <div className="flex min-h-0 w-full flex-col gap-3 xl:col-span-4 xl:h-full xl:overflow-y-auto">
             <div className="flex shrink-0 flex-col gap-3">
-              <button
-                onClick={() => setIsUploadBoardOpen(true)}
-                className="px-3.5 py-1.5 rounded-lg text-xs bg-[var(--color-bg-elevated,#1c1815)] border border-[var(--color-border-subtle,#221d17)] text-[var(--color-text-secondary,#b9ac91)] hover:bg-[var(--color-bg-elevated-hover,#262019)] hover:text-[var(--color-accent-gold-bright,#e8c579)] transition-all flex items-center gap-1.5 shadow-sm"
-              >
-                <span className="w-full text-center font-semibold flex justify-center items-center gap-1">
-                  Scan Book
-                  <Camera className="h-3.5 w-3.5 ml-0.5" />
-                </span>
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsUploadBoardOpen(true)}
+                  className="flex-1 px-3.5 py-1.5 rounded-lg text-xs bg-[var(--color-bg-elevated,#1c1815)] border border-[var(--color-border-subtle,#221d17)] text-[var(--color-text-secondary,#b9ac91)] hover:bg-[var(--color-bg-elevated-hover,#262019)] hover:text-[var(--color-accent-gold-bright,#e8c579)] transition-all flex items-center gap-1.5 shadow-sm"
+                >
+                  <span className="w-full text-center font-semibold flex justify-center items-center gap-1">
+                    Scan Book
+                    <Camera className="h-3.5 w-3.5 ml-0.5" />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSavePlay}
+                  disabled={saveState === "saving"}
+                  className="flex-1 px-3.5 py-1.5 rounded-lg text-xs bg-[var(--color-bg-elevated,#1c1815)] border border-accent-gold/35 text-accent-gold-bright hover:border-accent-gold/70 hover:bg-accent-gold-dim transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                >
+                  <span className="w-full text-center font-semibold flex justify-center items-center gap-1">
+                    {saveState === "saving" ? "Saving…" : "Save play"}
+                    <Save className="h-3.5 w-3.5 ml-0.5" />
+                  </span>
+                </button>
+              </div>
+              {saveMessage && (
+                <p
+                  className={[
+                    "text-[11px]",
+                    saveState === "error" ? "text-accent-garnet-bright" : "text-text-muted",
+                  ].join(" ")}
+                >
+                  {saveMessage}
+                </p>
+              )}
               <StockfishDashboard
                 evalScore={evaluation}
                 isAnalyzing={isThinking}
