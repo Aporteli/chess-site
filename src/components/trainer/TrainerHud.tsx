@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, Download, Keyboard, Upload } from "lucide-react";
+import { memo, useState } from "react";
+import { Download, Keyboard, Upload } from "lucide-react";
 import { useTrainer } from "@/lib/trainer/context";
 import { SrsProgress } from "./SrsProgress";
 import { MoveList } from "./MoveList";
@@ -17,8 +17,6 @@ import { TranspositionAlert } from "./TranspositionAlert";
 import { PgnDialog } from "./PgnDialog";
 import { KeyboardCheatsheet } from "./KeyboardCheatsheet";
 import { BoardSettingsPanel } from "./BoardSettings";
-import { UploadBoardModal } from "@/components/board/UploadBoardModal";
-
 function OpeningHeaderCard() {
   const { openingMeta } = useTrainer();
   return (
@@ -36,24 +34,25 @@ function OpeningHeaderCard() {
               : "border-border-strong bg-bg-deepest text-text-secondary",
           ].join(" ")}
         >
-          {openingMeta.side === "white" ? "White repertoire" : "Black repertoire"}
+          {openingMeta.side === "white"
+            ? "White repertoire"
+            : "Black repertoire"}
         </span>
       </div>
       <h2 className="font-serif-display text-[20px] font-medium leading-snug text-text-primary">
         {openingMeta.name}
       </h2>
-      <p className="mt-0.5 text-[13px] text-text-secondary">{openingMeta.variation}</p>
+      <p className="mt-0.5 text-[13px] text-text-secondary">
+        {openingMeta.variation}
+      </p>
     </div>
   );
 }
 
-export function TrainerHud() {
-  const { mode, loadCustomFen } = useTrainer();
+export const TrainerHud = memo(function TrainerHud() {
+  const { mode } = useTrainer();
   const [pgn, setPgn] = useState<"import" | "export" | null>(null);
   const [keys, setKeys] = useState(false);
-  const [isUploadBoardOpen, setIsUploadBoardOpen] = useState(false);
-
-  const handlePositionLoaded = (fen: string) => loadCustomFen(fen, "Scanned Book Position");
 
   return (
     <div className="flex h-full flex-col gap-3">
@@ -79,15 +78,6 @@ export function TrainerHud() {
           Import
         </button>
 
-        {/* Scan Board */}
-        <button
-          onClick={() => setIsUploadBoardOpen(true)}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border-default bg-bg-elevated px-2 py-2 text-[12px] text-text-secondary hover:text-accent-gold-bright"
-        >
-          <Camera className="h-3.5 w-3.5" />
-          Scan Book
-        </button>
-
         <button
           onClick={() => setPgn("export")}
           className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border-default bg-bg-elevated px-2 py-2 text-[12px] text-text-secondary hover:text-accent-gold-bright"
@@ -109,14 +99,12 @@ export function TrainerHud() {
         <ActionToolbar />
       </div>
 
-      <PgnDialog open={pgn !== null} mode={pgn ?? "import"} onClose={() => setPgn(null)} />
-      <KeyboardCheatsheet open={keys} onClose={() => setKeys(false)} />
-      
-      <UploadBoardModal
-        isOpen={isUploadBoardOpen}
-        onClose={() => setIsUploadBoardOpen(false)}
-        onPositionLoaded={handlePositionLoaded}
+      <PgnDialog
+        open={pgn !== null}
+        mode={pgn ?? "import"}
+        onClose={() => setPgn(null)}
       />
+      <KeyboardCheatsheet open={keys} onClose={() => setKeys(false)} />
     </div>
   );
-}
+});

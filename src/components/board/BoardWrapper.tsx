@@ -6,10 +6,22 @@ import { FlipVertical2, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { BoardOverlay } from "./BoardOverlay";
 import { PromotionDialog } from "./PromotionDialog";
 import { useTrainer } from "@/lib/trainer/context";
+import { useStockfishEngine } from "@/lib/chess/use-stockfish";
 
 export function BoardWrapper() {
   const t = useTrainer();
+  const { evaluation } = useStockfishEngine();
   const turn = t.fen.split(" ")[1] === "b" ? "b" : "w";
+  const evalScore = evaluation ?? 0;
+  const whiteBarHeight = Math.round(((Math.max(-10, Math.min(10, evalScore)) + 10) / 20) * 100);
+  const evalLabel =
+    evaluation == null
+      ? "—"
+      : Math.abs(evaluation) >= 99
+        ? (evaluation > 0 ? "M" : "-M")
+        : evaluation > 0
+          ? `+${evaluation.toFixed(1)}`
+          : evaluation.toFixed(1);
 
   const squareStyles = useMemo(() => {
     const styles: Record<string, React.CSSProperties> = {};
@@ -170,7 +182,17 @@ export function BoardWrapper() {
           </div>
         </div>
 
-        <div className="relative aspect-square w-full rounded-2xl p-3 wood-grain shadow-board sm:p-4">
+        <div className="relative flex w-full items-stretch gap-2">
+          <div
+            className={`relative w-3.5 shrink-0 overflow-hidden rounded-full border border-accent-gold/50 bg-bg-deepest shadow-lg ${t.flipped ? "flex flex-col" : "flex flex-col justify-end"}`}
+            title={evalLabel}
+          >
+            <div
+              className="w-full bg-text-primary transition-all duration-300"
+              style={{ height: `${t.flipped ? 100 - whiteBarHeight : whiteBarHeight}%` }}
+            />
+          </div>
+        <div className="relative aspect-square min-w-0 flex-1 rounded-2xl p-3 wood-grain shadow-board sm:p-4">
           <span className="pointer-events-none absolute left-2 top-2 h-3 w-3 rounded-tl-md border-l-2 border-t-2 border-accent-gold/50" />
           <span className="pointer-events-none absolute right-2 top-2 h-3 w-3 rounded-tr-md border-r-2 border-t-2 border-accent-gold/50" />
           <span className="pointer-events-none absolute bottom-2 left-2 h-3 w-3 rounded-bl-md border-b-2 border-l-2 border-accent-gold/50" />
@@ -187,6 +209,7 @@ export function BoardWrapper() {
             )}
           </div>
           <BoardOverlay status={t.moveStatus} />
+        </div>
         </div>
       </div>
     </div>

@@ -38,8 +38,8 @@ export const trainerPrompt: TrainerPrompt = {
 
 export const navItems: NavItem[] = [
   { key: "trainer", label: "Openings / Trainer" },
-  { key: "puzzles", label: "Puzzles", comingSoon: true },
-  { key: "analysis", label: "Analysis Board", comingSoon: true },
+  { key: "puzzles", label: "Puzzles", },
+  { key: "analysis", label: "Analysis Board",  },
   { key: "courses", label: "Courses & Repertoire" },
 ];
 

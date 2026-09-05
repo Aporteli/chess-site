@@ -1,8 +1,11 @@
 "use client";
 
+import { memo } from "react";
+import { Chess } from "chess.js";
 import { formatNags, pathToNode } from "@/lib/chess";
 import type { NotationMove } from "@/lib/types";
 import { useTrainer } from "@/lib/trainer/context";
+import { useStockfishEngine } from "@/lib/chess/use-stockfish";
 
 function toRows(t: ReturnType<typeof useTrainer>): { rows: NotationMove[]; activePly: number } {
   const ids = pathToNode(t.chapter, t.node.id);
@@ -66,7 +69,26 @@ function MoveCell({
   );
 }
 
-export function MoveList() {
+function formatEval(n: number) {
+  if (Math.abs(n) >= 99) return n > 0 ? "M" : "−M";
+  return n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1);
+}
+
+function uciToSan(fen: string, uci: string) {
+  try {
+    const g = new Chess(fen);
+    const move = g.move({
+      from: uci.slice(0, 2),
+      to: uci.slice(2, 4),
+      promotion: uci[4] || "q",
+    });
+    return move?.san ?? uci;
+  } catch {
+    return uci;
+  }
+}
+
+const CurrentLine = memo(function CurrentLine() {
   const t = useTrainer();
   const { rows, activePly } = toRows(t);
 
@@ -76,7 +98,7 @@ export function MoveList() {
   };
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-4">
+    <>
       <div className="mb-2.5 flex items-baseline justify-between border-b border-border-subtle pb-2.5">
         <h3 className="font-serif-display text-[15px] text-text-primary">Current line</h3>
         <span className="font-mono text-[10.5px] tracking-wide text-text-muted">PGN</span>
@@ -98,6 +120,48 @@ export function MoveList() {
           </div>
         ))}
       </div>
+    </>
+  );
+});
+
+function EngineSuggestions() {
+  const t = useTrainer();
+  const { lines, isThinking } = useStockfishEngine();
+
+  return (
+    <div className="mb-3 flex min-h-[30px] flex-wrap gap-1.5">
+      {lines.length === 0 && isThinking && (
+        <span className="font-mono text-[11px] text-text-muted">…</span>
+      )}
+      {lines.map((line, i) => {
+        const san = uciToSan(t.fen, line.uci);
+        return (
+          <button
+            key={`${line.multipv}-${line.uci}`}
+            onClick={() =>
+              t.playUserMove(line.uci.slice(0, 2), line.uci.slice(2, 4), line.uci[4] as "q" | "r" | "b" | "n" | undefined)
+            }
+            className={[
+              "flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[12px] transition-colors",
+              i === 0
+                ? "border-accent-teal/40 bg-accent-teal-dim text-accent-teal-bright"
+                : "border-border-subtle bg-bg-elevated text-text-secondary hover:text-text-primary",
+            ].join(" ")}
+          >
+            <span className="font-semibold">{san}</span>
+            <span className="text-[10px] text-text-muted">{formatEval(line.evaluation)}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function MoveList() {
+  return (
+    <div className="rounded-xl border border-border-subtle bg-bg-surface p-4">
+      <EngineSuggestions />
+      <CurrentLine />
     </div>
   );
 }

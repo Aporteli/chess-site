@@ -126,7 +126,9 @@ body {
 
 /* react-chessboard sits inside the wooden bezel; keep it flush. */
 [data-boardid="movetrainer-board"],
-#movetrainer-board {
+#movetrainer-board,
+[data-boardid="analysis-board"],
+#analysis-board {
   width: 100% !important;
   height: 100% !important;
 }
