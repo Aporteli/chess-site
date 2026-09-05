@@ -29,6 +29,8 @@ function TrainerEnginePanel() {
       turn={turn}
       moveNumber={moveNumber}
       fen={t.fen}
+      enabled={engine.enabled}
+      onToggleEnabled={() => engine.setEnabled(!engine.enabled)}
       onPlayMove={(ucis) => {
         for (const uci of ucis) {
           const ok = t.playUserMove(

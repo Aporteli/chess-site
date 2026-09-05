@@ -1,6 +1,7 @@
 "use client";
 
-import type { EngineLimits, EngineSettingsState } from "@/lib/chess/use-stockfish";
+import type { EngineLimits, EngineSettingsState, NnueModel } from "@/lib/chess/use-stockfish";
+import { NNUE_OPTIONS } from "@/lib/chess/use-stockfish";
 
 type EngineSettingsProps = {
   settings: EngineSettingsState;
@@ -9,6 +10,8 @@ type EngineSettingsProps = {
   depth: number;
   nps: number;
   onChange: (patch: Partial<EngineSettingsState>, restart: boolean) => void;
+  enabled: boolean;
+  onToggle: () => void;
 };
 
 function SliderRow({
@@ -56,6 +59,8 @@ export default function EngineSettings({
   depth,
   nps,
   onChange,
+  enabled,
+  onToggle,
 }: EngineSettingsProps) {
   const timeSec = settings.searchTimeMs / 1000;
   return (
@@ -83,13 +88,28 @@ export default function EngineSettings({
 
       <div className="grid grid-cols-[7.5rem_1fr_4.25rem] items-center gap-2 text-[12px] text-text-secondary">
         <span>Engine</span>
-        <div className="flex h-8 items-center justify-between rounded-lg border border-border-default bg-bg-elevated px-2.5 text-[12px] text-text-primary">
-          <span className="truncate">Stockfish WASM</span>
-          <span className="text-text-muted">▾</span>
-        </div>
-        <span className="text-right font-mono text-[10px] text-text-muted">
-          {isAnalyzing ? "on" : "off"}
-        </span>
+        <select
+          value={settings.nnueModel}
+          onChange={(e) => onChange({ nnueModel: e.target.value as NnueModel }, true)}
+          className="h-8 rounded-lg border border-border-default bg-bg-elevated px-2 text-[12px] text-text-primary"
+        >
+          {NNUE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={onToggle}
+          className={`h-8 rounded-md border px-2 font-mono text-[10px] font-semibold ${
+            enabled
+              ? "border-accent-teal bg-accent-teal-dim text-accent-teal-bright"
+              : "border-border-default bg-bg-elevated text-text-muted"
+          }`}
+        >
+          {enabled ? "on" : "off"}
+        </button>
       </div>
 
       <SliderRow

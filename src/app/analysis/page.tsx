@@ -42,6 +42,8 @@ export default function AnalysisPage() {
     stop,
     resetEngine,
     commitSettings,
+    enabled,
+    setEnabled,
   } = useStockfish();
 
   const handlePositionLoaded = useCallback(
@@ -362,6 +364,8 @@ export default function AnalysisPage() {
                 turn={game.turn()}
                 moveNumber={Number(fen.split(" ")[5] || 1)}
                 fen={fen}
+                enabled={enabled}
+                onToggleEnabled={() => setEnabled(!enabled)}
                 onPlayMove={(ucis) => {
                   try {
                     let lastFen = fen;

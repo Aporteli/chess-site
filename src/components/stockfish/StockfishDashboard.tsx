@@ -23,6 +23,8 @@ type StockfishDashboardProps = {
   turn: "w" | "b";
   moveNumber: number;
   fen: string;
+  enabled: boolean;
+  onToggleEnabled: () => void;
 };
 
 export default function StockfishDashboard({
@@ -40,6 +42,8 @@ export default function StockfishDashboard({
   turn,
   moveNumber,
   fen,
+  enabled,
+  onToggleEnabled,
 }: StockfishDashboardProps) {
   const [open, setOpen] = useState(false);
 
@@ -91,6 +95,8 @@ export default function StockfishDashboard({
               depth={depth}
               nps={nps}
               onChange={onSettingsChange}
+              enabled={enabled}
+              onToggle={onToggleEnabled}
             />
           </div>
         </div>

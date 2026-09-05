@@ -10,11 +10,28 @@ export interface EngineLine {
   depth: number;
 }
 
+export type NnueModel = "nnue-85" | "nnue-108" | "nnue-lite" | "hce";
+
+export const NNUE_OPTIONS: { value: NnueModel; label: string }[] = [
+  { value: "nnue-85", label: "NNUE · 85MB" },
+  { value: "nnue-108", label: "NNUE · 108MB" },
+  { value: "nnue-lite", label: "NNUE · 15MB Lite" },
+  { value: "hce", label: "HCE" },
+];
+
+const NNUE_UCI: Record<NnueModel, { useNnue: boolean; evalFile?: string }> = {
+  "nnue-85": { useNnue: true, evalFile: "nn-85.nnue" },
+  "nnue-108": { useNnue: true, evalFile: "nn-108.nnue" },
+  "nnue-lite": { useNnue: true, evalFile: "nn-lite-15.nnue" },
+  hce: { useNnue: false },
+};
+
 export type EngineSettingsState = {
   searchTimeMs: number;
   multiPv: number;
   threads: number;
   hashMb: number;
+  nnueModel: NnueModel;
 };
 
 export type EngineLimits = {
@@ -41,6 +58,7 @@ const DEFAULT_SETTINGS: EngineSettingsState = {
   multiPv: 1,
   threads: 1,
   hashMb: 16,
+  nnueModel: "nnue-85",
 };
 
 function hardwareThreads() {
@@ -55,6 +73,8 @@ export function useStockfish() {
   const settingsRef = useRef(DEFAULT_SETTINGS);
   const readyRef = useRef(false);
   const pendingGoRef = useRef(false);
+  const enabledRef = useRef(true);
+  const [enabled, setEnabledState] = useState(true);
 
   const [limits] = useState<EngineLimits>(() => ({
     searchTimeMin: 500,
@@ -85,16 +105,19 @@ export function useStockfish() {
     const w = workerRef.current;
     if (!w) return;
     const s = settingsRef.current;
+    const nnue = NNUE_UCI[s.nnueModel];
     w.postMessage(`setoption name MultiPV value ${s.multiPv}`);
     w.postMessage(`setoption name Threads value ${s.threads}`);
     w.postMessage(`setoption name Hash value ${s.hashMb}`);
+    w.postMessage(`setoption name Use NNUE value ${nnue.useNnue}`);
+    if (nnue.evalFile) w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
     w.postMessage('isready');
   }, []);
 
   const sendGo = useCallback(() => {
     const w = workerRef.current;
     const fen = fenRef.current;
-    if (!w || !fen) return;
+    if (!w || !fen || !enabledRef.current) return;
     const turn = (fen.split(' ')[1] || 'w') as 'w' | 'b';
     currentTurnRef.current = turn;
     setState((prev) => ({
@@ -191,6 +214,7 @@ export function useStockfish() {
   const evaluatePosition = useCallback((fen: string, _depth?: number) => {
     if (!workerRef.current) return;
     fenRef.current = fen;
+    if (!enabledRef.current) return;
     workerRef.current.postMessage('stop');
     if (readyRef.current) {
       sendGo();
@@ -221,7 +245,7 @@ export function useStockfish() {
     if (!w) return;
     w.postMessage('stop');
     applyOptions();
-    if (restart && fenRef.current) {
+    if (restart && fenRef.current && enabledRef.current) {
       pendingGoRef.current = true;
     }
   }, [applyOptions]);
@@ -243,8 +267,24 @@ export function useStockfish() {
     });
   }, [applyOptions]);
 
+  const setEnabled = useCallback((on: boolean) => {
+    enabledRef.current = on;
+    setEnabledState(on);
+    if (!on) {
+      pendingGoRef.current = false;
+      workerRef.current?.postMessage('stop');
+      setState((prev) => ({ ...prev, isThinking: false }));
+      return;
+    }
+    if (fenRef.current && workerRef.current) {
+      pendingGoRef.current = true;
+      applyOptions();
+    }
+  }, [applyOptions]);
+
   return {
     ...state,
+    enabled,
     settings,
     limits,
     evaluatePosition,
@@ -252,6 +292,7 @@ export function useStockfish() {
     resetEngine,
     setOption,
     commitSettings,
+    setEnabled,
   };
 }
 
