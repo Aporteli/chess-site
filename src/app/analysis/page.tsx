@@ -248,76 +248,62 @@ export default function AnalysisPage() {
 
   return (
     <AppShell activeKey="analysis">
-      <div className="flex h-[calc(100vh-5.5rem)] max-h-[calc(100vh-5.5rem)] flex-col overflow-hidden p-1">
-        <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-5 overflow-hidden lg:grid-cols-12">
+      <div className="flex min-h-0 flex-col overflow-y-auto p-2 pb-24 xl:h-[calc(100dvh-5.5rem)] xl:max-h-[calc(100dvh-5.5rem)] xl:overflow-hidden xl:p-1 xl:pb-1">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch xl:gap-5 xl:overflow-hidden">
           <div
-            className="flex h-full min-h-0 min-w-0 items-center justify-center lg:col-span-8"
-            style={{ background: "none", containerType: "size" }}
+            className="flex w-full min-h-0 min-w-0 flex-col items-center justify-center xl:col-span-8 xl:h-full"
+            style={{ background: "none", containerType: "inline-size" }}
           >
-            <div className="flex max-h-full items-center gap-3">
-              <div className="flex min-w-0 items-stretch gap-3">
-                <div className="flex shrink-0 self-stretch pt-8">
+            <div className="flex w-full max-w-[min(100%,calc(100dvh-9rem))] flex-col items-center justify-center gap-2 sm:gap-3 xl:max-h-full xl:max-w-none xl:flex-row">
+              <div className="flex w-full min-w-0 items-stretch justify-center gap-2 sm:gap-3 xl:w-auto">
+                <div className="flex shrink-0 self-stretch pt-7 sm:pt-8">
                   <EvaluationBar evaluation={evaluation} />
                 </div>
-              <div className="flex min-w-0 flex-col">
-                <div
-                  className="mb-1.5 flex shrink-0 items-center justify-between px-1"
-                  style={{
-                    width:
-                      "min(calc(100cqw - 4.5rem), calc(100cqh - 2.25rem))",
-                  }}
-                >
-                  <span className="text-xs font-mono text-[var(--color-text-muted,#7d735d)]">
-                    სვლა: {game.turn() === "w" ? "თეთრები" : "შავები"}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => setSound((prev) => !prev)}
-                      aria-label={sound ? "Mute sounds" : "Enable sounds"}
-                      className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-gold/50 hover:text-accent-gold-bright active:scale-95"
-                    >
-                      {sound ? (
-                        <Volume2 className="h-3.5 w-3.5" />
-                      ) : (
-                        <VolumeX className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                    <button
-                      onClick={handleFlip}
-                      aria-label="Flip board"
-                      className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-teal/50 hover:text-accent-teal-bright active:scale-95"
-                    >
-                      <FlipVertical2 className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      onClick={handleReset}
-                      aria-label="Restart line"
-                      className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-garnet/50 hover:text-accent-garnet-bright active:scale-95"
-                    >
-                      <RotateCcw className="h-3.5 w-3.5" />
-                    </button>
+                <div className="flex min-w-0 flex-1 flex-col xl:flex-none">
+                  <div className="mb-1.5 flex w-full shrink-0 items-center justify-between px-1 xl:w-[min(100cqw-4.5rem,calc(100dvh-10rem))]">
+                    <span className="text-xs font-mono text-[var(--color-text-muted,#7d735d)]">
+                      სვლა: {game.turn() === "w" ? "თეთრები" : "შავები"}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setSound((prev) => !prev)}
+                        aria-label={sound ? "Mute sounds" : "Enable sounds"}
+                        className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-gold/50 hover:text-accent-gold-bright active:scale-95"
+                      >
+                        {sound ? (
+                          <Volume2 className="h-3.5 w-3.5" />
+                        ) : (
+                          <VolumeX className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                      <button
+                        onClick={handleFlip}
+                        aria-label="Flip board"
+                        className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-teal/50 hover:text-accent-teal-bright active:scale-95"
+                      >
+                        <FlipVertical2 className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={handleReset}
+                        aria-label="Restart line"
+                        className="grid h-7 w-7 place-items-center rounded-md border border-border-default bg-bg-surface text-text-secondary transition-colors hover:border-accent-garnet/50 hover:text-accent-garnet-bright active:scale-95"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div
-                  className="relative shrink-0"
-                  style={{
-                    width:
-                      "min(calc(100cqw - 4.5rem), calc(100cqh - 2.25rem))",
-                    height:
-                      "min(calc(100cqw - 4.5rem), calc(100cqh - 2.25rem))",
-                  }}
-                >
-                  <div className="flex h-full w-full items-center justify-center rounded-2xl border border-[var(--color-border-default,#3a3122)] p-2.5 shadow-board wood-grain">
-                    <div className="relative h-full w-full overflow-hidden rounded-lg ring-1 ring-black/40">
-                      <Chessboard options={boardOptions} />
+                  <div className="relative aspect-square w-full shrink-0 xl:h-[min(100cqw-4.5rem,calc(100dvh-10rem))] xl:w-[min(100cqw-4.5rem,calc(100dvh-10rem))]">
+                    <div className="flex h-full w-full items-center justify-center rounded-xl border border-[var(--color-border-default,#3a3122)] p-1.5 shadow-board wood-grain sm:rounded-2xl sm:p-2.5">
+                      <div className="relative h-full w-full overflow-hidden rounded-lg ring-1 ring-black/40">
+                        <Chessboard options={boardOptions} />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              </div>
 
-              <div className="flex flex-col justify-center gap-2.5">
+              <div className="flex flex-row justify-center gap-2.5 xl:flex-col">
                 <button
                   onClick={handleUndo}
                   disabled={history.length === 0}
@@ -339,7 +325,7 @@ export default function AnalysisPage() {
           </div>
 
           {/* მარჯვენა მხარე: მართვის პანელი */}
-          <div className="flex h-full min-h-0 w-full flex-col gap-3 overflow-y-auto lg:col-span-4">
+          <div className="flex min-h-0 w-full flex-col gap-3 xl:col-span-4 xl:h-full xl:overflow-y-auto">
             <div className="flex shrink-0 flex-col gap-3">
               <button
                 onClick={() => setIsUploadBoardOpen(true)}
@@ -468,7 +454,7 @@ export default function AnalysisPage() {
             </div>
 
             {/* FEN */}
-            <div className="bg-[var(--color-bg-surface,#131110)] p-2 rounded-xl border border-[var(--color-border-subtle,#221d17)] shrink-0">
+            <div className="hidden bg-[var(--color-bg-surface,#131110)] p-2 rounded-xl border border-[var(--color-border-subtle,#221d17)] shrink-0">
               <span className="text-[8px] uppercase font-mono text-[var(--color-text-muted,#7d735d)] block mb-0.5">
                 FEN
               </span>

@@ -123,10 +123,6 @@ export function useStockfish() {
     setState((prev) => ({
       ...prev,
       isThinking: true,
-      lines: [],
-      depth: 0,
-      nps: 0,
-      nodes: 0,
     }));
     w.postMessage(`setoption name MultiPV value ${settingsRef.current.multiPv}`);
     w.postMessage(`position fen ${fen}`);

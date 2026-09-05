@@ -15,7 +15,7 @@ export function EvaluationBar({ evaluation, score, variant = "board" }: Evaluati
     return (
       <div className="relative h-2 w-full overflow-hidden rounded-full border border-border-subtle bg-bg-deepest">
         <div
-          className="h-full bg-text-primary transition-all duration-300"
+          className="h-full bg-text-primary"
           style={{ width: `${whiteBarHeight}%` }}
         />
       </div>

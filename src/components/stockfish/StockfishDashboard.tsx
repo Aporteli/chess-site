@@ -48,7 +48,7 @@ export default function StockfishDashboard({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative flex min-h-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3">
+    <div className="relative flex min-h-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3 [contain:layout]">
       <h3 className="border-b border-border-subtle pb-2 font-serif-display text-[15px] text-text-primary">
         Stockfish
       </h3>
