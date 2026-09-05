@@ -66,6 +66,11 @@ function hardwareThreads() {
   return Math.max(1, navigator.hardwareConcurrency || 2);
 }
 
+function isPhone() {
+  if (typeof navigator === 'undefined') return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 export function useStockfish() {
   const workerRef = useRef<Worker | null>(null);
   const currentTurnRef = useRef<'w' | 'b'>('w');
@@ -76,19 +81,28 @@ export function useStockfish() {
   const enabledRef = useRef(true);
   const [enabled, setEnabledState] = useState(true);
 
-  const [limits] = useState<EngineLimits>(() => ({
-    searchTimeMin: 500,
-    searchTimeMax: 30000,
-    multiPvMax: 5,
-    threadsMax: hardwareThreads(),
-    hashMin: 16,
-    hashMax: 256,
-  }));
+  const [limits] = useState<EngineLimits>(() => {
+    const phone = isPhone();
+    return {
+      searchTimeMin: 500,
+      searchTimeMax: phone ? 8000 : 30000,
+      multiPvMax: phone ? 3 : 5,
+      threadsMax: phone ? 1 : hardwareThreads(),
+      hashMin: phone ? 8 : 16,
+      hashMax: phone ? 32 : 256,
+    };
+  });
 
-  const [settings, setSettings] = useState<EngineSettingsState>(() => ({
-    ...DEFAULT_SETTINGS,
-    threads: Math.min(2, hardwareThreads()),
-  }));
+  const [settings, setSettings] = useState<EngineSettingsState>(() => {
+    const phone = isPhone();
+    return {
+      ...DEFAULT_SETTINGS,
+      searchTimeMs: phone ? 2000 : DEFAULT_SETTINGS.searchTimeMs,
+      threads: phone ? 1 : Math.min(2, hardwareThreads()),
+      hashMb: phone ? 8 : DEFAULT_SETTINGS.hashMb,
+      nnueModel: phone ? "nnue-lite" : DEFAULT_SETTINGS.nnueModel,
+    };
+  });
   settingsRef.current = settings;
 
   const [state, setState] = useState<EngineEvaluation>({
