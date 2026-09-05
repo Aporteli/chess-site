@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 import { ChevronRight, Menu, SlidersHorizontal } from "lucide-react";
 import { openingMeta as fallbackMeta } from "@/lib/mock-data";
 import { useTrainerOptional } from "@/lib/trainer/context";
@@ -18,6 +20,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
     meta.variation ? `${meta.name}: ${meta.variation}` : meta.name,
   ];
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   return (
     <header className="sticky top-0 z-30 border-b border-border-subtle bg-bg-surface/90 backdrop-blur-md">
@@ -30,27 +33,10 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
           <Menu className="h-5 w-5" />
         </button>
 
-        <nav aria-label="Breadcrumb" className="min-w-0 flex-1 overflow-hidden">
-          <ol className="flex items-baseline gap-1.5 overflow-hidden text-[13px] text-text-secondary">
-            {crumbs.map((crumb, i) => {
-              const isLast = i === crumbs.length - 1;
-              return (
-                <li key={`${crumb}-${i}`} className="flex min-w-0 items-baseline gap-1.5">
-                  {i > 0 && <ChevronRight className="h-3 w-3 shrink-0 self-center text-accent-gold/50" />}
-                  <span
-                    className={
-                      isLast
-                        ? "truncate font-serif-display text-[15px] italic text-text-primary"
-                        : "hidden shrink-0 tracking-wide sm:inline"
-                    }
-                  >
-                    {crumb}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+        <nav
+          aria-label="Breadcrumb"
+          className="min-w-0 flex-1 overflow-hidden"
+        ></nav>
 
         {trainer && (
           <span className="hidden rounded-full border border-border-default px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-wide text-text-muted md:inline">
@@ -86,7 +72,9 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
                     type="checkbox"
                     className="accent-[#c9a256]"
                     checked={trainer.settings[key]}
-                    onChange={(e) => trainer.setSettings({ [key]: e.target.checked })}
+                    onChange={(e) =>
+                      trainer.setSettings({ [key]: e.target.checked })
+                    }
                   />
                 </label>
               ))}
@@ -94,12 +82,30 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
           )}
         </div>
 
-        <button
-          aria-label="Open profile menu"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-accent-gold/30 bg-gradient-to-br from-accent-teal-dim to-accent-gold-dim font-serif-display text-[13px] font-medium text-accent-gold-bright transition-colors hover:border-accent-gold/60"
-        >
-          GT
-        </button>
+        {status === "authenticated" && session.user ? (
+          <>
+            <Link
+              href="/profile"
+              className="shrink-0 rounded-lg border border-accent-gold/40 bg-accent-gold-dim px-3 py-1.5 text-[13px] font-medium text-accent-gold-bright transition-colors hover:border-accent-gold/70"
+            >
+              Profile
+            </Link>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="shrink-0 rounded-lg border border-border-default bg-bg-elevated px-3 py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:border-accent-gold/40 hover:text-accent-gold-bright"
+            >
+              Sign out
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/auth/signin"
+            className="shrink-0 rounded-lg border border-accent-gold/40 bg-accent-gold-dim px-3 py-1.5 text-[13px] font-medium text-accent-gold-bright transition-colors hover:border-accent-gold/70"
+          >
+            Sign In
+          </Link>
+        )}
       </div>
       <div className="h-px w-full bg-gradient-to-r from-transparent via-accent-gold/25 to-transparent" />
     </header>

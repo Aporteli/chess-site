@@ -5,3 +5,7 @@ build/
 *.lock
 package-lock.json
 public/
+tsconfig.tsbuildinfo
+*.nnue
+.env*
+.git/
