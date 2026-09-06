@@ -90,12 +90,25 @@ function canUseThreadedWasm() {
   );
 }
 
+function createEngineWorker(): Worker {
+  const src = `${self.location.origin}/stockfish.wasm.js`;
+  const blob = new Blob([`importScripts(${JSON.stringify(src)});`], {
+    type: "text/javascript",
+  });
+  const url = URL.createObjectURL(blob);
+  const worker = new Worker(url);
+  URL.revokeObjectURL(url);
+  return worker;
+}
+
 export function useStockfish() {
   const workerRef = useRef<Worker | null>(null);
   const currentTurnRef = useRef<"w" | "b">("w");
   const fenRef = useRef<string | null>(null);
   const settingsRef = useRef(DEFAULT_SETTINGS);
   const readyRef = useRef(false);
+  const uciOkRef = useRef(false);
+  const cmdQueueRef = useRef<string[]>([]);
   const pendingGoRef = useRef(false);
   const enabledRef = useRef(true);
   const [enabled, setEnabledState] = useState(true);
@@ -119,7 +132,7 @@ export function useStockfish() {
       searchTimeMs: phone ? 2000 : DEFAULT_SETTINGS.searchTimeMs,
       threads: phone ? 1 : Math.min(2, hardwareThreads()),
       hashMb: phone ? 8 : DEFAULT_SETTINGS.hashMb,
-      nnueModel: phone ? "nnue-lite" : DEFAULT_SETTINGS.nnueModel,
+      nnueModel: phone ? "hce" : DEFAULT_SETTINGS.nnueModel,
     };
   });
   settingsRef.current = settings;
@@ -134,19 +147,30 @@ export function useStockfish() {
     nodes: 0,
   });
 
+  const postUci = useCallback((cmd: string) => {
+    const w = workerRef.current;
+    if (!w) return;
+    if (!uciOkRef.current && cmd !== "uci") {
+      cmdQueueRef.current.push(cmd);
+      return;
+    }
+    w.postMessage(cmd);
+  }, []);
+
   const applyOptions = useCallback(() => {
     const w = workerRef.current;
     if (!w) return;
     const s = settingsRef.current;
     const nnue = NNUE_UCI[s.nnueModel];
-    w.postMessage(`setoption name MultiPV value ${s.multiPv}`);
-    w.postMessage(`setoption name Threads value ${s.threads}`);
-    w.postMessage(`setoption name Hash value ${s.hashMb}`);
-    w.postMessage(`setoption name Use NNUE value ${nnue.useNnue}`);
-    if (nnue.evalFile)
-      w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
-    w.postMessage("isready");
-  }, []);
+    postUci(`setoption name MultiPV value ${s.multiPv}`);
+    postUci(`setoption name Threads value 1`);
+    postUci(`setoption name Hash value ${s.hashMb}`);
+    postUci(`setoption name Use NNUE value ${nnue.useNnue}`);
+    if (nnue.evalFile && !isMobileDevice()) {
+      postUci(`setoption name EvalFile value ${nnue.evalFile}`);
+    }
+    postUci("isready");
+  }, [postUci]);
 
   const sendGo = useCallback(() => {
     const w = workerRef.current;
@@ -158,28 +182,20 @@ export function useStockfish() {
       ...prev,
       isThinking: true,
     }));
-    w.postMessage(
-      `setoption name MultiPV value ${settingsRef.current.multiPv}`,
-    );
-    w.postMessage(`position fen ${fen}`);
-    w.postMessage(`go movetime ${settingsRef.current.searchTimeMs}`);
-  }, []);
+    postUci(`setoption name MultiPV value ${settingsRef.current.multiPv}`);
+    postUci(`position fen ${fen}`);
+    postUci(`go movetime ${settingsRef.current.searchTimeMs}`);
+  }, [postUci]);
 
   useEffect(() => {
-    const script = canUseThreadedWasm()
-      ? "/stockfish.wasm.js"
-      : "/stockfish.js";
     let worker: Worker;
     try {
-      worker = new Worker(script);
+      worker = createEngineWorker();
     } catch {
       return;
     }
     workerRef.current = worker;
-    worker.onerror = () => {
-      readyRef.current = false;
-      workerRef.current = null;
-    };
+    worker.onerror = () => {};
 
     worker.onmessage = (event: MessageEvent) => {
       const raw = event.data;
@@ -189,6 +205,12 @@ export function useStockfish() {
           : typeof raw?.data === "string"
             ? raw.data
             : "";
+      if (line === "uciok") {
+        uciOkRef.current = true;
+        const queued = cmdQueueRef.current.splice(0);
+        queued.forEach((c) => worker.postMessage(c));
+        return;
+      }
       if (line === "readyok") {
         readyRef.current = true;
         if (pendingGoRef.current) {
@@ -265,15 +287,15 @@ export function useStockfish() {
       if (!workerRef.current) return;
       fenRef.current = fen;
       if (!enabledRef.current) return;
-      workerRef.current.postMessage("stop");
+      postUci("stop");
       if (readyRef.current) {
         sendGo();
       } else {
         pendingGoRef.current = true;
-        workerRef.current.postMessage("isready");
+        postUci("isready");
       }
     },
-    [sendGo],
+    [sendGo, postUci],
   );
 
   const stop = useCallback(() => {
@@ -284,7 +306,7 @@ export function useStockfish() {
   }, []);
 
   const setOption = useCallback((name: string, value: string) => {
-    workerRef.current?.postMessage(`setoption name ${name} value ${value}`);
+    postUci(`setoption name ${name} value ${value}`);
   }, []);
 
   const commitSettings = useCallback(
@@ -296,7 +318,7 @@ export function useStockfish() {
       });
       const w = workerRef.current;
       if (!w) return;
-      w.postMessage("stop");
+      postUci("stop");
       applyOptions();
       if (restart && fenRef.current && enabledRef.current) {
         pendingGoRef.current = true;
@@ -307,8 +329,8 @@ export function useStockfish() {
 
   const resetEngine = useCallback(() => {
     if (workerRef.current) {
-      workerRef.current.postMessage("stop");
-      workerRef.current.postMessage("ucinewgame");
+      postUci("stop");
+      postUci("ucinewgame");
       applyOptions();
     }
     setState({
