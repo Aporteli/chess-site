@@ -1,6 +1,15 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback, createElement, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  createElement,
+  type ReactNode,
+} from "react";
 
 export interface EngineLine {
   multipv: number;
@@ -62,18 +71,28 @@ const DEFAULT_SETTINGS: EngineSettingsState = {
 };
 
 function hardwareThreads() {
-  if (typeof navigator === 'undefined') return 2;
+  if (typeof navigator === "undefined") return 2;
   return Math.max(1, navigator.hardwareConcurrency || 2);
 }
 
-function isPhone() {
-  if (typeof navigator === 'undefined') return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function isMobileDevice() {
+  if (typeof navigator === "undefined") return false;
+  const iPadOS =
+    navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || iPadOS;
+}
+
+function canUseThreadedWasm() {
+  return (
+    typeof SharedArrayBuffer !== "undefined" &&
+    typeof crossOriginIsolated !== "undefined" &&
+    crossOriginIsolated === true
+  );
 }
 
 export function useStockfish() {
   const workerRef = useRef<Worker | null>(null);
-  const currentTurnRef = useRef<'w' | 'b'>('w');
+  const currentTurnRef = useRef<"w" | "b">("w");
   const fenRef = useRef<string | null>(null);
   const settingsRef = useRef(DEFAULT_SETTINGS);
   const readyRef = useRef(false);
@@ -82,7 +101,7 @@ export function useStockfish() {
   const [enabled, setEnabledState] = useState(true);
 
   const [limits] = useState<EngineLimits>(() => {
-    const phone = isPhone();
+    const phone = isMobileDevice();
     return {
       searchTimeMin: 500,
       searchTimeMax: phone ? 8000 : 30000,
@@ -94,7 +113,7 @@ export function useStockfish() {
   });
 
   const [settings, setSettings] = useState<EngineSettingsState>(() => {
-    const phone = isPhone();
+    const phone = isMobileDevice();
     return {
       ...DEFAULT_SETTINGS,
       searchTimeMs: phone ? 2000 : DEFAULT_SETTINGS.searchTimeMs,
@@ -124,33 +143,53 @@ export function useStockfish() {
     w.postMessage(`setoption name Threads value ${s.threads}`);
     w.postMessage(`setoption name Hash value ${s.hashMb}`);
     w.postMessage(`setoption name Use NNUE value ${nnue.useNnue}`);
-    if (nnue.evalFile) w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
-    w.postMessage('isready');
+    if (nnue.evalFile)
+      w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
+    w.postMessage("isready");
   }, []);
 
   const sendGo = useCallback(() => {
     const w = workerRef.current;
     const fen = fenRef.current;
     if (!w || !fen || !enabledRef.current) return;
-    const turn = (fen.split(' ')[1] || 'w') as 'w' | 'b';
+    const turn = (fen.split(" ")[1] || "w") as "w" | "b";
     currentTurnRef.current = turn;
     setState((prev) => ({
       ...prev,
       isThinking: true,
     }));
-    w.postMessage(`setoption name MultiPV value ${settingsRef.current.multiPv}`);
+    w.postMessage(
+      `setoption name MultiPV value ${settingsRef.current.multiPv}`,
+    );
     w.postMessage(`position fen ${fen}`);
     w.postMessage(`go movetime ${settingsRef.current.searchTimeMs}`);
   }, []);
 
   useEffect(() => {
-    const worker = new Worker('/stockfish.wasm.js');
+    const script = canUseThreadedWasm()
+      ? "/stockfish.wasm.js"
+      : "/stockfish.js";
+    let worker: Worker;
+    try {
+      worker = new Worker(script);
+    } catch {
+      return;
+    }
     workerRef.current = worker;
+    worker.onerror = () => {
+      readyRef.current = false;
+      workerRef.current = null;
+    };
 
     worker.onmessage = (event: MessageEvent) => {
-      const line = typeof event.data === 'string' ? event.data : '';
-
-      if (line === 'readyok') {
+      const raw = event.data;
+      const line =
+        typeof raw === "string"
+          ? raw
+          : typeof raw?.data === "string"
+            ? raw.data
+            : "";
+      if (line === "readyok") {
         readyRef.current = true;
         if (pendingGoRef.current) {
           pendingGoRef.current = false;
@@ -163,18 +202,18 @@ export function useStockfish() {
         const mate = line.match(/score mate (-?\d+)/);
         if (mate) {
           const n = parseInt(mate[1], 10);
-          const isWhite = currentTurnRef.current === 'w';
-          return n > 0 ? (isWhite ? 100 : -100) : (isWhite ? -100 : 100);
+          const isWhite = currentTurnRef.current === "w";
+          return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
         }
         const cp = line.match(/score cp (-?\d+)/);
         if (cp) {
           const raw = parseInt(cp[1], 10) / 100;
-          return currentTurnRef.current === 'b' ? -raw : raw;
+          return currentTurnRef.current === "b" ? -raw : raw;
         }
         return null;
       };
 
-      if (line.startsWith('info') && line.includes(' pv ')) {
+      if (line.startsWith("info") && line.includes(" pv ")) {
         const score = parseScore();
         const pvMatch = line.match(/ pv (.+)$/);
         const mpv = Number(line.match(/multipv (\d+)/)?.[1] ?? 1);
@@ -183,7 +222,7 @@ export function useStockfish() {
         const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
         if (score !== null && pvMatch) {
           const pv = pvMatch[1].trim();
-          const uci = pv.split(' ')[0] ?? '';
+          const uci = pv.split(" ")[0] ?? "";
           setState((prev) => {
             const next = [
               ...prev.lines.filter((l) => l.multipv !== mpv),
@@ -203,17 +242,17 @@ export function useStockfish() {
         }
       }
 
-      if (line.startsWith('bestmove')) {
-        const move = line.split(' ')[1];
+      if (line.startsWith("bestmove")) {
+        const move = line.split(" ")[1];
         setState((prev) => ({
           ...prev,
-          bestMove: move !== '(none)' ? move : prev.bestMove,
+          bestMove: move !== "(none)" ? move : prev.bestMove,
           isThinking: false,
         }));
       }
     };
 
-    worker.postMessage('uci');
+    worker.postMessage("uci");
     applyOptions();
 
     return () => {
@@ -221,23 +260,26 @@ export function useStockfish() {
     };
   }, [applyOptions, sendGo]);
 
-  const evaluatePosition = useCallback((fen: string, _depth?: number) => {
-    if (!workerRef.current) return;
-    fenRef.current = fen;
-    if (!enabledRef.current) return;
-    workerRef.current.postMessage('stop');
-    if (readyRef.current) {
-      sendGo();
-    } else {
-      pendingGoRef.current = true;
-      workerRef.current.postMessage('isready');
-    }
-  }, [sendGo]);
+  const evaluatePosition = useCallback(
+    (fen: string, _depth?: number) => {
+      if (!workerRef.current) return;
+      fenRef.current = fen;
+      if (!enabledRef.current) return;
+      workerRef.current.postMessage("stop");
+      if (readyRef.current) {
+        sendGo();
+      } else {
+        pendingGoRef.current = true;
+        workerRef.current.postMessage("isready");
+      }
+    },
+    [sendGo],
+  );
 
   const stop = useCallback(() => {
     if (!workerRef.current) return;
     pendingGoRef.current = false;
-    workerRef.current.postMessage('stop');
+    workerRef.current.postMessage("stop");
     setState((prev) => ({ ...prev, isThinking: false }));
   }, []);
 
@@ -245,25 +287,28 @@ export function useStockfish() {
     workerRef.current?.postMessage(`setoption name ${name} value ${value}`);
   }, []);
 
-  const commitSettings = useCallback((patch: Partial<EngineSettingsState>, restart: boolean) => {
-    setSettings((prev) => {
-      const next = { ...prev, ...patch };
-      settingsRef.current = next;
-      return next;
-    });
-    const w = workerRef.current;
-    if (!w) return;
-    w.postMessage('stop');
-    applyOptions();
-    if (restart && fenRef.current && enabledRef.current) {
-      pendingGoRef.current = true;
-    }
-  }, [applyOptions]);
+  const commitSettings = useCallback(
+    (patch: Partial<EngineSettingsState>, restart: boolean) => {
+      setSettings((prev) => {
+        const next = { ...prev, ...patch };
+        settingsRef.current = next;
+        return next;
+      });
+      const w = workerRef.current;
+      if (!w) return;
+      w.postMessage("stop");
+      applyOptions();
+      if (restart && fenRef.current && enabledRef.current) {
+        pendingGoRef.current = true;
+      }
+    },
+    [applyOptions],
+  );
 
   const resetEngine = useCallback(() => {
     if (workerRef.current) {
-      workerRef.current.postMessage('stop');
-      workerRef.current.postMessage('ucinewgame');
+      workerRef.current.postMessage("stop");
+      workerRef.current.postMessage("ucinewgame");
       applyOptions();
     }
     setState({
@@ -277,20 +322,23 @@ export function useStockfish() {
     });
   }, [applyOptions]);
 
-  const setEnabled = useCallback((on: boolean) => {
-    enabledRef.current = on;
-    setEnabledState(on);
-    if (!on) {
-      pendingGoRef.current = false;
-      workerRef.current?.postMessage('stop');
-      setState((prev) => ({ ...prev, isThinking: false }));
-      return;
-    }
-    if (fenRef.current && workerRef.current) {
-      pendingGoRef.current = true;
-      applyOptions();
-    }
-  }, [applyOptions]);
+  const setEnabled = useCallback(
+    (on: boolean) => {
+      enabledRef.current = on;
+      setEnabledState(on);
+      if (!on) {
+        pendingGoRef.current = false;
+        workerRef.current?.postMessage("stop");
+        setState((prev) => ({ ...prev, isThinking: false }));
+        return;
+      }
+      if (fenRef.current && workerRef.current) {
+        pendingGoRef.current = true;
+        applyOptions();
+      }
+    },
+    [applyOptions],
+  );
 
   return {
     ...state,
@@ -306,9 +354,17 @@ export function useStockfish() {
   };
 }
 
-const StockfishContext = createContext<ReturnType<typeof useStockfish> | null>(null);
+const StockfishContext = createContext<ReturnType<typeof useStockfish> | null>(
+  null,
+);
 
-export function StockfishProvider({ fen, children }: { fen: string; children: ReactNode }) {
+export function StockfishProvider({
+  fen,
+  children,
+}: {
+  fen: string;
+  children: ReactNode;
+}) {
   const engine = useStockfish();
 
   useEffect(() => {
@@ -320,6 +376,7 @@ export function StockfishProvider({ fen, children }: { fen: string; children: Re
 
 export function useStockfishEngine() {
   const ctx = useContext(StockfishContext);
-  if (!ctx) throw new Error('useStockfishEngine must be used within StockfishProvider');
+  if (!ctx)
+    throw new Error("useStockfishEngine must be used within StockfishProvider");
   return ctx;
 }
