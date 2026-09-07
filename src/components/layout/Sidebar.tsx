@@ -11,6 +11,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   X,
+  TableIcon,
 } from "lucide-react";
 import { navItems, secondaryNavItems } from "@/lib/mock-data";
 import type { NavKey } from "@/lib/types";
@@ -21,6 +22,7 @@ const HREF: Partial<Record<NavKey, string>> = {
   analysis: "/analysis",
   courses: "/courses",
   profile: "/profile",
+  tablebase: "/tablebase",
 };
 
 const ICONS: Record<NavKey, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
@@ -30,6 +32,7 @@ const ICONS: Record<NavKey, React.ComponentType<{ className?: string; strokeWidt
   courses: Library,
   settings: Settings,
   profile: UserRound,
+  tablebase: TableIcon,
 };
 
 interface SidebarProps {

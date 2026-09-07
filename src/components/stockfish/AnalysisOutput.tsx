@@ -10,6 +10,15 @@ function isUci(s: string) {
   return /^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(s);
 }
 
+const FIGURINE: Record<"w" | "b", Record<string, string>> = {
+  w: { K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘" },
+  b: { K: "♚", Q: "♛", R: "♜", B: "♝", N: "♞" },
+};
+
+function toFigurineSan(san: string, color: "w" | "b") {
+  return san.replace(/^[KQRBN]/, (piece) => FIGURINE[color][piece] ?? piece);
+}
+
 function parseUci(uci: string) {
   return {
     from: uci.slice(0, 2),
@@ -49,15 +58,32 @@ function MiniBoard({ fen }: { fen: string }) {
   );
 }
 
-function pvItems(pv: string, turn: "w" | "b", moveNumber: number) {
+function pvItems(pv: string, fen: string, turn: "w" | "b", moveNumber: number) {
   const moves = pv.split(/\s+/).filter(isUci);
-  const items: { key: string; kind: "num" | "move"; text: string; ply?: number }[] = [];
+  const items: {
+    key: string;
+    kind: "num" | "move";
+    text: string;
+    ply?: number;
+  }[] = [];
+  const game = new Chess(fen);
   let n = moveNumber;
   let side = turn;
+
   moves.forEach((uci, ply) => {
-    if (side === "w") items.push({ key: `n-${ply}`, kind: "num", text: `${n}.` });
-    else if (ply === 0) items.push({ key: `n-${ply}`, kind: "num", text: `${n}...` });
-    items.push({ key: `m-${ply}`, kind: "move", text: uci, ply });
+    if (side === "w")
+      items.push({ key: `n-${ply}`, kind: "num", text: `${n}.` });
+    else if (ply === 0)
+      items.push({ key: `n-${ply}`, kind: "num", text: `${n}...` });
+
+    let text = uci;
+    try {
+      const mv = game.move(parseUci(uci));
+      if (mv) text = toFigurineSan(mv.san, mv.color);
+    } catch {
+      // keep UCI if the move is illegal from this FEN
+    }
+    items.push({ key: `m-${ply}`, kind: "move", text, ply });
     if (side === "b") n += 1;
     side = side === "w" ? "b" : "w";
   });
@@ -70,33 +96,47 @@ function MoveStrip({
   onPly,
   onPlay,
   moves,
+  isExpanded = false,
 }: {
   items: { key: string; kind: "num" | "move"; text: string; ply?: number }[];
   ply: number;
   onPly: (n: number) => void;
   onPlay: (ucis: string[]) => void;
   moves: string[];
+  isExpanded?: boolean;
 }) {
   return (
-    <div className="flex min-w-0 flex-nowrap gap-x-1 overflow-hidden text-text-secondary group-open:flex-wrap group-open:overflow-visible">
+    <div
+      className={`flex items-center gap-x-1.5 text-text-primary ${
+        isExpanded
+          ? "flex-wrap leading-relaxed"
+          : "min-w-0 flex-nowrap overflow-hidden leading-none"
+      }`}
+    >
       {items.map((it) =>
         it.kind === "num" ? (
-          <span key={it.key} className="text-text-muted">
+          <span
+            key={it.key}
+            className="inline-flex shrink-0 items-center whitespace-nowrap text-text-muted"
+          >
             {it.text}
           </span>
         ) : (
           <button
             key={it.key}
             type="button"
-            className={`rounded px-0.5 hover:bg-accent-gold-dim hover:text-accent-gold-bright ${
+            className={`inline-flex shrink-0 items-center whitespace-nowrap rounded border-0 bg-transparent px-0.5 font-sans text-[12px] hover:bg-accent-gold-dim hover:text-accent-gold-bright ${
               it.ply === ply ? "bg-accent-gold-dim text-accent-gold-bright" : ""
             }`}
             onMouseEnter={() => onPly(it.ply ?? 0)}
-            onClick={() => onPlay(moves.slice(0, (it.ply ?? 0) + 1))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlay(moves.slice(0, (it.ply ?? 0) + 1));
+            }}
           >
             {it.text}
           </button>
-        ),
+        )
       )}
     </div>
   );
@@ -121,8 +161,8 @@ function VariationLine({
   const [anchor, setAnchor] = useState({ top: 0, left: 0 });
 
   const { moves, items } = useMemo(
-    () => pvItems(line.pv || line.uci, turn, moveNumber),
-    [line.pv, line.uci, turn, moveNumber],
+    () => pvItems(line.pv || line.uci, fen, turn, moveNumber),
+    [line.pv, line.uci, fen, turn, moveNumber]
   );
 
   const fens = useMemo(() => {
@@ -141,7 +181,10 @@ function VariationLine({
   }, [fen, moves]);
 
   const previewFen = fens[Math.min(ply + 1, fens.length - 1)] ?? fen;
-  const score = line.evaluation > 0 ? `+${line.evaluation.toFixed(2)}` : line.evaluation.toFixed(2);
+  const score =
+    line.evaluation > 0
+      ? `+${line.evaluation.toFixed(2)}`
+      : line.evaluation.toFixed(2);
 
   const openPreview = () => {
     const r = wrapRef.current?.getBoundingClientRect();
@@ -152,21 +195,43 @@ function VariationLine({
   return (
     <details
       ref={wrapRef}
-      className="group relative rounded border border-transparent open:border-border-subtle open:bg-bg-elevated"
+      className="group rounded border border-transparent open:border-border-subtle open:bg-bg-elevated"
       onMouseEnter={openPreview}
       onMouseLeave={() => setHovering(false)}
     >
-      <summary className="flex h-6 cursor-pointer list-none items-center gap-2 overflow-hidden rounded px-0.5 text-left marker:content-none [&::-webkit-details-marker]:hidden">
-        <span className="shrink-0 text-[9px] text-text-muted group-open:rotate-90">▸</span>
-        <span className="w-10 shrink-0 font-semibold text-accent-teal-bright">{score}</span>
-        <span className="w-5 shrink-0 text-text-muted">#{line.multipv}</span>
-        <div className="min-w-0 flex-1 overflow-hidden [&]:[&>div]:flex-nowrap [&]:[&>div]:overflow-hidden">
-          <MoveStrip items={items} ply={ply} onPly={setPly} onPlay={onPlayMoves} moves={moves} />
+      <summary className="flex min-h-[28px] cursor-pointer list-none items-center gap-2 rounded px-1 py-1 text-left marker:content-none [&::-webkit-details-marker]:hidden">
+        <span className="shrink-0 text-[9px] text-text-muted transition-transform group-open:rotate-90">
+          ▸
+        </span>
+        <span className="w-10 shrink-0 font-semibold text-accent-teal-bright">
+          {score}
+        </span>
+
+        {/* ჩაკეცილ მდგომარეობაში გვიჩვენებს მხოლოდ ერთ ხაზს */}
+        <div className="min-w-0 flex-1 group-open:hidden">
+          <MoveStrip
+            items={items}
+            ply={ply}
+            onPly={setPly}
+            onPlay={onPlayMoves}
+            moves={moves}
+            isExpanded={false}
+          />
         </div>
       </summary>
-      <div className="px-1 pb-1.5 pl-6">
-        <MoveStrip items={items} ply={ply} onPly={setPly} onPlay={onPlayMoves} moves={moves} />
+
+      {/* ჩამოშლილ (open) მდგომარეობაში სრული ვარიანტი გადადის ქვემოთ და იშლება ბლოკურად */}
+      <div className="px-2 pb-2 pt-1 pl-7">
+        <MoveStrip
+          items={items}
+          ply={ply}
+          onPly={setPly}
+          onPlay={onPlayMoves}
+          moves={moves}
+          isExpanded={true}
+        />
       </div>
+
       {hovering &&
         typeof document !== "undefined" &&
         createPortal(
@@ -176,7 +241,7 @@ function VariationLine({
           >
             <MiniBoard fen={previewFen} />
           </div>,
-          document.body,
+          document.body
         )}
     </details>
   );

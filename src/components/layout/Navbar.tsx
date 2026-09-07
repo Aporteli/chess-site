@@ -241,12 +241,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
 
         {status === "authenticated" && session.user ? (
           <>
-            <Link
-              href="/profile"
-              className="shrink-0 rounded-lg border border-accent-gold/40 bg-accent-gold-dim px-3 py-1.5 text-[13px] font-medium text-accent-gold-bright transition-colors hover:border-accent-gold/70"
-            >
-              Profile
-            </Link>
+          
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: "/" })}

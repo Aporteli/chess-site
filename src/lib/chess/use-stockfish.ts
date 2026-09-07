@@ -60,14 +60,37 @@ interface EngineEvaluation {
   depth: number;
   nps: number;
   nodes: number;
+  resultFen: string | null;
 }
 
+export type EngineSearchComplete = {
+  fen: string;
+  bestMove: string | null;
+};
+
 const DEFAULT_SETTINGS: EngineSettingsState = {
-  searchTimeMs: 8000,
+  searchTimeMs: 0.1,
   multiPv: 1,
   threads: 1,
   hashMb: 16,
-  nnueModel: "nnue-85",
+  nnueModel: "hce",
+};
+
+const DEFAULT_LIMITS: EngineLimits = {
+  searchTimeMin: 0.1,
+  searchTimeMax: 30000,
+  multiPvMax: 5,
+  threadsMax: 2,
+  hashMin: 16,
+  hashMax: 256,
+};
+const PHONE_LIMITS: EngineLimits = {
+  searchTimeMin: 0.1,
+  searchTimeMax: 8000,
+  multiPvMax: 3,
+  threadsMax: 1,
+  hashMin: 8,
+  hashMax: 32,
 };
 
 function hardwareThreads() {
@@ -82,23 +105,25 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || iPadOS;
 }
 
-function canUseThreadedWasm() {
-  return (
-    typeof SharedArrayBuffer !== "undefined" &&
-    typeof crossOriginIsolated !== "undefined" &&
-    crossOriginIsolated === true
-  );
+function engineLines(raw: unknown): string[] {
+  if (typeof raw === "string") {
+    return raw
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+  }
+  if (raw && typeof raw === "object") {
+    const o = raw as { data?: unknown; line?: unknown };
+    if (typeof o.data === "string") return engineLines(o.data);
+    if (typeof o.line === "string") return engineLines(o.line);
+  }
+  return [];
 }
 
 function createEngineWorker(): Worker {
-  const src = `${self.location.origin}/stockfish.wasm.js`;
-  const blob = new Blob([`importScripts(${JSON.stringify(src)});`], {
-    type: "text/javascript",
-  });
-  const url = URL.createObjectURL(blob);
-  const worker = new Worker(url);
-  URL.revokeObjectURL(url);
-  return worker;
+  // Public file — do not use `new URL(..., import.meta.url)` / origin URL.
+  // Next/Turbopack intercepts that pattern and the worker request stays pending.
+  return new Worker("/stockfish.wasm.js");
 }
 
 export function useStockfish() {
@@ -107,35 +132,50 @@ export function useStockfish() {
   const fenRef = useRef<string | null>(null);
   const settingsRef = useRef(DEFAULT_SETTINGS);
   const readyRef = useRef(false);
-  const uciOkRef = useRef(false);
-  const cmdQueueRef = useRef<string[]>([]);
   const pendingGoRef = useRef(false);
+  const searchingRef = useRef(false);
+  const abandonSearchRef = useRef(false);
+  const activeFenRef = useRef<string | null>(null);
+  const jobIdRef = useRef(0);
+  const activeJobIdRef = useRef(0);
+  const completeCbRef = useRef<((result: EngineSearchComplete) => void) | null>(
+    null,
+  );
+  const goWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const enabledRef = useRef(true);
   const [enabled, setEnabledState] = useState(true);
 
-  const [limits] = useState<EngineLimits>(() => {
-    const phone = isMobileDevice();
-    return {
-      searchTimeMin: 500,
-      searchTimeMax: phone ? 8000 : 30000,
-      multiPvMax: phone ? 3 : 5,
-      threadsMax: phone ? 1 : hardwareThreads(),
-      hashMin: phone ? 8 : 16,
-      hashMax: phone ? 32 : 256,
-    };
-  });
+  const [limits, setLimits] = useState<EngineLimits>(DEFAULT_LIMITS);
 
-  const [settings, setSettings] = useState<EngineSettingsState>(() => {
-    const phone = isMobileDevice();
-    return {
-      ...DEFAULT_SETTINGS,
-      searchTimeMs: phone ? 2000 : DEFAULT_SETTINGS.searchTimeMs,
-      threads: phone ? 1 : Math.min(2, hardwareThreads()),
-      hashMb: phone ? 8 : DEFAULT_SETTINGS.hashMb,
-      nnueModel: phone ? "hce" : DEFAULT_SETTINGS.nnueModel,
-    };
-  });
+  const [settings, setSettings] =
+    useState<EngineSettingsState>(DEFAULT_SETTINGS);
   settingsRef.current = settings;
+
+  useEffect(() => {
+    if (isMobileDevice()) {
+      const next = {
+        ...DEFAULT_SETTINGS,
+        searchTimeMs: 0.1,
+        threads: 1,
+        hashMb: 8,
+        nnueModel: "hce" as const,
+      };
+      settingsRef.current = next;
+      setLimits(PHONE_LIMITS);
+      setSettings(next);
+      return;
+    }
+    const next = {
+      ...DEFAULT_SETTINGS,
+      threads: 1,
+    };
+    settingsRef.current = next;
+    setLimits({
+      ...DEFAULT_LIMITS,
+      threadsMax: hardwareThreads(),
+    });
+    setSettings(next);
+  }, []);
 
   const [state, setState] = useState<EngineEvaluation>({
     bestMove: null,
@@ -145,132 +185,191 @@ export function useStockfish() {
     depth: 0,
     nps: 0,
     nodes: 0,
+    resultFen: null,
   });
-
-  const postUci = useCallback((cmd: string) => {
-    const w = workerRef.current;
-    if (!w) return;
-    if (!uciOkRef.current && cmd !== "uci") {
-      cmdQueueRef.current.push(cmd);
-      return;
-    }
-    w.postMessage(cmd);
-  }, []);
 
   const applyOptions = useCallback(() => {
     const w = workerRef.current;
     if (!w) return;
     const s = settingsRef.current;
     const nnue = NNUE_UCI[s.nnueModel];
-    postUci(`setoption name MultiPV value ${s.multiPv}`);
-    postUci(`setoption name Threads value 1`);
-    postUci(`setoption name Hash value ${s.hashMb}`);
-    postUci(`setoption name Use NNUE value ${nnue.useNnue}`);
-    if (nnue.evalFile && !isMobileDevice()) {
-      postUci(`setoption name EvalFile value ${nnue.evalFile}`);
+    w.postMessage(`setoption name MultiPV value ${s.multiPv}`);
+    w.postMessage("setoption name Threads value 1");
+    w.postMessage(`setoption name Hash value ${Math.min(s.hashMb, 16)}`);
+    w.postMessage(`setoption name Use NNUE value ${nnue.useNnue}`);
+    if (nnue.evalFile) {
+      w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
     }
-    postUci("isready");
-  }, [postUci]);
+    w.postMessage("isready");
+  }, []);
 
   const sendGo = useCallback(() => {
     const w = workerRef.current;
     const fen = fenRef.current;
     if (!w || !fen || !enabledRef.current) return;
+    if (goWatchdogRef.current) {
+      clearTimeout(goWatchdogRef.current);
+      goWatchdogRef.current = null;
+    }
     const turn = (fen.split(" ")[1] || "w") as "w" | "b";
     currentTurnRef.current = turn;
+    activeFenRef.current = fen;
+    activeJobIdRef.current = jobIdRef.current;
+    searchingRef.current = true;
     setState((prev) => ({
       ...prev,
       isThinking: true,
+      lines: [],
+      bestMove: null,
+      evaluation: null,
+      depth: 0,
+      resultFen: null,
     }));
-    postUci(`setoption name MultiPV value ${settingsRef.current.multiPv}`);
-    postUci(`position fen ${fen}`);
-    postUci(`go movetime ${settingsRef.current.searchTimeMs}`);
-  }, [postUci]);
+    w.postMessage(
+      `setoption name MultiPV value ${settingsRef.current.multiPv}`,
+    );
+    w.postMessage(`position fen ${fen}`);
+    w.postMessage(`go movetime ${settingsRef.current.searchTimeMs}`);
+  }, []);
+
+  const [workerGen, setWorkerGen] = useState(0);
 
   useEffect(() => {
     let worker: Worker;
     try {
       worker = createEngineWorker();
-    } catch {
+    } catch (e) {
+      console.error("Worker Creation Failed:", e);
       return;
     }
     workerRef.current = worker;
-    worker.onerror = () => {};
+
+    worker.onerror = (err) => {
+      err.preventDefault();
+      console.error(
+        "Stockfish Worker Error:",
+        err.message,
+        err.filename,
+        err.lineno,
+      );
+    };
 
     worker.onmessage = (event: MessageEvent) => {
-      const raw = event.data;
-      const line =
-        typeof raw === "string"
-          ? raw
-          : typeof raw?.data === "string"
-            ? raw.data
-            : "";
-      if (line === "uciok") {
-        uciOkRef.current = true;
-        const queued = cmdQueueRef.current.splice(0);
-        queued.forEach((c) => worker.postMessage(c));
-        return;
-      }
-      if (line === "readyok") {
-        readyRef.current = true;
-        if (pendingGoRef.current) {
-          pendingGoRef.current = false;
-          sendGo();
+      for (const line of engineLines(event.data)) {
+        if (line === "readyok") {
+          readyRef.current = true;
+          if (pendingGoRef.current && !searchingRef.current) {
+            pendingGoRef.current = false;
+            sendGo();
+          }
+          continue;
         }
-        return;
-      }
+        if (line === "uciok") {
+          continue;
+        }
 
-      const parseScore = () => {
-        const mate = line.match(/score mate (-?\d+)/);
-        if (mate) {
-          const n = parseInt(mate[1], 10);
-          const isWhite = currentTurnRef.current === "w";
-          return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
-        }
-        const cp = line.match(/score cp (-?\d+)/);
-        if (cp) {
-          const raw = parseInt(cp[1], 10) / 100;
-          return currentTurnRef.current === "b" ? -raw : raw;
-        }
-        return null;
-      };
+        const parseScore = () => {
+          const mate = line.match(/score mate (-?\d+)/);
+          if (mate) {
+            const n = parseInt(mate[1], 10);
+            const isWhite = currentTurnRef.current === "w";
+            return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
+          }
+          const cp = line.match(/score cp (-?\d+)/);
+          if (cp) {
+            const rawCp = parseInt(cp[1], 10) / 100;
+            return currentTurnRef.current === "b" ? -rawCp : rawCp;
+          }
+          return null;
+        };
 
-      if (line.startsWith("info") && line.includes(" pv ")) {
-        const score = parseScore();
-        const pvMatch = line.match(/ pv (.+)$/);
-        const mpv = Number(line.match(/multipv (\d+)/)?.[1] ?? 1);
-        const depth = Number(line.match(/\bdepth (\d+)/)?.[1] ?? 0);
-        const nps = Number(line.match(/\bnps (\d+)/)?.[1] ?? 0);
-        const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
-        if (score !== null && pvMatch) {
-          const pv = pvMatch[1].trim();
-          const uci = pv.split(" ")[0] ?? "";
+        if (line.startsWith("info") && line.includes(" pv ")) {
+          if (
+            abandonSearchRef.current ||
+            activeFenRef.current !== fenRef.current
+          ) {
+            continue;
+          }
+          const score = parseScore();
+          const pvMatch = line.match(/ pv (.+)$/);
+          const mpv = Number(line.match(/multipv (\d+)/)?.[1] ?? 1);
+          const depth = Number(line.match(/\bdepth (\d+)/)?.[1] ?? 0);
+          const nps = Number(line.match(/\bnps (\d+)/)?.[1] ?? 0);
+          const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
+          if (score !== null && pvMatch) {
+            const pv = pvMatch[1].trim();
+            const uci = pv.split(" ")[0] ?? "";
+            setState((prev) => {
+              const next = [
+                ...prev.lines.filter((l) => l.multipv !== mpv),
+                { multipv: mpv, uci, pv, evaluation: score, depth },
+              ];
+              next.sort((a, b) => a.multipv - b.multipv);
+              return {
+                ...prev,
+                evaluation: mpv === 1 ? score : prev.evaluation,
+                bestMove: mpv === 1 ? uci : prev.bestMove,
+                lines: next,
+                depth: mpv === 1 ? depth : prev.depth,
+                nps: nps || prev.nps,
+                nodes: nodes || prev.nodes,
+              };
+            });
+          }
+        }
+
+        if (line.startsWith("bestmove")) {
+          const completedFen = activeFenRef.current;
+          const completedJob = activeJobIdRef.current;
+          const move = line.split(" ")[1] ?? null;
+          const bestMove = move && move !== "(none)" ? move : null;
+          const stale =
+            abandonSearchRef.current ||
+            completedJob !== jobIdRef.current ||
+            completedFen !== fenRef.current;
+          if (stale) {
+            abandonSearchRef.current = false;
+            if (pendingGoRef.current && enabledRef.current) {
+              pendingGoRef.current = false;
+              searchingRef.current = false;
+              sendGo();
+            }
+            continue;
+          }
+          abandonSearchRef.current = false;
+
+          searchingRef.current = false;
           setState((prev) => {
-            const next = [
-              ...prev.lines.filter((l) => l.multipv !== mpv),
-              { multipv: mpv, uci, pv, evaluation: score, depth },
-            ];
-            next.sort((a, b) => a.multipv - b.multipv);
+            const nextLines =
+              prev.lines.length > 0 || !bestMove
+                ? prev.lines
+                : [
+                    {
+                      multipv: 1,
+                      uci: bestMove,
+                      pv: bestMove,
+                      evaluation: prev.evaluation ?? 0,
+                      depth: prev.depth || 1,
+                    },
+                  ];
             return {
               ...prev,
-              evaluation: mpv === 1 ? score : prev.evaluation,
-              bestMove: mpv === 1 ? uci : prev.bestMove,
-              lines: next,
-              depth: mpv === 1 ? depth : prev.depth,
-              nps: nps || prev.nps,
-              nodes: nodes || prev.nodes,
+              bestMove: bestMove ?? prev.bestMove,
+              isThinking: false,
+              resultFen: completedFen,
+              lines: nextLines,
             };
           });
-        }
-      }
+          completeCbRef.current?.({
+            fen: completedFen ?? "",
+            bestMove,
+          });
 
-      if (line.startsWith("bestmove")) {
-        const move = line.split(" ")[1];
-        setState((prev) => ({
-          ...prev,
-          bestMove: move !== "(none)" ? move : prev.bestMove,
-          isThinking: false,
-        }));
+          if (pendingGoRef.current && enabledRef.current) {
+            pendingGoRef.current = false;
+            sendGo();
+          }
+        }
       }
     };
 
@@ -280,33 +379,60 @@ export function useStockfish() {
     return () => {
       worker.terminate();
     };
-  }, [applyOptions, sendGo]);
+  }, [applyOptions, sendGo, workerGen]);
 
   const evaluatePosition = useCallback(
-    (fen: string, _depth?: number) => {
-      if (!workerRef.current) return;
+    (fen: string, onComplete?: (result: EngineSearchComplete) => void) => {
+      const parts = fen.trim().split(/\s+/);
+      if (parts.length < 4 || !parts[0]?.includes("/")) return;
+      completeCbRef.current = onComplete ?? null;
+      jobIdRef.current += 1;
       fenRef.current = fen;
+      if (!workerRef.current) return;
       if (!enabledRef.current) return;
-      postUci("stop");
+      if (searchingRef.current) {
+        pendingGoRef.current = true;
+        workerRef.current.postMessage("stop");
+        if (goWatchdogRef.current) clearTimeout(goWatchdogRef.current);
+        goWatchdogRef.current = setTimeout(() => {
+          goWatchdogRef.current = null;
+          if (!pendingGoRef.current || !enabledRef.current) return;
+          pendingGoRef.current = false;
+          searchingRef.current = false;
+          abandonSearchRef.current = true;
+          sendGo();
+        }, 600);
+        return;
+      }
       if (readyRef.current) {
         sendGo();
       } else {
         pendingGoRef.current = true;
-        postUci("isready");
+        workerRef.current.postMessage("isready");
       }
     },
-    [sendGo, postUci],
+    [sendGo],
   );
 
   const stop = useCallback(() => {
     if (!workerRef.current) return;
     pendingGoRef.current = false;
-    workerRef.current.postMessage("stop");
+    completeCbRef.current = null;
+    jobIdRef.current += 1;
+    if (goWatchdogRef.current) {
+      clearTimeout(goWatchdogRef.current);
+      goWatchdogRef.current = null;
+    }
+    if (searchingRef.current) {
+      abandonSearchRef.current = true;
+      workerRef.current.postMessage("stop");
+    }
+    searchingRef.current = false;
     setState((prev) => ({ ...prev, isThinking: false }));
   }, []);
 
   const setOption = useCallback((name: string, value: string) => {
-    postUci(`setoption name ${name} value ${value}`);
+    workerRef.current?.postMessage(`setoption name ${name} value ${value}`);
   }, []);
 
   const commitSettings = useCallback(
@@ -316,9 +442,27 @@ export function useStockfish() {
         settingsRef.current = next;
         return next;
       });
+      const needsNewWorker =
+        patch.hashMb !== undefined ||
+        patch.nnueModel !== undefined ||
+        patch.threads !== undefined;
+      if (needsNewWorker) {
+        workerRef.current?.terminate();
+        workerRef.current = null;
+        readyRef.current = false;
+        if (restart && fenRef.current && enabledRef.current) {
+          pendingGoRef.current = true;
+        }
+        // bump a `workerGen` state so the existing worker useEffect remounts
+        setWorkerGen((n) => n + 1);
+        return;
+      }
       const w = workerRef.current;
       if (!w) return;
-      postUci("stop");
+      if (searchingRef.current) {
+        abandonSearchRef.current = true;
+        w.postMessage("stop");
+      }
       applyOptions();
       if (restart && fenRef.current && enabledRef.current) {
         pendingGoRef.current = true;
@@ -329,8 +473,8 @@ export function useStockfish() {
 
   const resetEngine = useCallback(() => {
     if (workerRef.current) {
-      postUci("stop");
-      postUci("ucinewgame");
+      workerRef.current.postMessage("stop");
+      workerRef.current.postMessage("ucinewgame");
       applyOptions();
     }
     setState({
@@ -341,6 +485,7 @@ export function useStockfish() {
       depth: 0,
       nps: 0,
       nodes: 0,
+      resultFen: null,
     });
   }, [applyOptions]);
 
@@ -350,7 +495,12 @@ export function useStockfish() {
       setEnabledState(on);
       if (!on) {
         pendingGoRef.current = false;
-        workerRef.current?.postMessage("stop");
+        completeCbRef.current = null;
+        jobIdRef.current += 1;
+        if (searchingRef.current) {
+          abandonSearchRef.current = true;
+          workerRef.current?.postMessage("stop");
+        }
         setState((prev) => ({ ...prev, isThinking: false }));
         return;
       }

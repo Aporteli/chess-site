@@ -45,7 +45,8 @@ export type NavKey =
   | "analysis"
   | "courses"
   | "profile"
-  | "settings";
+  | "settings"
+  | "tablebase";
 
 export interface NavItem {
   key: NavKey;

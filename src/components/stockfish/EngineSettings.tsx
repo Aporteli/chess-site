@@ -1,6 +1,10 @@
 "use client";
 
-import type { EngineLimits, EngineSettingsState, NnueModel } from "@/lib/chess/use-stockfish";
+import type {
+  EngineLimits,
+  EngineSettingsState,
+  NnueModel,
+} from "@/lib/chess/use-stockfish";
 import { NNUE_OPTIONS } from "@/lib/chess/use-stockfish";
 
 type EngineSettingsProps = {
@@ -47,7 +51,9 @@ function SliderRow({
           background: `linear-gradient(to right, var(--color-accent-gold, #c9a256) ${pct}%, var(--color-border-default, #3a3122) ${pct}%)`,
         }}
       />
-      <span className="text-right font-mono text-[11px] text-text-primary">{valueText}</span>
+      <span className="text-right font-mono text-[11px] text-text-primary">
+        {valueText}
+      </span>
     </label>
   );
 }
@@ -86,12 +92,14 @@ export default function EngineSettings({
         }
       `}</style>
 
-      <div className="grid grid-cols-[7.5rem_1fr_4.25rem] items-center gap-2 text-[12px] text-text-secondary">
+      <div className="grid grid-cols-1 gap-2 text-[12px] text-text-secondary sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
         <span>Engine</span>
         <select
           value={settings.nnueModel}
-          onChange={(e) => onChange({ nnueModel: e.target.value as NnueModel }, true)}
-          className="h-8 rounded-lg border border-border-default bg-bg-elevated px-2 text-[12px] text-text-primary"
+          onChange={(e) =>
+            onChange({ nnueModel: e.target.value as NnueModel }, true)
+          }
+          className="h-8 min-w-0 w-full rounded-lg border border-border-default bg-bg-elevated px-2 text-[12px] text-text-primary"
         >
           {NNUE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -102,7 +110,7 @@ export default function EngineSettings({
         <button
           type="button"
           onClick={onToggle}
-          className={`h-8 rounded-md border px-2 font-mono text-[10px] font-semibold ${
+          className={`h-8 shrink-0 rounded-md border px-2 font-mono text-[10px] font-semibold ${
             enabled
               ? "border-accent-teal bg-accent-teal-dim text-accent-teal-bright"
               : "border-border-default bg-bg-elevated text-text-muted"

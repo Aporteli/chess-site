@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Settings, X } from "lucide-react";
-import type { EngineLine, EngineLimits, EngineSettingsState } from "@/lib/chess/use-stockfish";
+import type {
+  EngineLine,
+  EngineLimits,
+  EngineSettingsState,
+} from "@/lib/chess/use-stockfish";
 import EvaluationBar from "../stockfish/EvaluationBar";
 import Controls from "../stockfish/Controls";
 import EngineSettings from "../stockfish/EngineSettings";
@@ -17,7 +22,10 @@ type StockfishDashboardProps = {
   limits: EngineLimits;
   depth: number;
   nps: number;
-  onSettingsChange: (patch: Partial<EngineSettingsState>, restart: boolean) => void;
+  onSettingsChange: (
+    patch: Partial<EngineSettingsState>,
+    restart: boolean,
+  ) => void;
   analysisLines: EngineLine[];
   onPlayMove: (ucis: string[]) => void;
   turn: "w" | "b";
@@ -46,6 +54,8 @@ export default function StockfishDashboard({
   onToggleEnabled,
 }: StockfishDashboardProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
 
   return (
     <div className="relative flex min-h-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3 [contain:layout]">
@@ -55,7 +65,11 @@ export default function StockfishDashboard({
       <EvaluationBar score={evalScore} variant="panel" />
       <div className="flex gap-2">
         <div className="min-w-0 flex-1">
-          <Controls isAnalyzing={isAnalyzing} onStart={onStart} onStop={onStop} />
+          <Controls
+            isAnalyzing={isAnalyzing}
+            onStart={onStart}
+            onStop={onStop}
+          />
         </div>
         <button
           type="button"
@@ -67,18 +81,35 @@ export default function StockfishDashboard({
         </button>
       </div>
       <p className="font-mono text-[10px] text-text-muted">
-        {settings.searchTimeMs / 1000}s · {settings.multiPv} line{settings.multiPv === 1 ? "" : "s"} · {settings.threads} thr · {settings.hashMb}MB
+        {settings.searchTimeMs / 1000}s · {settings.multiPv} line
+        {settings.multiPv === 1 ? "" : "s"} · {settings.threads} thr ·{" "}
+        {settings.hashMb}MB
       </p>
-      <AnalysisOutput lines={analysisLines} onPlayMove={onPlayMove} turn={turn} moveNumber={moveNumber} fen={fen} />
+
+      {pathname === "/tablebase" ? null : (
+        <AnalysisOutput
+          lines={analysisLines}
+          onPlayMove={onPlayMove}
+          turn={turn}
+          moveNumber={moveNumber}
+          fen={fen}
+        />
+      )}
+
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4" onClick={() => setOpen(false)}>
+        <div
+          className="fixed inset-0 top-4/4 z-50 flex items-center justify-center bg-black/55 p-4"
+          onClick={() => setOpen(false)}
+        >
           <div
             className="w-full max-w-md rounded-xl border border-border-default bg-bg-surface p-4 shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="font-serif-display text-[15px] text-text-primary">Engine settings</h4>
+              <h4 className="font-serif-display text-[15px] text-text-primary">
+                Engine settings
+              </h4>
               <button
                 type="button"
                 aria-label="Close settings"

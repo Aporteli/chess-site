@@ -127,6 +127,7 @@ export default function PuzzlesPage() {
   const [sound, setSound] = useState(true);
   const [flipped, setFlipped] = useState(false);
   const [sans, setSans] = useState<string[]>([]);
+  const [arrows, setArrows] = useState<Arrow[]>([]);
 
   const handleGeneratePuzzle = async () => {
     setLoading(true);

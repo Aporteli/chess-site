@@ -41,6 +41,7 @@ export const navItems: NavItem[] = [
   { key: "puzzles", label: "Puzzles", },
   { key: "analysis", label: "Analysis Board",  },
   { key: "courses", label: "Courses & Repertoire" },
+  { key: "tablebase", label: "Tablebase" },
 ];
 
 export const secondaryNavItems: NavItem[] = [
