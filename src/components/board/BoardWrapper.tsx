@@ -148,7 +148,7 @@ export function BoardWrapper() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative mx-auto w-full max-w-[620px]">
+        <div className="relative mx-auto w-full max-w-[min(100%,620px)]">
         <div className="mb-3 flex items-center justify-between">
           <span className="hidden items-center gap-1.5 rounded-full border border-border-default bg-bg-surface px-3 py-1 text-[11px] font-medium tracking-wide text-text-muted sm:inline-flex">
             Board · Walnut &amp; Maple
@@ -184,7 +184,7 @@ export function BoardWrapper() {
 
         <div className="relative flex w-full items-stretch gap-2">
           <div
-            className={`relative w-3.5 shrink-0 overflow-hidden rounded-full border border-accent-gold/50 bg-bg-deepest shadow-lg ${t.flipped ? "flex flex-col" : "flex flex-col justify-end"}`}
+            className={`relative w-3.5 shrink-0 self-stretch overflow-hidden rounded-full border border-accent-gold/50 bg-bg-deepest shadow-lg ${t.flipped ? "flex flex-col" : "flex flex-col justify-end"}`}
             title={evalLabel}
           >
             <div

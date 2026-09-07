@@ -37,8 +37,8 @@ function SliderRow({
 }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
-    <label className="grid grid-cols-[7.5rem_1fr_4.25rem] items-center gap-2 text-[12px] text-text-secondary">
-      <span>{label}</span>
+    <label className="grid grid-cols-[6.5rem_minmax(0,1fr)_4.25rem] items-center gap-2 text-[12px] text-text-secondary sm:grid-cols-[7.5rem_minmax(0,1fr)_4.25rem]">
+      <span className="truncate">{label}</span>
       <input
         type="range"
         min={min}
@@ -46,7 +46,7 @@ function SliderRow({
         step={step}
         value={value}
         onChange={(e) => onCommit(Number(e.target.value))}
-        className="engine-range h-1.5 w-full cursor-pointer appearance-none rounded-full"
+        className="engine-range h-1.5 min-w-0 w-full max-w-none cursor-pointer appearance-none rounded-full"
         style={{
           background: `linear-gradient(to right, var(--color-accent-gold, #c9a256) ${pct}%, var(--color-border-default, #3a3122) ${pct}%)`,
         }}
@@ -125,7 +125,7 @@ export default function EngineSettings({
         valueText={`${timeSec % 1 === 0 ? timeSec : timeSec.toFixed(1)}s`}
         min={limits.searchTimeMin}
         max={limits.searchTimeMax}
-        step={500}
+        step={250}
         value={settings.searchTimeMs}
         onCommit={(n) => onChange({ searchTimeMs: n }, true)}
       />
@@ -152,7 +152,7 @@ export default function EngineSettings({
         valueText={`${settings.hashMb}MB`}
         min={limits.hashMin}
         max={limits.hashMax}
-        step={16}
+        step={8}
         value={settings.hashMb}
         onCommit={(n) => onChange({ hashMb: n }, true)}
       />

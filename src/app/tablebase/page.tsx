@@ -6,9 +6,7 @@ export default function TablebasePage() {
   return (
     <TrainerProvider>
       <AppShell activeKey="tablebase">
-          <div>
-            <TablebaseChecker />
-          </div>
+        <TablebaseChecker />
       </AppShell>
     </TrainerProvider>
   );

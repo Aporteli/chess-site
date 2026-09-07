@@ -22,18 +22,11 @@ export interface EngineLine {
 export type NnueModel = "nnue-85" | "nnue-108" | "nnue-lite" | "hce";
 
 export const NNUE_OPTIONS: { value: NnueModel; label: string }[] = [
+  { value: "hce", label: "HCE" },
+  { value: "nnue-lite", label: "NNUE · 15MB Lite" },
   { value: "nnue-85", label: "NNUE · 85MB" },
   { value: "nnue-108", label: "NNUE · 108MB" },
-  { value: "nnue-lite", label: "NNUE · 15MB Lite" },
-  { value: "hce", label: "HCE" },
 ];
-
-const NNUE_UCI: Record<NnueModel, { useNnue: boolean; evalFile?: string }> = {
-  "nnue-85": { useNnue: true, evalFile: "nn-85.nnue" },
-  "nnue-108": { useNnue: true, evalFile: "nn-108.nnue" },
-  "nnue-lite": { useNnue: true, evalFile: "nn-lite-15.nnue" },
-  hce: { useNnue: false },
-};
 
 export type EngineSettingsState = {
   searchTimeMs: number;
@@ -69,34 +62,31 @@ export type EngineSearchComplete = {
 };
 
 const DEFAULT_SETTINGS: EngineSettingsState = {
-  searchTimeMs: 0.1,
+  searchTimeMs: 1000,
   multiPv: 1,
   threads: 1,
-  hashMb: 16,
+  hashMb: 8,
   nnueModel: "hce",
 };
 
 const DEFAULT_LIMITS: EngineLimits = {
-  searchTimeMin: 0.1,
+  searchTimeMin: 250,
   searchTimeMax: 30000,
   multiPvMax: 5,
-  threadsMax: 2,
-  hashMin: 16,
-  hashMax: 256,
+  threadsMax: 1,
+  hashMin: 8,
+  hashMax: 16,
 };
 const PHONE_LIMITS: EngineLimits = {
-  searchTimeMin: 0.1,
+  searchTimeMin: 250,
   searchTimeMax: 8000,
   multiPvMax: 3,
   threadsMax: 1,
   hashMin: 8,
-  hashMax: 32,
+  hashMax: 8,
 };
 
-function hardwareThreads() {
-  if (typeof navigator === "undefined") return 2;
-  return Math.max(1, navigator.hardwareConcurrency || 2);
-}
+const ENGINE_SCRIPTS = ["/stockfish.wasm.js", "/stockfish.js"];
 
 function isMobileDevice() {
   if (typeof navigator === "undefined") return false;
@@ -112,6 +102,7 @@ function engineLines(raw: unknown): string[] {
       .map((l) => l.trim())
       .filter(Boolean);
   }
+  if (typeof raw === "number" || typeof raw === "boolean") return [];
   if (raw && typeof raw === "object") {
     const o = raw as { data?: unknown; line?: unknown };
     if (typeof o.data === "string") return engineLines(o.data);
@@ -120,10 +111,14 @@ function engineLines(raw: unknown): string[] {
   return [];
 }
 
-function createEngineWorker(): Worker {
-  // Public file — do not use `new URL(..., import.meta.url)` / origin URL.
-  // Next/Turbopack intercepts that pattern and the worker request stays pending.
-  return new Worker("/stockfish.wasm.js");
+function post(w: Worker | null, msg: string) {
+  if (!w) return false;
+  try {
+    w.postMessage(msg);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function useStockfish() {
@@ -132,50 +127,21 @@ export function useStockfish() {
   const fenRef = useRef<string | null>(null);
   const settingsRef = useRef(DEFAULT_SETTINGS);
   const readyRef = useRef(false);
+  const uciOkRef = useRef(false);
   const pendingGoRef = useRef(false);
   const searchingRef = useRef(false);
-  const abandonSearchRef = useRef(false);
   const activeFenRef = useRef<string | null>(null);
-  const jobIdRef = useRef(0);
-  const activeJobIdRef = useRef(0);
+  const lastUciRef = useRef<string | null>(null);
   const completeCbRef = useRef<((result: EngineSearchComplete) => void) | null>(
     null,
   );
-  const goWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const enabledRef = useRef(true);
+  const goTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [enabled, setEnabledState] = useState(true);
-
   const [limits, setLimits] = useState<EngineLimits>(DEFAULT_LIMITS);
-
   const [settings, setSettings] =
     useState<EngineSettingsState>(DEFAULT_SETTINGS);
   settingsRef.current = settings;
-
-  useEffect(() => {
-    if (isMobileDevice()) {
-      const next = {
-        ...DEFAULT_SETTINGS,
-        searchTimeMs: 0.1,
-        threads: 1,
-        hashMb: 8,
-        nnueModel: "hce" as const,
-      };
-      settingsRef.current = next;
-      setLimits(PHONE_LIMITS);
-      setSettings(next);
-      return;
-    }
-    const next = {
-      ...DEFAULT_SETTINGS,
-      threads: 1,
-    };
-    settingsRef.current = next;
-    setLimits({
-      ...DEFAULT_LIMITS,
-      threadsMax: hardwareThreads(),
-    });
-    setSettings(next);
-  }, []);
 
   const [state, setState] = useState<EngineEvaluation>({
     bestMove: null,
@@ -188,251 +154,285 @@ export function useStockfish() {
     resultFen: null,
   });
 
-  const applyOptions = useCallback(() => {
-    const w = workerRef.current;
-    if (!w) return;
-    const s = settingsRef.current;
-    const nnue = NNUE_UCI[s.nnueModel];
-    w.postMessage(`setoption name MultiPV value ${s.multiPv}`);
-    w.postMessage("setoption name Threads value 1");
-    w.postMessage(`setoption name Hash value ${Math.min(s.hashMb, 16)}`);
-    w.postMessage(`setoption name Use NNUE value ${nnue.useNnue}`);
-    if (nnue.evalFile) {
-      w.postMessage(`setoption name EvalFile value ${nnue.evalFile}`);
-    }
-    w.postMessage("isready");
-  }, []);
-
-  const sendGo = useCallback(() => {
-    const w = workerRef.current;
-    const fen = fenRef.current;
-    if (!w || !fen || !enabledRef.current) return;
-    if (goWatchdogRef.current) {
-      clearTimeout(goWatchdogRef.current);
-      goWatchdogRef.current = null;
-    }
-    const turn = (fen.split(" ")[1] || "w") as "w" | "b";
-    currentTurnRef.current = turn;
-    activeFenRef.current = fen;
-    activeJobIdRef.current = jobIdRef.current;
-    searchingRef.current = true;
-    setState((prev) => ({
-      ...prev,
-      isThinking: true,
-      lines: [],
-      bestMove: null,
-      evaluation: null,
-      depth: 0,
-      resultFen: null,
-    }));
-    w.postMessage(
-      `setoption name MultiPV value ${settingsRef.current.multiPv}`,
-    );
-    w.postMessage(`position fen ${fen}`);
-    w.postMessage(`go movetime ${settingsRef.current.searchTimeMs}`);
-  }, []);
-
   const [workerGen, setWorkerGen] = useState(0);
 
   useEffect(() => {
-    let worker: Worker;
-    try {
-      worker = createEngineWorker();
-    } catch (e) {
-      console.error("Worker Creation Failed:", e);
-      return;
+    if (isMobileDevice()) {
+      const next = {
+        ...DEFAULT_SETTINGS,
+        searchTimeMs: 600,
+        hashMb: 8,
+      };
+      settingsRef.current = next;
+      setLimits(PHONE_LIMITS);
+      setSettings(next);
     }
-    workerRef.current = worker;
+  }, []);
 
-    worker.onerror = (err) => {
-      err.preventDefault();
-      console.error(
-        "Stockfish Worker Error:",
-        err.message,
-        err.filename,
-        err.lineno,
-      );
+  useEffect(() => {
+    let worker: Worker | null = null;
+    let scriptIndex = 0;
+    let stopped = false;
+    let objectUrl: string | null = null;
+
+    const clearGoTimer = () => {
+      if (goTimerRef.current) {
+        clearTimeout(goTimerRef.current);
+        goTimerRef.current = null;
+      }
     };
 
-    worker.onmessage = (event: MessageEvent) => {
-      for (const line of engineLines(event.data)) {
-        if (line === "readyok") {
-          readyRef.current = true;
-          if (pendingGoRef.current && !searchingRef.current) {
-            pendingGoRef.current = false;
+    const finishSearch = (bestMove: string | null, fromFen: string | null) => {
+      clearGoTimer();
+      searchingRef.current = false;
+      const isCurrent = fromFen != null && fromFen === fenRef.current;
+      const move = bestMove && bestMove !== "(none)" ? bestMove : null;
+      if (isCurrent) {
+        setState((prev) => {
+          const resolved = move ?? prev.bestMove ?? lastUciRef.current;
+          const nextLines =
+            prev.lines.length > 0 || !resolved
+              ? prev.lines
+              : [
+                  {
+                    multipv: 1,
+                    uci: resolved,
+                    pv: resolved,
+                    evaluation: prev.evaluation ?? 0,
+                    depth: prev.depth || 1,
+                  },
+                ];
+          return {
+            ...prev,
+            bestMove: resolved,
+            isThinking: false,
+            resultFen: fromFen,
+            lines: nextLines,
+          };
+        });
+        const cb = completeCbRef.current;
+        completeCbRef.current = null;
+        cb?.({
+          fen: fromFen ?? "",
+          bestMove: move ?? lastUciRef.current,
+        });
+      } else {
+        setState((prev) => ({ ...prev, isThinking: false }));
+      }
+    };
+
+    const sendGo = () => {
+      const w = workerRef.current;
+      const fen = fenRef.current;
+      if (!w || !fen || !enabledRef.current || !readyRef.current) return;
+      currentTurnRef.current = (fen.split(" ")[1] || "w") as "w" | "b";
+      activeFenRef.current = fen;
+      lastUciRef.current = null;
+      searchingRef.current = true;
+      pendingGoRef.current = false;
+      setState((prev) => ({
+        ...prev,
+        isThinking: true,
+        lines: [],
+        bestMove: null,
+        evaluation: null,
+        depth: 0,
+        resultFen: null,
+      }));
+      const ms = Math.max(50, Math.round(settingsRef.current.searchTimeMs));
+      post(w, `setoption name MultiPV value ${settingsRef.current.multiPv}`);
+      post(w, `position fen ${fen}`);
+      post(w, `go movetime ${ms}`);
+      clearGoTimer();
+      goTimerRef.current = setTimeout(() => {
+        goTimerRef.current = null;
+        if (!searchingRef.current) return;
+        post(w, "stop");
+        goTimerRef.current = setTimeout(() => {
+          goTimerRef.current = null;
+          if (!searchingRef.current) return;
+          finishSearch(lastUciRef.current, activeFenRef.current);
+          if (pendingGoRef.current && enabledRef.current && readyRef.current) {
             sendGo();
           }
-          continue;
+        }, 1500);
+      }, ms + 2000);
+    };
+
+    const onLine = (line: string) => {
+      if (line === "uciok") {
+        uciOkRef.current = true;
+        const w = workerRef.current;
+        post(w, `setoption name MultiPV value ${settingsRef.current.multiPv}`);
+        post(w, "setoption name Hash value 4");
+        post(w, "isready");
+        return;
+      }
+      if (line === "readyok") {
+        readyRef.current = true;
+        if (pendingGoRef.current && !searchingRef.current) sendGo();
+        return;
+      }
+
+      const parseScore = () => {
+        const mate = line.match(/score mate (-?\d+)/);
+        if (mate) {
+          const n = parseInt(mate[1], 10);
+          const isWhite = currentTurnRef.current === "w";
+          return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
         }
-        if (line === "uciok") {
-          continue;
+        const cp = line.match(/score cp (-?\d+)/);
+        if (cp) {
+          const rawCp = parseInt(cp[1], 10) / 100;
+          return currentTurnRef.current === "b" ? -rawCp : rawCp;
         }
+        return null;
+      };
 
-        const parseScore = () => {
-          const mate = line.match(/score mate (-?\d+)/);
-          if (mate) {
-            const n = parseInt(mate[1], 10);
-            const isWhite = currentTurnRef.current === "w";
-            return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
-          }
-          const cp = line.match(/score cp (-?\d+)/);
-          if (cp) {
-            const rawCp = parseInt(cp[1], 10) / 100;
-            return currentTurnRef.current === "b" ? -rawCp : rawCp;
-          }
-          return null;
-        };
-
-        if (line.startsWith("info") && line.includes(" pv ")) {
-          if (
-            abandonSearchRef.current ||
-            activeFenRef.current !== fenRef.current
-          ) {
-            continue;
-          }
-          const score = parseScore();
-          const pvMatch = line.match(/ pv (.+)$/);
-          const mpv = Number(line.match(/multipv (\d+)/)?.[1] ?? 1);
-          const depth = Number(line.match(/\bdepth (\d+)/)?.[1] ?? 0);
-          const nps = Number(line.match(/\bnps (\d+)/)?.[1] ?? 0);
-          const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
-          if (score !== null && pvMatch) {
-            const pv = pvMatch[1].trim();
-            const uci = pv.split(" ")[0] ?? "";
-            setState((prev) => {
-              const next = [
-                ...prev.lines.filter((l) => l.multipv !== mpv),
-                { multipv: mpv, uci, pv, evaluation: score, depth },
-              ];
-              next.sort((a, b) => a.multipv - b.multipv);
-              return {
-                ...prev,
-                evaluation: mpv === 1 ? score : prev.evaluation,
-                bestMove: mpv === 1 ? uci : prev.bestMove,
-                lines: next,
-                depth: mpv === 1 ? depth : prev.depth,
-                nps: nps || prev.nps,
-                nodes: nodes || prev.nodes,
-              };
-            });
-          }
-        }
-
-        if (line.startsWith("bestmove")) {
-          const completedFen = activeFenRef.current;
-          const completedJob = activeJobIdRef.current;
-          const move = line.split(" ")[1] ?? null;
-          const bestMove = move && move !== "(none)" ? move : null;
-          const stale =
-            abandonSearchRef.current ||
-            completedJob !== jobIdRef.current ||
-            completedFen !== fenRef.current;
-          if (stale) {
-            abandonSearchRef.current = false;
-            if (pendingGoRef.current && enabledRef.current) {
-              pendingGoRef.current = false;
-              searchingRef.current = false;
-              sendGo();
-            }
-            continue;
-          }
-          abandonSearchRef.current = false;
-
-          searchingRef.current = false;
+      if (line.startsWith("info")) {
+        if (activeFenRef.current !== fenRef.current) return;
+        const score = parseScore();
+        const depth = Number(line.match(/\bdepth (\d+)/)?.[1] ?? 0);
+        const nps = Number(line.match(/\bnps (\d+)/)?.[1] ?? 0);
+        const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
+        const pvMatch = line.match(/ pv (.+)$/);
+        const mpv = Number(line.match(/multipv (\d+)/)?.[1] ?? 1);
+        if (pvMatch) {
+          const pv = pvMatch[1].trim();
+          const uci = pv.split(" ")[0] ?? "";
+          if (mpv === 1 && uci) lastUciRef.current = uci;
           setState((prev) => {
-            const nextLines =
-              prev.lines.length > 0 || !bestMove
-                ? prev.lines
-                : [
-                    {
-                      multipv: 1,
-                      uci: bestMove,
-                      pv: bestMove,
-                      evaluation: prev.evaluation ?? 0,
-                      depth: prev.depth || 1,
-                    },
-                  ];
+            const next = [
+              ...prev.lines.filter((l) => l.multipv !== mpv),
+              {
+                multipv: mpv,
+                uci,
+                pv,
+                evaluation: score ?? prev.evaluation ?? 0,
+                depth,
+              },
+            ];
+            next.sort((a, b) => a.multipv - b.multipv);
             return {
               ...prev,
-              bestMove: bestMove ?? prev.bestMove,
-              isThinking: false,
-              resultFen: completedFen,
-              lines: nextLines,
+              evaluation:
+                mpv === 1 && score !== null ? score : prev.evaluation,
+              bestMove: mpv === 1 && uci ? uci : prev.bestMove,
+              lines: next,
+              depth: mpv === 1 && depth ? depth : prev.depth,
+              nps: nps || prev.nps,
+              nodes: nodes || prev.nodes,
             };
           });
-          completeCbRef.current?.({
-            fen: completedFen ?? "",
-            bestMove,
-          });
+        } else if (score !== null || depth) {
+          setState((prev) => ({
+            ...prev,
+            evaluation: score ?? prev.evaluation,
+            depth: depth || prev.depth,
+            nps: nps || prev.nps,
+            nodes: nodes || prev.nodes,
+          }));
+        }
+      }
 
-          if (pendingGoRef.current && enabledRef.current) {
-            pendingGoRef.current = false;
-            sendGo();
-          }
+      if (line.startsWith("bestmove")) {
+        const completedFen = activeFenRef.current;
+        const move = line.split(" ")[1] ?? null;
+        const bestMove = move && move !== "(none)" ? move : null;
+        if (bestMove) lastUciRef.current = bestMove;
+        finishSearch(bestMove, completedFen);
+        if (pendingGoRef.current && enabledRef.current && readyRef.current) {
+          sendGo();
         }
       }
     };
 
-    worker.postMessage("uci");
-    applyOptions();
+    const boot = (src: string) => {
+      readyRef.current = false;
+      uciOkRef.current = false;
+      searchingRef.current = false;
+      try {
+        worker = new Worker(src);
+      } catch (e) {
+        console.error("Worker Creation Failed:", src, e);
+        return false;
+      }
+      workerRef.current = worker;
+      worker.onerror = (err) => {
+        err.preventDefault();
+        console.error(
+          "Stockfish Worker Error:",
+          err.message,
+          err.filename,
+          src,
+        );
+        clearGoTimer();
+        searchingRef.current = false;
+        readyRef.current = false;
+        worker?.terminate();
+        workerRef.current = null;
+        if (!stopped) {
+          scriptIndex += 1;
+          const next = ENGINE_SCRIPTS[scriptIndex];
+          if (next) boot(next);
+          else setState((prev) => ({ ...prev, isThinking: false }));
+        }
+      };
+      worker.onmessage = (event: MessageEvent) => {
+        for (const line of engineLines(event.data)) onLine(line);
+      };
+      post(worker, "uci");
+      return true;
+    };
+
+    boot(ENGINE_SCRIPTS[0]!);
 
     return () => {
-      worker.terminate();
+      stopped = true;
+      clearGoTimer();
+      readyRef.current = false;
+      uciOkRef.current = false;
+      searchingRef.current = false;
+      worker?.terminate();
+      if (workerRef.current === worker) workerRef.current = null;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [applyOptions, sendGo, workerGen]);
+  }, [workerGen]);
 
   const evaluatePosition = useCallback(
     (fen: string, onComplete?: (result: EngineSearchComplete) => void) => {
       const parts = fen.trim().split(/\s+/);
       if (parts.length < 4 || !parts[0]?.includes("/")) return;
       completeCbRef.current = onComplete ?? null;
-      jobIdRef.current += 1;
       fenRef.current = fen;
-      if (!workerRef.current) return;
-      if (!enabledRef.current) return;
+      pendingGoRef.current = true;
+      const w = workerRef.current;
+      if (!w || !enabledRef.current) return;
       if (searchingRef.current) {
-        pendingGoRef.current = true;
-        workerRef.current.postMessage("stop");
-        if (goWatchdogRef.current) clearTimeout(goWatchdogRef.current);
-        goWatchdogRef.current = setTimeout(() => {
-          goWatchdogRef.current = null;
-          if (!pendingGoRef.current || !enabledRef.current) return;
-          pendingGoRef.current = false;
-          searchingRef.current = false;
-          abandonSearchRef.current = true;
-          sendGo();
-        }, 600);
+        post(w, "stop");
         return;
       }
-      if (readyRef.current) {
-        sendGo();
-      } else {
-        pendingGoRef.current = true;
-        workerRef.current.postMessage("isready");
-      }
+      if (readyRef.current || uciOkRef.current) post(w, "isready");
     },
-    [sendGo],
+    [],
   );
 
   const stop = useCallback(() => {
-    if (!workerRef.current) return;
+    if (goTimerRef.current) {
+      clearTimeout(goTimerRef.current);
+      goTimerRef.current = null;
+    }
     pendingGoRef.current = false;
     completeCbRef.current = null;
-    jobIdRef.current += 1;
-    if (goWatchdogRef.current) {
-      clearTimeout(goWatchdogRef.current);
-      goWatchdogRef.current = null;
-    }
     if (searchingRef.current) {
-      abandonSearchRef.current = true;
-      workerRef.current.postMessage("stop");
+      post(workerRef.current, "stop");
+    } else {
+      setState((prev) => ({ ...prev, isThinking: false }));
     }
-    searchingRef.current = false;
-    setState((prev) => ({ ...prev, isThinking: false }));
   }, []);
 
   const setOption = useCallback((name: string, value: string) => {
-    workerRef.current?.postMessage(`setoption name ${name} value ${value}`);
+    post(workerRef.current, `setoption name ${name} value ${value}`);
   }, []);
 
   const commitSettings = useCallback(
@@ -442,41 +442,36 @@ export function useStockfish() {
         settingsRef.current = next;
         return next;
       });
-      const needsNewWorker =
-        patch.hashMb !== undefined ||
-        patch.nnueModel !== undefined ||
-        patch.threads !== undefined;
-      if (needsNewWorker) {
-        workerRef.current?.terminate();
-        workerRef.current = null;
-        readyRef.current = false;
-        if (restart && fenRef.current && enabledRef.current) {
-          pendingGoRef.current = true;
-        }
-        // bump a `workerGen` state so the existing worker useEffect remounts
-        setWorkerGen((n) => n + 1);
-        return;
-      }
       const w = workerRef.current;
       if (!w) return;
       if (searchingRef.current) {
-        abandonSearchRef.current = true;
-        w.postMessage("stop");
+        pendingGoRef.current = true;
+        post(w, "stop");
       }
-      applyOptions();
+      if (uciOkRef.current) {
+        post(w, `setoption name MultiPV value ${settingsRef.current.multiPv}`);
+        post(w, "isready");
+      }
       if (restart && fenRef.current && enabledRef.current) {
         pendingGoRef.current = true;
       }
+      if (patch.hashMb !== undefined) {
+        workerRef.current?.terminate();
+        workerRef.current = null;
+        readyRef.current = false;
+        uciOkRef.current = false;
+        searchingRef.current = false;
+        setWorkerGen((n) => n + 1);
+      }
     },
-    [applyOptions],
+    [],
   );
 
   const resetEngine = useCallback(() => {
-    if (workerRef.current) {
-      workerRef.current.postMessage("stop");
-      workerRef.current.postMessage("ucinewgame");
-      applyOptions();
-    }
+    post(workerRef.current, "stop");
+    post(workerRef.current, "ucinewgame");
+    searchingRef.current = false;
+    pendingGoRef.current = false;
     setState({
       bestMove: null,
       evaluation: 0,
@@ -487,30 +482,24 @@ export function useStockfish() {
       nodes: 0,
       resultFen: null,
     });
-  }, [applyOptions]);
+  }, []);
 
-  const setEnabled = useCallback(
-    (on: boolean) => {
-      enabledRef.current = on;
-      setEnabledState(on);
-      if (!on) {
-        pendingGoRef.current = false;
-        completeCbRef.current = null;
-        jobIdRef.current += 1;
-        if (searchingRef.current) {
-          abandonSearchRef.current = true;
-          workerRef.current?.postMessage("stop");
-        }
-        setState((prev) => ({ ...prev, isThinking: false }));
-        return;
-      }
-      if (fenRef.current && workerRef.current) {
-        pendingGoRef.current = true;
-        applyOptions();
-      }
-    },
-    [applyOptions],
-  );
+  const setEnabled = useCallback((on: boolean) => {
+    enabledRef.current = on;
+    setEnabledState(on);
+    if (!on) {
+      pendingGoRef.current = false;
+      completeCbRef.current = null;
+      if (searchingRef.current) post(workerRef.current, "stop");
+      searchingRef.current = false;
+      setState((prev) => ({ ...prev, isThinking: false }));
+      return;
+    }
+    if (fenRef.current && workerRef.current) {
+      pendingGoRef.current = true;
+      if (uciOkRef.current) post(workerRef.current, "isready");
+    }
+  }, []);
 
   return {
     ...state,

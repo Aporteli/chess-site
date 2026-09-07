@@ -71,16 +71,24 @@ export function Sidebar({
         ].join(" ")}
       >
         {/* Brand row */}
-        <div className="flex h-16 items-center justify-between gap-2 border-b border-border-subtle px-4">
+        <div
+          className={[
+            "flex h-16 items-center gap-2 border-b border-border-subtle",
+            collapsed ? "justify-between px-4 lg:justify-center lg:px-2" : "justify-between px-4",
+          ].join(" ")}
+        >
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-accent-gold/30 bg-gradient-to-br from-accent-gold-dim to-bg-elevated text-accent-gold-bright">
               <span className="font-serif-display text-lg leading-none">♞</span>
             </span>
-            {!collapsed && (
-              <span className="truncate font-serif-display text-[17px] font-medium tracking-tight text-text-primary">
-                MoveTrainer
-              </span>
-            )}
+            <span
+              className={[
+                "truncate font-serif-display text-[17px] font-medium tracking-tight text-text-primary",
+                collapsed ? "lg:hidden" : "",
+              ].join(" ")}
+            >
+              MoveTrainer
+            </span>
           </Link>
           <button
             onClick={onCloseMobile}
@@ -92,7 +100,7 @@ export function Sidebar({
         </div>
 
         {/* Primary nav */}
-        <nav className="flex-1 space-y-1  px-3 py-4 ">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {navItems.map((item) => {
             const Icon = ICONS[item.key];
             const isActive = item.key === activeKey;
@@ -153,7 +161,10 @@ export function Sidebar({
         {/* Collapse toggle (desktop only) */}
         <button
           onClick={onToggleCollapsed}
-          className="mx-3 mb-2 hidden items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-text-muted hover:bg-bg-elevated hover:text-text-secondary lg:flex"
+          className={[
+            "mx-3 mb-2 hidden items-center gap-2 rounded-lg py-2 text-xs font-medium text-text-muted hover:bg-bg-elevated hover:text-text-secondary lg:flex",
+            collapsed ? "justify-center px-2" : "px-3",
+          ].join(" ")}
         >
           {collapsed ? (
             <PanelLeftOpen className="h-4 w-4" />

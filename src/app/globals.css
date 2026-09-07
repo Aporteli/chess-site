@@ -128,12 +128,17 @@ body {
 [data-boardid="movetrainer-board"],
 #movetrainer-board,
 [data-boardid="analysis-board"],
-#analysis-board {
+#analysis-board,
+[data-boardid="tablebase-board"],
+#tablebase-board,
+[data-boardid="puzzle-board"],
+#puzzle-board,
+[data-boardid="pv-preview-board"],
+#pv-preview-board {
   width: 100% !important;
   height: 100% !important;
 }
 
 input[type="range"] {
   accent-color: var(--color-accent-gold);
-  max-width: 96px;
 }

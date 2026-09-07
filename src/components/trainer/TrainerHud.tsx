@@ -7,7 +7,6 @@ import { SrsProgress } from "./SrsProgress";
 import { MoveList } from "./MoveList";
 import { HintBox } from "./HintBox";
 import { ActionToolbar } from "./ActionToolbar";
-import { ModeToggle } from "./ModeToggle";
 import { RepertoireBar } from "./RepertoireBar";
 import { DrillFilters } from "./DrillFilters";
 import { MoveTree } from "./MoveTree";
@@ -55,8 +54,7 @@ export const TrainerHud = memo(function TrainerHud() {
   const [keys, setKeys] = useState(false);
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <ModeToggle />
+    <div className="flex min-h-0 flex-col gap-3">
       <OpeningHeaderCard />
       <TranspositionAlert />
       <HintBox />

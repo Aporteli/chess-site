@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { BoardWrapper } from "@/components/board/BoardWrapper";
 import { TrainerHud } from "@/components/trainer/TrainerHud";
+import { ModeToggle } from "@/components/trainer/ModeToggle";
 import { MOVE_NAGS } from "@/lib/chess";
 import { useTrainer } from "@/lib/trainer/context";
 import { StockfishProvider, useStockfishEngine } from "@/lib/chess/use-stockfish";
@@ -99,8 +100,8 @@ export function TrainerWorkspace() {
 
   return (
     <StockfishProvider fen={t.fen}>
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-6 p-4 sm:p-6 lg:flex-row lg:items-start lg:gap-6">
-        <section className="flex-1 lg:sticky lg:top-[88px]">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-4 p-4 sm:p-5 lg:h-full lg:min-h-0 lg:flex-row lg:items-stretch lg:overflow-hidden lg:gap-5">
+        <section className="min-w-0 flex-1 lg:overflow-y-auto">
           <BoardWrapper />
           <p className="mx-auto mt-3 hidden max-w-[620px] text-center text-[11px] text-text-muted lg:block">
             {t.mode === "study"
@@ -109,9 +110,16 @@ export function TrainerWorkspace() {
           </p>
         </section>
 
-        <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-[360px] xl:w-[400px]">
-          <TrainerEnginePanel />
-          <TrainerHud />
+        <aside className="flex w-full shrink-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:w-[min(100%,400px)] lg:overflow-hidden">
+          <div className="shrink-0">
+            <ModeToggle />
+          </div>
+          <div className="shrink-0">
+            <TrainerEnginePanel />
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <TrainerHud />
+          </div>
         </aside>
       </div>
     </StockfishProvider>

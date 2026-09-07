@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
 import { Settings, X } from "lucide-react";
 import type {
   EngineLine,
@@ -54,11 +53,9 @@ export default function StockfishDashboard({
   onToggleEnabled,
 }: StockfishDashboardProps) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
 
   return (
-    <div className="relative flex min-h-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3 [contain:layout]">
+    <div className="flex min-h-0 shrink-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3">
       <h3 className="border-b border-border-subtle pb-2 font-serif-display text-[15px] text-text-primary">
         Stockfish
       </h3>
@@ -86,20 +83,17 @@ export default function StockfishDashboard({
         {settings.hashMb}MB
       </p>
 
-      {pathname === "/tablebase" ? null : (
-        <AnalysisOutput
-          lines={analysisLines}
-          onPlayMove={onPlayMove}
-          turn={turn}
-          moveNumber={moveNumber}
-          fen={fen}
-        />
-      )}
-
+      <AnalysisOutput
+        lines={analysisLines}
+        onPlayMove={onPlayMove}
+        turn={turn}
+        moveNumber={moveNumber}
+        fen={fen}
+      />
 
       {open && (
         <div
-          className="fixed inset-0 top-4/4 z-50 flex items-center justify-center bg-black/55 p-4"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4"
           onClick={() => setOpen(false)}
         >
           <div

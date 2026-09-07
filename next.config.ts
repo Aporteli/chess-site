@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.googleusercontent.com" },
     ],
   },
+  headers: async () => [
+    {
+      source: "/:file*.wasm",
+      headers: [{ key: "Content-Type", value: "application/wasm" }],
+    },
+  ],
 };
 
 export default nextConfig;

@@ -33,11 +33,15 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-[#121110] text-[#E0DACE] px-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-[#1C1A17] border border-[#2A2723] rounded-xl shadow-2xl">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-[#F5EDC7]">ავტორიზაცია</h1>
-          <p className="text-sm text-[#A0988C]">შედი ანგარიშზე ვარჯიშის გასაგრძელებლად</p>
+    <main className="flex min-h-dvh items-center justify-center bg-bg-deepest px-4 py-8 text-text-primary">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-border-default bg-bg-surface p-8 shadow-panel">
+        <div className="space-y-2 text-center">
+          <h1 className="font-serif-display text-2xl font-medium tracking-tight text-text-primary">
+            ავტორიზაცია
+          </h1>
+          <p className="text-sm text-text-secondary">
+            შედი ანგარიშზე ვარჯიშის გასაგრძელებლად
+          </p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -48,7 +52,7 @@ export default function SignInPage() {
           )}
 
           <div className="space-y-1">
-            <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#A0988C]">
+            <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
               ელ-ფოსტა
             </label>
             <input
@@ -60,12 +64,12 @@ export default function SignInPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="name@example.com"
-              className="w-full px-3.5 py-2.5 bg-[#121110] border border-[#2A2723] rounded-lg text-[#E0DACE] placeholder-[#5C5549] focus:outline-none focus:border-[#E1B056] transition text-sm"
+              className="w-full rounded-lg border border-border-default bg-bg-deepest px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted transition focus:border-accent-gold focus:outline-none"
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-[#A0988C]">
+            <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-text-muted">
               პაროლი
             </label>
             <input
@@ -77,13 +81,13 @@ export default function SignInPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 bg-[#121110] border border-[#2A2723] rounded-lg text-[#E0DACE] placeholder-[#5C5549] focus:outline-none focus:border-[#E1B056] transition text-sm"
+              className="w-full rounded-lg border border-border-default bg-bg-deepest px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-muted transition focus:border-accent-gold focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 font-semibold text-[#121110] bg-[#E1B056] hover:bg-[#F0C16A] active:bg-[#C9983E] rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-md mt-2"
+            className="mt-2 w-full rounded-lg bg-accent-gold px-4 py-2.5 font-semibold text-bg-deepest shadow-md transition duration-150 hover:bg-accent-gold-bright disabled:cursor-not-allowed disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "შესვლა..." : "შესვლა"}
@@ -92,17 +96,17 @@ export default function SignInPage() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#2A2723]" />
+            <div className="w-full border-t border-border-default" />
           </div>
           <div className="relative flex justify-center text-xs uppercase tracking-wider">
-            <span className="bg-[#1C1A17] px-2 text-[#5C5549]">ან</span>
+            <span className="bg-bg-surface px-2 text-text-muted">ან</span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full py-2.5 px-4 font-semibold text-[#E0DACE] bg-[#121110] border border-[#2A2723] hover:border-[#E1B056] rounded-lg transition duration-150 text-sm"
+          className="w-full rounded-lg border border-border-default bg-bg-deepest px-4 py-2.5 text-sm font-semibold text-text-primary transition duration-150 hover:border-accent-gold"
         >
           Google-ით შესვლა
         </button>

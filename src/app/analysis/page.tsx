@@ -338,7 +338,7 @@ export default function AnalysisPage() {
 
   return (
     <AppShell activeKey="analysis">
-      <div className="flex min-h-0 flex-col overflow-y-auto p-2 pb-24 xl:h-[calc(100dvh-5.5rem)] xl:max-h-[calc(100dvh-5.5rem)] xl:overflow-hidden xl:p-1 xl:pb-1">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3 pb-6 xl:overflow-hidden xl:p-3">
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch xl:gap-5 xl:overflow-hidden">
           <div
             className="flex w-full min-h-0 min-w-0 flex-col items-center justify-center xl:col-span-8 xl:h-full"
@@ -416,8 +416,7 @@ export default function AnalysisPage() {
 
           {/* მარჯვენა მხარე: მართვის პანელი */}
           <div className="flex min-h-0 w-full flex-col gap-3 xl:col-span-4 xl:h-full xl:overflow-y-auto">
-            <div className="flex shrink-0 flex-col gap-3">
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 <button
                   onClick={() => setIsUploadBoardOpen(true)}
                   className="flex-1 px-3.5 py-1.5 rounded-lg text-xs bg-[var(--color-bg-elevated,#1c1815)] border border-[var(--color-border-subtle,#221d17)] text-[var(--color-text-secondary,#b9ac91)] hover:bg-[var(--color-bg-elevated-hover,#262019)] hover:text-[var(--color-accent-gold-bright,#e8c579)] transition-all flex items-center gap-1.5 shadow-sm"
@@ -500,63 +499,45 @@ export default function AnalysisPage() {
                   }
                 }}
               />
-            </div>
 
-            {/* Eval მეტრიკა */}
-            <div className="bg-[var(--color-bg-surface,#131110)] p-3 rounded-xl border border-[var(--color-border-subtle,#221d17)] space-y-2 shrink-0">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted,#7d735d)] font-mono">
-                  Engine Eval
-                </span>
-                <span
-                  className={`text-[9px] px-1.5 py-0.5 rounded font-mono ${
-                    isThinking
-                      ? "bg-[var(--color-accent-teal-dim,#142621)] text-[var(--color-accent-teal-bright,#7fc0af)] border border-[var(--color-accent-teal,#4f9484)]"
-                      : "bg-[var(--color-bg-elevated,#1c1815)] text-[var(--color-text-secondary,#b9ac91)]"
-                  }`}
-                >
-                  {isThinking ? "Calculating" : "Idle"}
-                </span>
+            {/* Eval + history */}
+            <div className="flex min-h-[120px] flex-1 flex-col overflow-hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
+              <div className="mb-1.5 flex shrink-0 items-center justify-between gap-2">
+                <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
+                  სვლების ისტორია
+                </h2>
+                <div className="flex min-w-0 items-center gap-2">
+                  <span
+                    className={`rounded px-1.5 py-0.5 font-mono text-[9px] ${
+                      isThinking
+                        ? "border border-accent-teal bg-accent-teal-dim text-accent-teal-bright"
+                        : "bg-bg-elevated text-text-secondary"
+                    }`}
+                  >
+                    {isThinking ? "Calculating" : "Idle"}
+                  </span>
+                  <span className="font-mono text-sm font-semibold text-accent-gold-bright">
+                    {evaluation !== null
+                      ? evaluation > 0
+                        ? `+${evaluation}`
+                        : evaluation
+                      : "0.00"}
+                  </span>
+                  <span className="truncate rounded border border-border-subtle bg-accent-teal-dim px-1.5 py-0.5 font-mono text-[11px] font-semibold text-accent-teal-bright">
+                    {bestMove ?? "—"}
+                  </span>
+                </div>
               </div>
-
-              <div className="flex items-baseline justify-between border-t border-[var(--color-border-subtle,#221d17)] pt-1.5">
-                <span className="text-xs text-[var(--color-text-secondary,#b9ac91)]">
-                  შეფასება:
-                </span>
-                <span className="text-xl font-mono font-bold text-[var(--color-accent-gold-bright,#e8c579)]">
-                  {evaluation !== null
-                    ? evaluation > 0
-                      ? `+${evaluation}`
-                      : evaluation
-                    : "0.00"}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-[var(--color-border-subtle,#221d17)] pt-1.5">
-                <span className="text-xs text-[var(--color-text-secondary,#b9ac91)]">
-                  საუკეთესო სვლა:
-                </span>
-                <span className="font-mono text-xs font-semibold text-[var(--color-accent-teal-bright,#7fc0af)] bg-[var(--color-accent-teal-dim,#142621)] px-2 py-0.5 rounded border border-[var(--color-border-subtle,#221d17)]">
-                  {bestMove ?? "—"}
-                </span>
-              </div>
-            </div>
-
-            {/* სვლების ისტორია */}
-            <div className="bg-[var(--color-bg-surface,#131110)] p-3 rounded-xl border border-[var(--color-border-subtle,#221d17)] flex-1 min-h-[100px] flex flex-col overflow-hidden">
-              <h2 className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted,#7d735d)] font-mono mb-1.5 shrink-0">
-                სვლების ისტორია
-              </h2>
-              <div className="flex-1 overflow-y-auto pr-1 flex flex-wrap gap-1 content-start font-mono text-xs">
+              <div className="flex flex-1 flex-wrap content-start gap-1 overflow-y-auto pr-1 font-mono text-xs">
                 {history.length === 0 ? (
-                  <span className="text-[var(--color-text-muted,#7d735d)] italic text-xs">
+                  <span className="text-xs italic text-text-muted">
                     სვლები ჯერ არ გაკეთებულა
                   </span>
                 ) : (
                   history.map((san, index) => (
                     <span
                       key={index}
-                      className="px-1.5 py-0.5 bg-[var(--color-bg-elevated,#1c1815)] border border-[var(--color-border-subtle,#221d17)] rounded text-[var(--color-text-secondary,#b9ac91)] text-xs"
+                      className="rounded border border-border-subtle bg-bg-elevated px-1.5 py-0.5 text-xs text-text-secondary"
                     >
                       {index % 2 === 0 ? `${Math.floor(index / 2) + 1}. ` : ""}
                       {san}
@@ -567,11 +548,11 @@ export default function AnalysisPage() {
             </div>
 
             {/* FEN */}
-            <div className="bg-[var(--color-bg-surface,#131110)] p-2 rounded-xl border border-[var(--color-border-subtle,#221d17)] shrink-0">
-              <span className="text-[8px] uppercase font-mono text-[var(--color-text-muted,#7d735d)] block mb-0.5">
+            <div className="shrink-0 rounded-xl border border-border-subtle bg-bg-surface p-2">
+              <span className="mb-0.5 block font-mono text-[8px] uppercase text-text-muted">
                 FEN
               </span>
-              <p className="font-mono text-[9px] text-[var(--color-text-muted,#7d735d)] truncate select-all">
+              <p className="select-all truncate font-mono text-[9px] text-text-muted">
                 {fen}
               </p>
             </div>

@@ -296,7 +296,7 @@ export default function PuzzlesPage() {
 
   return (
     <AppShell activeKey="puzzles">
-      <div className="flex min-h-0 flex-col overflow-y-auto p-3 pb-24 xl:h-[calc(100dvh-5.5rem)] xl:max-h-[calc(100dvh-5.5rem)] xl:overflow-hidden xl:p-4 xl:pb-4">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3 pb-6 xl:overflow-hidden xl:p-4">
         <div className="mx-auto grid min-h-0 w-full max-w-[1400px] flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch xl:gap-5 xl:overflow-hidden">
           <section
             className="flex min-h-0 min-w-0 flex-col items-center justify-center xl:col-span-7 xl:h-full"

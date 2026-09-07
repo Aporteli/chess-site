@@ -10,6 +10,24 @@ const NAMES: Record<string, string> = {
   n: "Knight",
   p: "Pawn",
 };
+
+const WHITE_GLYPH: Record<string, string> = {
+  k: "♔",
+  q: "♕",
+  r: "♖",
+  b: "♗",
+  n: "♘",
+  p: "♙",
+};
+const BLACK_GLYPH: Record<string, string> = {
+  k: "♚",
+  q: "♛",
+  r: "♜",
+  b: "♝",
+  n: "♞",
+  p: "♟",
+};
+
 const FILES = "abcdefgh";
 const ALL_SQUARES = Array.from(
   { length: 64 },
@@ -17,6 +35,9 @@ const ALL_SQUARES = Array.from(
 );
 const GENERATE_ATTEMPTS = 500;
 const KEY = "tablebase:deck:v2";
+const KINDS_KEY = "tablebase:kinds:v1";
+const HIDDEN_KEY = "tablebase:hidden-kinds:v1";
+const PIECE_ORDER = ["k", "q", "r", "b", "n", "p"] as const;
 
 export const ENDGAME_CONFIGS = {
   KP_K: { white: ["k", "p"], black: ["k"] },
@@ -27,22 +48,177 @@ export const ENDGAME_CONFIGS = {
   KRB_K: { white: ["k", "r", "b"], black: ["k"] },
   KQ_KR: { white: ["k", "q"], black: ["k", "r"] },
   KRP_KR: { white: ["k", "r", "p"], black: ["k", "r"] },
+  KRPP_KR: { white: ["k", "r", "p", "p"], black: ["k", "r"] },
 } as const;
 
-export type EndgameKind = keyof typeof ENDGAME_CONFIGS;
-export type EndgamePieces = { white: readonly string[]; black: readonly string[] };
+export type EndgameKind = string;
+export type EndgamePieces = {
+  white: readonly string[];
+  black: readonly string[];
+};
+export type EndgameEntry = {
+  id: EndgameKind;
+  label: string;
+  icons: string;
+  fen: string;
+};
 
-export const ENDGAME_IDS = Object.keys(ENDGAME_CONFIGS) as EndgameKind[];
+type StoredKind = { id: string; white: string[]; black: string[] };
+
+let customKinds: Record<string, EndgamePieces> = {};
+let hiddenKinds = new Set<string>();
+let customHydrated = false;
+
+function readStoredKinds(): Record<string, EndgamePieces> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(KINDS_KEY);
+    const parsed = raw ? (JSON.parse(raw) as StoredKind[]) : [];
+    const next: Record<string, EndgamePieces> = {};
+    if (Array.isArray(parsed)) {
+      for (const item of parsed) {
+        if (
+          item?.id &&
+          Array.isArray(item.white) &&
+          Array.isArray(item.black)
+        ) {
+          next[item.id] = { white: item.white, black: item.black };
+        }
+      }
+    }
+    return next;
+  } catch {
+    return {};
+  }
+}
+
+function loadCustomKinds(): Record<string, EndgamePieces> {
+  return customKinds;
+}
+
+/** Call from a client effect only — localStorage must not run during SSR. */
+export function hydrateCustomKinds(): Record<string, EndgamePieces> {
+  if (typeof window === "undefined" || customHydrated) return customKinds;
+  customHydrated = true;
+  customKinds = readStoredKinds();
+  try {
+    const raw = window.localStorage.getItem(HIDDEN_KEY);
+    const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+    hiddenKinds = new Set(Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : []);
+  } catch {
+    hiddenKinds = new Set();
+  }
+  return customKinds;
+}
+
+function persistHiddenKinds() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(HIDDEN_KEY, JSON.stringify([...hiddenKinds]));
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+function persistCustomKinds() {
+  if (typeof window === "undefined") return;
+  const builtins = new Set(Object.keys(ENDGAME_CONFIGS));
+  const payload: StoredKind[] = Object.entries(loadCustomKinds())
+    .filter(([id]) => !builtins.has(id))
+    .map(([id, pieces]) => ({
+      id,
+      white: [...pieces.white],
+      black: [...pieces.black],
+    }));
+  try {
+    window.localStorage.setItem(KINDS_KEY, JSON.stringify(payload));
+  } catch {
+    /* quota / private mode */
+  }
+}
+
+export function allEndgameConfigs(): Record<string, EndgamePieces> {
+  return { ...ENDGAME_CONFIGS, ...loadCustomKinds() };
+}
+
+export function getEndgameConfig(kind: EndgameKind): EndgamePieces | undefined {
+  return allEndgameConfigs()[kind];
+}
+
+function sortPieces(pieces: string[]): string[] {
+  return [...pieces].sort(
+    (a, b) =>
+      PIECE_ORDER.indexOf(a as (typeof PIECE_ORDER)[number]) -
+      PIECE_ORDER.indexOf(b as (typeof PIECE_ORDER)[number]),
+  );
+}
+
+function materialToken(pieces: readonly string[]): string {
+  const counts: Record<string, number> = {};
+  for (const p of pieces) {
+    const key = p.toLowerCase();
+    counts[key] = (counts[key] ?? 0) + 1;
+  }
+  return PIECE_ORDER.flatMap((p) =>
+    Array.from({ length: counts[p] ?? 0 }, () => p.toUpperCase()),
+  ).join("");
+}
+
+export function piecesFromFen(fen: string): EndgamePieces | null {
+  const board = fen.split(" ")[0] ?? "";
+  const white: string[] = [];
+  const black: string[] = [];
+  for (const ch of board) {
+    if (/[KQRBNP]/.test(ch)) white.push(ch.toLowerCase());
+    else if (/[kqrbnp]/.test(ch)) black.push(ch);
+  }
+  if (!white.includes("k") || !black.includes("k")) return null;
+  return { white: sortPieces(white), black: sortPieces(black) };
+}
+
+export function kindFromFen(fen: string): EndgameKind | null {
+  const pieces = piecesFromFen(fen);
+  if (!pieces) return null;
+  return `${materialToken(pieces.white)}_${materialToken(pieces.black)}`;
+}
+
+/** Adds a material type to the catalog when a scanned FEN is new. */
+export function registerEndgameFromFen(fen: string): EndgameKind | null {
+  const pieces = piecesFromFen(fen);
+  if (!pieces) return null;
+  const kind = `${materialToken(pieces.white)}_${materialToken(pieces.black)}`;
+  if (!(kind in allEndgameConfigs())) {
+    const next = { ...loadCustomKinds(), [kind]: pieces };
+    customKinds = next;
+    persistCustomKinds();
+  }
+  hiddenKinds.delete(kind);
+  persistHiddenKinds();
+  return kind;
+}
+
+export function endgameIcons(kind: EndgameKind): string {
+  const cfg = getEndgameConfig(kind);
+  if (!cfg) return kind;
+  return `${cfg.white.map((p) => WHITE_GLYPH[p] ?? p).join("")} vs ${cfg.black
+    .map((p) => BLACK_GLYPH[p] ?? p)
+    .join("")}`;
+}
+
+export const ENDGAME_IDS = Object.keys(ENDGAME_CONFIGS) as Array<
+  keyof typeof ENDGAME_CONFIGS
+>;
 
 export function isEndgameKind(value: unknown): value is EndgameKind {
-  return typeof value === "string" && value in ENDGAME_CONFIGS;
+  return typeof value === "string" && value in allEndgameConfigs();
 }
 
 function labelOf(kind: EndgameKind) {
-  const { white, black } = ENDGAME_CONFIGS[kind];
+  const cfg = getEndgameConfig(kind);
+  if (!cfg) return kind;
   const fmt = (pieces: readonly string[]) =>
     pieces.map((p) => NAMES[p.toLowerCase()] ?? p.toUpperCase()).join(" + ");
-  return `${fmt(white)} vs ${fmt(black)}`;
+  return `${fmt(cfg.white)} vs ${fmt(cfg.black)}`;
 }
 
 function fenFromPlacements(placements: [string, string][]): string {
@@ -69,7 +245,9 @@ function fenFromPlacements(placements: [string, string][]): string {
 }
 
 function fallbackFen(kind: EndgameKind): string {
-  const { white, black } = ENDGAME_CONFIGS[kind];
+  const cfg = getEndgameConfig(kind);
+  if (!cfg) return "8/8/8/8/8/8/8/8 w - - 0 1";
+  const { white, black } = cfg;
   const placements: [string, string][] = [];
   let wi = 0;
   let bi = 0;
@@ -84,11 +262,27 @@ function fallbackFen(kind: EndgameKind): string {
   return fenFromPlacements(placements);
 }
 
-export const ENDGAMES = ENDGAME_IDS.map((id) => ({
-  id,
-  label: labelOf(id),
-  fen: fallbackFen(id),
-}));
+export function listBuiltinEndgames(): EndgameEntry[] {
+  return Object.keys(ENDGAME_CONFIGS).map((id) => ({
+    id,
+    label: labelOf(id),
+    icons: endgameIcons(id),
+    fen: fallbackFen(id),
+  }));
+}
+
+export function listEndgames(): EndgameEntry[] {
+  return Object.keys(allEndgameConfigs())
+    .filter((id) => !hiddenKinds.has(id))
+    .map((id) => ({
+      id,
+      label: labelOf(id),
+      icons: endgameIcons(id),
+      fen: fallbackFen(id),
+    }));
+}
+
+export const ENDGAMES = listBuiltinEndgames();
 
 export type EndgameCard = {
   id: string;
@@ -136,6 +330,7 @@ export function emptyDeck(name = "Endgame deck"): EndgameDeck {
 
 export function loadDeck(): EndgameDeck {
   if (typeof window === "undefined") return emptyDeck();
+  hydrateCustomKinds();
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return emptyDeck();
@@ -192,10 +387,11 @@ export function isLegalPlayableFen(fen: string): boolean {
 export function fenMatchesKind(fen: string, kind: EndgameKind): boolean {
   const board = fen.split(" ")[0] ?? "";
   const pieces = [...board.replace(/[\d/]/g, "")].sort().join("");
-  const { white, black } = ENDGAME_CONFIGS[kind];
+  const cfg = getEndgameConfig(kind);
+  if (!cfg) return false;
   const expected = [
-    ...white.map((p) => p.toUpperCase()),
-    ...black.map((p) => p.toLowerCase()),
+    ...cfg.white.map((p) => p.toUpperCase()),
+    ...cfg.black.map((p) => p.toLowerCase()),
   ]
     .sort()
     .join("");
@@ -207,7 +403,8 @@ export function generateEndgameFen(
   kind: EndgameKind,
   seen: ReadonlySet<string> = new Set(),
 ): string | null {
-  const config: EndgamePieces = ENDGAME_CONFIGS[kind];
+  const config = getEndgameConfig(kind);
+  if (!config) return null;
   for (let n = 0; n < GENERATE_ATTEMPTS; n++) {
     const used = new Set<string>();
     const placements: [string, string][] = [];
@@ -274,6 +471,54 @@ export function upsertCard(deck: EndgameDeck, card: EndgameCard): EndgameDeck {
   const next = { ...deck, cards, cursor, updatedAt: Date.now() };
   saveDeck(next);
   return next;
+}
+
+export function removeCard(deck: EndgameDeck, cardId: string): EndgameDeck {
+  const cards = deck.cards.filter((c) => c.id !== cardId);
+  const cursor = Math.min(deck.cursor, Math.max(0, cards.length - 1));
+  const next = { ...deck, cards, cursor, updatedAt: Date.now() };
+  saveDeck(next);
+  return next;
+}
+
+export function removeCardsByKind(
+  deck: EndgameDeck,
+  kind: EndgameKind,
+): EndgameDeck {
+  const cards = deck.cards.filter((c) => c.kind !== kind);
+  const cursor = Math.min(deck.cursor, Math.max(0, cards.length - 1));
+  const next = { ...deck, cards, cursor, updatedAt: Date.now() };
+  saveDeck(next);
+  return next;
+}
+
+export function removeAllCards(deck: EndgameDeck): EndgameDeck {
+  const next = { ...deck, cards: [], cursor: 0, updatedAt: Date.now() };
+  saveDeck(next);
+  return next;
+}
+
+export function isBuiltinKind(kind: EndgameKind): boolean {
+  return kind in ENDGAME_CONFIGS;
+}
+
+export function removeEndgameKind(kind: EndgameKind): void {
+  if (kind in ENDGAME_CONFIGS) {
+    hiddenKinds.add(kind);
+    persistHiddenKinds();
+  }
+  if (kind in customKinds) {
+    const { [kind]: _removed, ...rest } = customKinds;
+    customKinds = rest;
+    persistCustomKinds();
+  }
+}
+
+export function removeAllEndgameKinds(): void {
+  customKinds = {};
+  persistCustomKinds();
+  hiddenKinds = new Set(Object.keys(ENDGAME_CONFIGS));
+  persistHiddenKinds();
 }
 
 export function isWinningEval(evaluation: number | null): boolean {

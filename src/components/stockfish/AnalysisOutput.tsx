@@ -265,7 +265,7 @@ export default function AnalysisOutput({
       <span className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
         Top variations
       </span>
-      <div className="flex h-52 shrink-0 flex-col gap-1 overflow-y-auto overflow-x-hidden rounded-lg border border-border-subtle bg-bg-deepest p-2 font-mono text-[11px]">
+      <div className="flex max-h-36 min-h-0 flex-col gap-1 overflow-y-auto overflow-x-hidden rounded-lg border border-border-subtle bg-bg-deepest p-2 font-mono text-[11px]">
         {lines && lines.length > 0 ? (
           lines.map((line) => (
             <VariationLine
