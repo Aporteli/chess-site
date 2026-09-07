@@ -104,7 +104,11 @@ export function hydrateCustomKinds(): Record<string, EndgamePieces> {
   try {
     const raw = window.localStorage.getItem(HIDDEN_KEY);
     const parsed = raw ? (JSON.parse(raw) as string[]) : [];
-    hiddenKinds = new Set(Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : []);
+    hiddenKinds = new Set(
+      Array.isArray(parsed)
+        ? parsed.filter((id) => typeof id === "string")
+        : [],
+    );
   } catch {
     hiddenKinds = new Set();
   }
@@ -224,7 +228,15 @@ function labelOf(kind: EndgameKind) {
 function fenFromPlacements(placements: [string, string][]): string {
   const rows = Array.from({ length: 8 }, () => Array<string>(8).fill(""));
   for (const [piece, sq] of placements) {
-    rows[8 - Number(sq[1])][sq.charCodeAt(0) - 97] = piece;
+    if (!sq || sq.length < 2) continue;
+
+    const file = sq.charCodeAt(0) - 97; // 'a'-'h' -> 0-7
+    const rank = 8 - Number(sq[1]); // '1'-'8' -> 7-0
+
+    // 2. შემოწმება: არის თუ არა ინდექსები 8x8 დაფის ფარგლებში
+    if (rank >= 0 && rank < 8 && file >= 0 && file < 8) {
+      rows[rank][file] = piece;
+    }
   }
   const boardFen = rows
     .map((row) => {
