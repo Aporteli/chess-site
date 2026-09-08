@@ -22,16 +22,29 @@ export function AnalysisPanel() {
   const tbLines = result ? tablebaseLines(result.moves, turn) : [];
   const lines = tbLines.length ? tbLines : localLines;
 
+  // Additional safe defaults for min/max heights
+  // and preventing children overlap issues with flex/shrink basis
+
   return (
-    <section className="flex min-h-0 flex-col gap-2 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)]">
-      <div className="flex items-center justify-between gap-2">
+    <section
+      className="flex flex-col gap-2 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)]"
+      style={{
+        minHeight: 0,
+        height: "100%",
+        boxSizing: "border-box",
+        overflow: "hidden",
+      }}
+    >
+      <div className="flex items-center justify-between gap-2 flex-shrink-0">
         <h2 className="font-display text-base text-fg">Analysis</h2>
         <Button size="tiny" variant={enabled ? "primary" : "secondary"} onClick={toggleEngine}>
           {enabled ? "Auto on" : "Auto off"}
         </Button>
       </div>
-      <EvalBar />
-      <div className="flex items-center justify-between font-mono text-micro text-muted">
+      <div className="flex-shrink-0">
+        <EvalBar />
+      </div>
+      <div className="flex items-center justify-between font-mono text-micro text-muted flex-shrink-0">
         <span className="uppercase tracking-wider text-accent">
           {loading ? "…" : (result?.category ?? (lines[0] ? "local" : "idle"))}
         </span>
@@ -44,30 +57,43 @@ export function AnalysisPanel() {
           {result?.dtz != null ? ` · DTZ ${result.dtz}` : ""}
         </span>
       </div>
-      <div className="flex max-h-28 flex-wrap gap-1 overflow-y-auto">
+      <div
+        className="flex flex-col gap-2 overflow-y-auto min-h-16 max-h-56 p-1"
+        style={{
+          flexGrow: 1,
+          minHeight: "4rem",
+          maxHeight: "12rem",
+        }}
+      >
         {lines.length === 0 ? (
           <p className="text-micro italic text-muted">No lines yet.</p>
         ) : (
-          lines.map((line) => (
-            <button
-              key={`${line.multipv}-${line.uci}`}
-              type="button"
-              disabled={building || Boolean(gameOver)}
-              onClick={() => playUcis([line.uci])}
-              className="min-h-9 rounded-sm px-2 font-mono text-2xs text-muted shadow-[var(--shadow-border)] hover:text-fg disabled:opacity-50"
-            >
-              {line.san ?? line.uci}
-            </button>
-          ))
+          <div className="flex flex-wrap gap-2">
+            {lines.map((line) => (
+              <button
+                key={`${line.multipv}-${line.uci}`}
+                type="button"
+                disabled={building || Boolean(gameOver)}
+                onClick={() => playUcis([line.uci])}
+                className="min-h-10 rounded px-3 py-1 font-mono text-xs text-muted shadow-[var(--shadow-border)] hover:text-fg disabled:opacity-50 bg-surface/80"
+                style={{ minWidth: "3.5rem" }}
+              >
+                {line.san ?? line.uci}
+              </button>
+            ))}
+          </div>
         )}
       </div>
-      <Button
-        size="sm"
-        onClick={() => setLocalLines(analyzePosition(fen, 3, 5))}
-        disabled={building}
-      >
-        Local search
-      </Button>
+      <div className="flex-shrink-0 mt-2">
+        <Button
+          size="sm"
+          onClick={() => setLocalLines(analyzePosition(fen, 3, 5))}
+          disabled={building}
+          className="w-full"
+        >
+          Local search
+        </Button>
+      </div>
     </section>
   );
 }
