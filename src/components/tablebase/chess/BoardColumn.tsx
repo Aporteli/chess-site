@@ -1,3 +1,8 @@
+/*
+BoardColumn.tsx
+ეს კომპონენტი მართავს Tablebase-ის საჭადრაკო დაფას react-chessboard-ის მეშვეობით, აკონტროლებს სვლების ლოგიკას, უჯრების ვიზუალურ ეფექტებსა და თამაშის მდგომარეობის დამხმარე პანელებს.
+*/
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -8,6 +13,7 @@ import { fenTurn } from "@/lib/tablebase/chess/moves";
 import { useTablebaseStore } from "@/stores/tablebase-store";
 import { BoardToolbar } from "./BoardToolbar";
 import { GameOverOverlay } from "./GameOverOverlay";
+
 
 export function BoardColumn() {
   const fen = useTablebaseStore((s) => s.fen);
@@ -22,6 +28,8 @@ export function BoardColumn() {
   useEffect(() => setReady(true), []);
   useEffect(() => setFromSq(null), [fen]);
 
+  //* ლეგალური სამიზნე უჯრების გამოთვლა
+  
   const legalTargets = useMemo(() => {
     if (!fromSq) return new Set<string>();
     try {
@@ -33,6 +41,10 @@ export function BoardColumn() {
       return new Set<string>();
     }
   }, [fen, fromSq]);
+
+ 
+  
+  //* ჭადრაკის დაფის ინტერაქციების, სტილებისა და სვლების ვიზუალიზაციის ოპტიმიზებული კონფიგურაცია useMemo-ს გამოყენებით.
 
   const options = useMemo(() => {
     const turn = fenTurn(fen);

@@ -1,3 +1,8 @@
+/*
+GameOverOverlay.tsx
+ეს კომპონენტი აჩვენებს თამაშის დასრულების ოვერლეის შესაბამისი შეტყობინებითა და ხელახლა დაწყების ("Replay") ან შემდეგ ეტაპზე გადასვლის ("Next") ღილაკებით.
+*/
+
 "use client";
 
 import { gameOverCopy } from "@/lib/tablebase/chess/moves";
