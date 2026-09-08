@@ -8,7 +8,7 @@ import {
   } from "react";
   import { Chess } from "chess.js";
   import type { TablebaseResponse } from "@/app/api/tablebase/route";
-  import type { GameOverReason } from "@/components/tablebase/types";
+  import type { GameOverReason } from "@/lib/tablebase/chess/types";
   
   interface BoardStateOptions {
     setResult?: Dispatch<SetStateAction<TablebaseResponse | null>>;

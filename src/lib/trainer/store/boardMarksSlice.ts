@@ -1,4 +1,5 @@
-import { replaceRepertoire, type Repertoire, type Side } from '@/lib/chess';
+import { replaceRepertoire, type Repertoire } from '@/lib/chess';
+import type { Side } from '@/lib/types';  
 import { deriveActive } from './deriveActive';
 import type { BoardMarksActions, TrainerSlice } from './types';
 

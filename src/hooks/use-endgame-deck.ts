@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { loadDeck, saveDeck } from "@/lib/tablebase/deck-store";
-import type { EndgameCard, EndgameDeck } from "@/lib/tablebase/types";
+import { loadDeck, saveDeck } from "@/lib/tablebase/chess/deck";
+import type { EndgameCard, EndgameDeck } from "@/lib/tablebase/chess/types";
 
 export function useEndgameDeck(
   selectedKind: string,

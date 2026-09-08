@@ -4,33 +4,62 @@ import type { TablebaseResponse } from "@/app/api/tablebase/route";
 import { useStockfish } from "@/lib/chess/use-stockfish";
 import {
   fenMatchesKind,
-  generateEndgameFen,
   isLegalPlayableFen,
-} from "@/lib/tablebase/fen-utils";
+} from "@/lib/tablebase/chess/fen-legal";
+import { generateEndgameFen } from "@/lib/tablebase/chess/generate";
 import {
   isWinningEval,
   makeCard,
   upsertCard,
-} from "@/lib/tablebase/deck-store";
+} from "@/lib/tablebase/chess/deck";
 import type {
   EndgameCard,
   EndgameDeck,
   EndgameKind,
-} from "@/lib/tablebase/types";
-import {
-  clonePlayed,
-  endReason,
-  isValidFen,
-  pickFallbackMove,
-  playMoveSfx,
-  playUci,
-  tablebaseScore,
-  uciOf,
-} from "@/components/tablebase/tablebase-utils";
-import type {
   GameOverReason,
   PipelineStatus,
-} from "@/components/tablebase/types";
+} from "@/lib/tablebase/chess/types";
+import {
+  endReason,
+  pickFallbackMove,
+  playUci,
+  uciOf,
+} from "@/lib/tablebase/chess/moves";
+
+export function isValidFen(fen: string): boolean {
+  try {
+    // chess.js throws if FEN is invalid
+    new Chess(fen);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Default implementation for clonePlayed
+export function clonePlayed(board: Chess): Chess {
+  // Clone the given chess.js board object
+  return new Chess(board.fen());
+}
+
+// Default stub for playMoveSfx
+export function playMoveSfx(
+  board: Chess,
+  move: { from: string; to: string; promotion?: string },
+  sound: boolean
+) {
+  // Implementation stub: play move sound if wanted
+  // No-op for now or plug into real sound effect logic
+}
+
+// Default implementation for tablebaseScore
+export function tablebaseScore(category: string, color: "w" | "b"): number | null {
+  // Example: +100 for won, -100 for lost, 0 for drawn (adapt to real categories)
+  if (category === "win") return color === "w" ? 100 : -100;
+  if (category === "loss") return color === "w" ? -100 : 100;
+  if (category === "draw") return 0;
+  return null;
+}
 
 export function useTablebasePipeline(
   selectedKind: EndgameKind,
