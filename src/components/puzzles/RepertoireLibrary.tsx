@@ -5,7 +5,7 @@ import Link from "next/link";
 import { BookOpen, Plus, Trash2, Upload } from "lucide-react";
 import { collectTrainable, isDue, nodeCount } from "@/lib/chess";
 import { useTrainer } from "@/lib/trainer/context";
-import { PgnDialog } from "./PgnDialog";
+import { PgnDialog } from "../trainer/PgnDialog";
 
 export function RepertoireLibrary() {
   const t = useTrainer();
@@ -17,13 +17,15 @@ export function RepertoireLibrary() {
     <div className="mx-auto max-w-[1100px] p-4 sm:p-6">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-accent-gold/70">Library</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-accent-gold/70">
+            Library
+          </p>
           <h1 className="font-serif-display text-[28px] font-medium text-text-primary">
             Courses & repertoire
           </h1>
           <p className="mt-1 max-w-xl text-[13.5px] text-text-secondary">
-            Distinct White and Black files, each with branching chapters. Open a file to author
-            the tree or drill it with spaced repetition.
+            Distinct White and Black files, each with branching chapters. Open a
+            file to author the tree or drill it with spaced repetition.
           </p>
         </div>
         <div className="flex gap-2">
@@ -82,7 +84,9 @@ export function RepertoireLibrary() {
         {t.store.repertoires.map((rep) => {
           const moves = rep.chapters.reduce((s, ch) => s + nodeCount(ch), 0);
           const due = rep.chapters.reduce(
-            (s, ch) => s + collectTrainable(ch, rep.side).filter((n) => isDue(n.srs)).length,
+            (s, ch) =>
+              s +
+              collectTrainable(ch, rep.side).filter((n) => isDue(n.srs)).length,
             0,
           );
           return (
@@ -98,7 +102,9 @@ export function RepertoireLibrary() {
                   <h2 className="mt-2 font-serif-display text-[20px] text-text-primary">
                     {rep.name}
                   </h2>
-                  <p className="mt-1 text-[13px] text-text-secondary">{rep.description || "Custom file"}</p>
+                  <p className="mt-1 text-[13px] text-text-secondary">
+                    {rep.description || "Custom file"}
+                  </p>
                 </div>
                 <button
                   onClick={() => t.deleteRepertoire(rep.id)}
@@ -120,11 +126,15 @@ export function RepertoireLibrary() {
                   >
                     <span className="text-text-primary">
                       {ch.eco && (
-                        <span className="mr-2 font-mono text-[10.5px] text-accent-gold/80">{ch.eco}</span>
+                        <span className="mr-2 font-mono text-[10.5px] text-accent-gold/80">
+                          {ch.eco}
+                        </span>
                       )}
                       {ch.name}
                     </span>
-                    <span className="font-mono text-[10.5px] text-text-muted">{nodeCount(ch)}</span>
+                    <span className="font-mono text-[10.5px] text-text-muted">
+                      {nodeCount(ch)}
+                    </span>
                   </li>
                 ))}
               </ul>
