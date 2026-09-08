@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Chess } from "chess.js";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -75,3 +76,31 @@ export type VariantProps<T> = T extends (
 ) => any
   ? Omit<P, "className">
   : never;
+
+  export function applyUci(game: Chess, uci: string) {
+    const u = uci.toLowerCase();
+    return game.move({
+      from: u.slice(0, 2),
+      to: u.slice(2, 4),
+      ...(u[4] ? { promotion: u[4] } : {}),
+    });
+  }
+  
+
+  export function lineIndex(
+    startFen: string,
+    boardFen: string,
+    solution: string[]
+  ): number {
+    const game = new Chess(startFen);
+    if (game.fen() === boardFen) return 0;
+    for (let i = 0; i < solution.length; i++) {
+      try {
+        applyUci(game, solution[i]);
+      } catch {
+        return -1;
+      }
+      if (game.fen() === boardFen) return i + 1;
+    }
+    return -1;
+  }
