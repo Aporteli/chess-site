@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  ENDGAME_IDS,
   generateEndgameFen,
-  isEndgameKind,
-} from "@/lib/chess/endgame-deck";
+} from "@/lib/tablebase/chess/generate";
+import { isEndgameKind } from "@/lib/tablebase/chess/kinds";
+import { ENDGAME_IDS } from "@/lib/tablebase/chess/configs";
 
 export async function POST(req: Request) {
   try {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isLegalChessFen } from "@/lib/chess/endgame-deck";
+import { isLegalChessFen } from "@/lib/tablebase/chess/fen-legal";
 
 export interface TablebaseMove {
   uci: string;
