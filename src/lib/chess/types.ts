@@ -124,3 +124,5 @@ export interface DrillCard {
 }
 
 export type TrainerMode = "study" | "drill";
+
+

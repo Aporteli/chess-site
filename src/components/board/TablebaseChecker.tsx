@@ -42,10 +42,13 @@ import {
   removeEndgameKind,
   saveDeck,
   upsertCard,
+} from "@/lib/chess/endgame-deck";
+
+import {
   type EndgameCard,
   type EndgameDeck,
   type EndgameKind,
-} from "@/lib/chess/endgame-deck";
+} from "@/lib/tablebase/types";
 
 const START_FEN = ENDGAMES[0].fen;
 
@@ -64,7 +67,9 @@ function uciOf(move: { from: string; to: string; promotion?: string }) {
 function clonePlayed(board: Chess) {
   return new Chess(board.fen());
 }
+
 type GameOverReason = "checkmate" | "stalemate" | "insufficient" | "threefold";
+
 function endReason(game: Chess): GameOverReason | null {
   if (game.isCheckmate()) return "checkmate";
   if (game.isStalemate()) return "stalemate";
@@ -228,7 +233,8 @@ export default function TablebaseChecker() {
   const deckRef = useRef(deck);
   deckRef.current = deck;
   const humanColor: "w" | "b" = flipped ? "b" : "w";
-  const selectedKind = catalog[endgameIndex]?.id ?? catalog[0]?.id ?? ENDGAMES[0].id;
+  const selectedKind =
+    catalog[endgameIndex]?.id ?? catalog[0]?.id ?? ENDGAMES[0].id;
   const typedCards = useMemo(
     () => deck.cards.filter((card) => card.kind === selectedKind),
     [deck.cards, selectedKind],
@@ -326,6 +332,8 @@ export default function TablebaseChecker() {
     setUciHistory((prev) => [...prev, uci]);
     setResult(null);
   }, []);
+
+  //ეს ფუნქცია პასუხისმგებელია ჭადრაკის ძრავის (Engine / Stockfish / Tablebase) მიერ შემოთავაზებული პასუხის (სვლის) დაფაზე განხორციელებაზე.
 
   const applyEngineReply = useCallback(
     (fromFen: string, uci: string | null) => {
@@ -490,7 +498,10 @@ export default function TablebaseChecker() {
         const cardIndex = last.deck.cards.findIndex(
           (c) => c.fen === last.card.fen,
         );
-        loadCard(last.deck.cards[cardIndex] ?? last.card, Math.max(0, cardIndex));
+        loadCard(
+          last.deck.cards[cardIndex] ?? last.card,
+          Math.max(0, cardIndex),
+        );
       } else if (last) {
         evaluatePosition(last.card.fen);
       }
@@ -528,6 +539,8 @@ export default function TablebaseChecker() {
     lines,
     result,
   ]);
+
+  //ეს ფუნქცია ჭადრაკის დაფაზე სვლების სიას (მაგალითად: ["e2e4", "e7e5"]) სათითაოდ, ავტომატურად ათამაშებს და განახლებს ჭადრაკის დაფაზე.
 
   const playUcis = useCallback(
     (ucis: string[]) => {
@@ -579,6 +592,8 @@ export default function TablebaseChecker() {
     haltEngine();
     setActiveCard(null);
   };
+
+//ეს ფუნქცია მართავს მოთამაშის (ადამიანის) მიერ დაფაზე ფიგურის ხელით გადაადგილებას (Drag & Drop-ს).
 
   const handlePieceDrop = useCallback(
     ({
@@ -635,8 +650,7 @@ export default function TablebaseChecker() {
 
   const loadEndgame = (index: number) => {
     if (building || catalog.length === 0) return;
-    const next =
-      ((index % catalog.length) + catalog.length) % catalog.length;
+    const next = ((index % catalog.length) + catalog.length) % catalog.length;
     const kind = catalog[next].id;
     haltEngine();
     setEndgameIndex(next);
@@ -672,7 +686,11 @@ export default function TablebaseChecker() {
   };
 
   const revealKind = useCallback(
-    (kind: EndgameKind, nextDeck: EndgameDeck, nextCatalog = listEndgames()) => {
+    (
+      kind: EndgameKind,
+      nextDeck: EndgameDeck,
+      nextCatalog = listEndgames(),
+    ) => {
       setCatalog(nextCatalog);
       const idx = nextCatalog.findIndex((e) => e.id === kind);
       const entry = idx >= 0 ? nextCatalog[idx] : nextCatalog[0];
@@ -833,7 +851,12 @@ export default function TablebaseChecker() {
       }
       const nextCatalog = listEndgames();
       setCatalog(nextCatalog);
-      setEndgameIndex(Math.max(0, nextCatalog.findIndex((e) => e.id === kind)));
+      setEndgameIndex(
+        Math.max(
+          0,
+          nextCatalog.findIndex((e) => e.id === kind),
+        ),
+      );
       haltEngine();
       commitFen(game.fen());
       repliedFen.current = game.fen();
@@ -876,8 +899,7 @@ export default function TablebaseChecker() {
         });
         const nextDeck = upsertCard(deckRef.current, card);
         setDeck(nextDeck);
-        const stored =
-          nextDeck.cards.find((c) => c.fen === scannedFen) ?? card;
+        const stored = nextDeck.cards.find((c) => c.fen === scannedFen) ?? card;
         setActiveCard(stored);
         evaluatePosition(scannedFen, ({ bestMove }) => {
           if (!bestMove) return;
@@ -989,15 +1011,7 @@ export default function TablebaseChecker() {
     if (repliedFen.current === fen) return;
     if (replyFen.current !== fen) replyFen.current = fen;
     applyEngineReply(fen, result.moves[0].uci);
-  }, [
-    applyEngineReply,
-    building,
-    fen,
-    fenValid,
-    gameOver,
-    humanColor,
-    result,
-  ]);
+  }, [applyEngineReply, building, fen, fenValid, gameOver, humanColor, result]);
 
   useEffect(() => {
     if (!fenValid || building || gameOver) return;

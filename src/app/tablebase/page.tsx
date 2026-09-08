@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/layout/AppShell";
-import TablebaseChecker from "@/components/board/TablebaseChecker";
+import { TablebaseChecker } from "@/components/tablebase/chess/TablebaseChecker";
 import { TrainerProvider } from "@/lib/trainer/context";
 
 export default function TablebasePage() {

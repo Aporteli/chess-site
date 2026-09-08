@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-display: "Newsreader", "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --color-bg: #12100e;
+  --color-surface: #1b1714;
+  --color-elevated: #241f1b;
+  --color-fg: #efe7d8;
+  --color-muted: #9a907e;
+  --color-subtle: #6f675a;
+  --color-border: #322c26;
+  --color-accent: #c5ccd4;
+  --color-accent-fg: #12100e;
+  --color-danger: #c45c4a;
+  --color-win: #7d9b76;
+  --color-board-light: #e8d9b5;
+  --color-board-dark: #7a4c2c;
+  --color-hint: #d4c4a8;
+
+  --text-2xs: 0.625rem;
+  --text-micro: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-border: 0 0 0 1px rgba(239, 231, 216, 0.08);
+  --shadow-border-hover: 0 0 0 1px rgba(239, 231, 216, 0.16);
+
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+.wood-frame {
+  background:
+    radial-gradient(ellipse at 28% 18%, rgba(255, 220, 170, 0.1), transparent 52%),
+    linear-gradient(155deg, #5c4028 0%, #3a2718 55%, #2a1c12 100%);
+  box-shadow:
+    0 0 0 1px rgba(239, 231, 216, 0.1),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
