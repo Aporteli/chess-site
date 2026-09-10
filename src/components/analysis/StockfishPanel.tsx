@@ -1,13 +1,12 @@
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
-import { useStockfish } from '@/lib/chess/use-stockfish';
+import { StockfishProvider, useStockfishEngine } from '@/lib/chess/use-stockfish';
 import { useAnalysisStore } from '@/lib/analysis/analysis-store';
 
-export function StockfishPanel() {
-  const engine = useStockfish();
+function InnerStockfishPanel() {
+  const engine = useStockfishEngine();
 
   const game = useAnalysisStore((state) => state.game);
   const fen = useAnalysisStore((state) => state.fen);
-  const sound = useAnalysisStore((state) => state.sound);
 
   const handlePlayMove = (ucis: string[]) => {
     const resultFen = useAnalysisStore.getState().playUciMoves(ucis);
@@ -37,3 +36,14 @@ export function StockfishPanel() {
     />
   );
 }
+
+export function StockfishPanel() {
+  const fen = useAnalysisStore((state) => state.fen);
+
+  return (
+    <StockfishProvider fen={fen}>
+      <InnerStockfishPanel />
+    </StockfishProvider>
+  );
+}
+

@@ -1,7 +1,12 @@
-import { useStockfishEngine } from "@/lib/chess/use-stockfish";
+"use client";
 
-export function EvalBar({ flipped }: { flipped: boolean }) {
+import { StockfishProvider, useStockfishEngine } from "@/lib/chess/use-stockfish";
+import { useAnalysisStore } from "@/lib/analysis/analysis-store";
+
+function InnerEvalBar() {
   const { evaluation } = useStockfishEngine();
+  const flipped = useAnalysisStore((state) => state.flipped);
+  
   const evalScore = evaluation ?? 0;
   const whiteBarHeight = Math.round(((Math.max(-10, Math.min(10, evalScore)) + 10) / 20) * 100);
   
@@ -24,5 +29,15 @@ export function EvalBar({ flipped }: { flipped: boolean }) {
         style={{ height: `${flipped ? 100 - whiteBarHeight : whiteBarHeight}%` }}
       />
     </div>
+  );
+}
+
+export function EvalBar({ flipped }: { flipped: boolean }) {
+  const fen = useAnalysisStore((state) => state.fen);
+
+  return (
+    <StockfishProvider fen={fen}>
+      <InnerEvalBar />
+    </StockfishProvider>
   );
 }
