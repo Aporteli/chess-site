@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Sidebar } from "./Sidebar";
-import { Navbar } from "./Navbar";
+import { Sidebar } from "./sidebar/Sidebar";
+import { Navbar } from "@/components/layout/navbar/Navbar";
 import type { NavKey } from "@/lib/types";
 
 interface AppShellProps {
@@ -10,11 +10,6 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
-/**
- * Shared shell for every route in the platform. New sections (Puzzles,
- * Analysis, Courses, Profile) mount inside `children` and automatically
- * inherit the sidebar, breadcrumb bar, and responsive behavior below.
- */
 export function AppShell({ activeKey, children }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);

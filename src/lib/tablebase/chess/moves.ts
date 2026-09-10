@@ -47,3 +47,11 @@ export function pickFallbackMove(game: Chess) {
 export function fenTurn(fen: string): "w" | "b" {
   return fen.split(" ")[1] === "b" ? "b" : "w";
 }
+
+export function replayUcis(startFen: string, ucis: string[]): string | null {
+  const game = new Chess(startFen);
+  for (const uci of ucis) {
+    if (!playUci(game, uci)) return null;
+  }
+  return game.fen();
+}

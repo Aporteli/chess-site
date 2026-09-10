@@ -121,7 +121,15 @@ body {
 }
 .thin-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--color-border-strong);
-  border-radius: 999px;
+  border-radius: 998px;
+}
+
+/* Hide scrollbars entirely (e.g. collapsed sidebar icon rail) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* react-chessboard sits inside the wooden bezel; keep it flush. */

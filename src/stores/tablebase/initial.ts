@@ -1,0 +1,35 @@
+import { ENDGAMES, START_FEN } from "@/lib/tablebase/chess/catalog";
+import type { TablebaseState } from "./types";
+
+export const initialTablebaseState: TablebaseState = {
+  endgameQuery: "",
+  endgameIndex: 0,
+  catalog: ENDGAMES,
+  isUploadOpen: false,
+  confirm: null,
+  fen: START_FEN,
+  fenInput: START_FEN,
+  fenValid: true,
+  flipped: false,
+  sound: true,
+  result: null,
+  resultFen: null,
+  loading: false,
+  error: null,
+  uciHistory: [],
+  undoneUcis: [],
+  startFen: START_FEN,
+  hintUci: null,
+  gameOver: null,
+  deck: {
+    id: "deck",
+    name: "Endgame deck",
+    cards: [],
+    cursor: 0,
+    updatedAt: 0,
+  },
+  activeCard: null,
+  pipeline: "idle",
+  engineEnabled: true,
+  localLines: [],
+};

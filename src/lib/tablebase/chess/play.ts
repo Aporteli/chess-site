@@ -62,7 +62,9 @@ export function playUcis(ucis: string[]): boolean {
     fenInput: next.fen(),
     fenValid: true,
     uciHistory: [...store.uciHistory, ...played],
+    undoneUcis: [],
     result: null,
+    resultFen: null,
     hintUci: null,
     localLines: [],
   });

@@ -86,7 +86,6 @@ export type VariantProps<T> = T extends (
     });
   }
   
-
   export function lineIndex(
     startFen: string,
     boardFen: string,

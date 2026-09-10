@@ -1,42 +1,21 @@
 "use client";
 
+import { useMemo } from "react";
 import { usePuzzleStore } from "@/stores/puzzle-store";
+import { formatSanHistory } from "@/lib/puzzles/format-moves";
+import { MoveListEmpty } from "@/components/puzzles/MoveListEmpty";
 
 export function MoveList() {
   const { puzzle, sanHistory } = usePuzzleStore();
 
+  const movesWithNumbers = useMemo(() => {
+    if (!puzzle) return [];
+    return formatSanHistory(puzzle.fen, sanHistory);
+  }, [puzzle, sanHistory]);
+
   if (!puzzle) {
-    return (
-      <div className="flex min-h-[10rem] flex-1 flex-col rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
-        <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
-          Move list
-        </h2>
-        <div className="mt-2 flex-1">
-          <span className="italic text-text-muted">
-            Moves will appear here.
-          </span>
-        </div>
-      </div>
-    );
+    return <MoveListEmpty />;
   }
-
-  // Build move numbers with SAN prefixes
-  const fenParts = puzzle.fen.split(" ");
-  const blackFirst = fenParts[1] === "b";
-  const startNum = Number(fenParts[5] || 1);
-
-  const movesWithNumbers = sanHistory.map((san, index) => {
-    let prefix = "";
-    if (blackFirst) {
-      if (index === 0) prefix = `${startNum}... `;
-      else if ((index - 1) % 2 === 0)
-        prefix = `${startNum + 1 + Math.floor((index - 1) / 2)}. `;
-    } else {
-      if (index % 2 === 0)
-        prefix = `${startNum + Math.floor(index / 2)}. `;
-    }
-    return { prefix, san };
-  });
 
   return (
     <div className="flex min-h-[10rem] flex-1 flex-col rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">

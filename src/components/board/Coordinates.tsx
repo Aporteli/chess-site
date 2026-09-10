@@ -6,12 +6,6 @@ interface CoordinatesProps {
   flipped?: boolean;
 }
 
-/**
- * Renders file letters along the bottom edge and rank numbers along the
- * left edge of the board, like brass inlay on a wooden board — a warm
- * espresso tone on the light (maple) squares, a soft ivory on the dark
- * (walnut) squares, so labels stay legible against either.
- */
 export function Coordinates({ flipped = false }: CoordinatesProps) {
   const files = flipped ? [...FILES].reverse() : FILES;
   const ranks = flipped ? [...RANKS].reverse() : RANKS;

@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { BoardWrapper } from "@/components/board/BoardWrapper";
-import { TrainerHud } from "@/components/trainer/TrainerHud";
-import { ModeToggle } from "@/components/trainer/ModeToggle";
-import { MOVE_NAGS } from "@/lib/chess";
-import { useTrainer } from "@/lib/trainer/context";
-import { StockfishProvider, useStockfishEngine } from "@/lib/chess/use-stockfish";
-import StockfishDashboard from "@/components/stockfish/StockfishDashboard";
+import { useEffect } from 'react';
+import { BoardWrapper } from '@/components/board/BoardWrapper';
+import { TrainerHud } from '@/components/trainer/trainer-hud/TrainerHud';
+import { ModeToggle } from '@/components/trainer/ModeToggle';
+import { MOVE_NAGS } from '@/lib/chess';
+import { useTrainer } from '@/lib/trainer/context';
+import { StockfishProvider, useStockfishEngine } from '@/lib/chess/use-stockfish';
+import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
 
 function TrainerEnginePanel() {
   const t = useTrainer();
   const engine = useStockfishEngine();
-  const turn = (t.fen.split(" ")[1] || "w") as "w" | "b";
-  const moveNumber = Number(t.fen.split(" ")[5] || 1);
+  const turn = (t.fen.split(' ')[1] || 'w') as 'w' | 'b';
+  const moveNumber = Number(t.fen.split(' ')[5] || 1);
 
   return (
     <StockfishDashboard
@@ -34,11 +34,7 @@ function TrainerEnginePanel() {
       onToggleEnabled={() => engine.setEnabled(!engine.enabled)}
       onPlayMove={(ucis) => {
         for (const uci of ucis) {
-          const ok = t.playUserMove(
-            uci.slice(0, 2),
-            uci.slice(2, 4),
-            uci[4],
-          );
+          const ok = t.playUserMove(uci.slice(0, 2), uci.slice(2, 4), uci[4]);
           if (!ok) break;
         }
       }}
@@ -52,40 +48,35 @@ export function TrainerWorkspace() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable)
-      ) {
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
         return;
       }
-      if (e.key === "ArrowLeft") {
+      if (e.key === 'ArrowLeft') {
         e.preventDefault();
         t.goBack();
-      } else if (e.key === "ArrowRight") {
+      } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         t.goForward();
-      } else if (e.key === "Home") {
+      } else if (e.key === 'Home') {
         e.preventDefault();
         t.goStart();
-      } else if (e.key === "End") {
+      } else if (e.key === 'End') {
         e.preventDefault();
         t.goEnd();
-      } else if (e.key === "f" || e.key === "F") {
+      } else if (e.key === 'f' || e.key === 'F') {
         t.flipBoard();
-      } else if (e.key === "h" || e.key === "H") {
+      } else if (e.key === 'h' || e.key === 'H') {
         t.requestHint();
-      } else if (e.key === "s" || e.key === "S") {
+      } else if (e.key === 's' || e.key === 'S') {
         t.setSettings({ sound: !t.settings.sound });
-      } else if (e.key === "Escape") {
+      } else if (e.key === 'Escape') {
         t.clearMarks();
-      } else if (e.key === "Enter") {
-        if (t.mode === "drill") {
+      } else if (e.key === 'Enter') {
+        if (t.mode === 'drill') {
           if (t.drill?.lineComplete || t.drill?.sessionOver) t.startPractice();
           else t.revealSolution();
         }
-      } else if (t.mode === "study" && /^[1-6]$/.test(e.key)) {
+      } else if (t.mode === 'study' && /^[1-6]$/.test(e.key)) {
         const nag = MOVE_NAGS[Number(e.key) - 1];
         if (!nag) return;
         const nags = t.node.nags.includes(nag.code)
@@ -94,8 +85,8 @@ export function TrainerWorkspace() {
         t.updateCurrent({ nags });
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [t]);
 
   return (
@@ -104,9 +95,9 @@ export function TrainerWorkspace() {
         <section className="min-w-0 flex-1 lg:overflow-y-auto">
           <BoardWrapper />
           <p className="mx-auto mt-3 hidden max-w-[620px] text-center text-[11px] text-text-muted lg:block">
-            {t.mode === "study"
-              ? "Study — play moves to author the tree. Right-drag arrows, right-click squares. Press ? via the keyboard icon."
-              : "Practice — play your book moves. The opponent answers automatically, picking a random branch when there are several replies."}
+            {t.mode === 'study'
+              ? 'Study — play moves to author the tree. Right-drag arrows, right-click squares. Press ? via the keyboard icon.'
+              : 'Practice — play your book moves. The opponent answers automatically, picking a random branch when there are several replies.'}
           </p>
         </section>
 

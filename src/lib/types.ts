@@ -53,3 +53,12 @@ export interface NavItem {
   label: string;
   comingSoon?: boolean;
 }
+
+export interface Puzzle {
+  id?: string;
+  fen: string;
+  solution: string[];
+  // თუ სხვა ველებიც აქვს (მაგ: rating, themes და ა.შ.), აქ დაამატე
+}
+
+export type FENSide = "w" | "b";

@@ -6,12 +6,6 @@ interface ComingSoonProps {
   description: string;
 }
 
-/**
- * Placeholder view for modules that aren't built yet (Puzzles, Analysis,
- * Courses, ...). Each future feature gets its own route + real page, but
- * mounts this until the feature ships — keeps the sidebar links honest
- * without 404s.
- */
 export function ComingSoon({ icon: Icon, title, description }: ComingSoonProps) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-6 py-24 text-center">

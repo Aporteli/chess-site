@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useEngineLoop } from "@/hooks/tablebase/use-engine-loop";
-import { useHydrate } from "@/hooks/tablebase/use-hydrate";
-import { AnalysisPanel } from "./AnalysisPanel";
-import { BoardColumn } from "./BoardColumn";
-import { ConfirmDialog } from "./ConfirmDialog";
-import { EndgameCatalog } from "./EndgameCatalog";
-import { FenInput } from "./FenInput";
-import { ScanModal } from "./ScanModal";
-import { UciHistory } from "./UciHistory";
-import { VariationsPanel } from "./VariationsPanel";
+import { useEngineLoop } from '@/hooks/tablebase/use-engine-loop';
+import { useHydrate } from '@/hooks/tablebase/use-hydrate';
+import { AnalysisPanel } from './analysis-panel/AnalysisPanel';
+import { BoardColumn } from './BoardColumn';
+import { ConfirmDialog } from './ConfirmDialog';
+import { EndgameCatalog } from './endgame-catalog/EndgameCatalog';
+import { FenInput } from './FenInput';
+import { ScanModal } from './scan-modal/ScanModal';
+import { UciHistory } from './UciHistory';
+import { VariationsPanel } from './variations-panel/VariationsPanel';
 
 export function TablebaseChecker() {
   useHydrate();

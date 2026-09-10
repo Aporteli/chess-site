@@ -6,11 +6,6 @@ interface BoardOverlayProps {
   status: MoveStatus;
 }
 
-/**
- * Transient feedback shown over the board after a move is played.
- * Purely presentational — the real trainer logic decides when `status`
- * changes and clears it after the move is acknowledged.
- */
 export function BoardOverlay({ status }: BoardOverlayProps) {
   if (status === "pending") return null;
 

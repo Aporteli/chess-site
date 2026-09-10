@@ -1,6 +1,6 @@
-import StockfishDashboard from "@/components/stockfish/StockfishDashboard";
-import { useStockfish } from "@/lib/chess/use-stockfish";
-import { useAnalysisStore } from "@/lib/analysis/analysis-store";
+import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
+import { useStockfish } from '@/lib/chess/use-stockfish';
+import { useAnalysisStore } from '@/lib/analysis/analysis-store';
 
 export function StockfishPanel() {
   const engine = useStockfish();
@@ -29,7 +29,7 @@ export function StockfishPanel() {
       onSettingsChange={engine.commitSettings}
       analysisLines={engine.lines}
       turn={game.turn()}
-      moveNumber={Number(fen.split(" ")[5] || 1)}
+      moveNumber={Number(fen.split(' ')[5] || 1)}
       fen={fen}
       enabled={engine.enabled}
       onToggleEnabled={() => engine.setEnabled(!engine.enabled)}
