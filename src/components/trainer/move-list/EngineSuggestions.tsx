@@ -2,7 +2,7 @@
 
 import { Chess } from 'chess.js';
 import { useTrainer } from '@/lib/trainer/context';
-import { useStockfishEngine } from '@/lib/chess/use-stockfish';
+import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
 import { formatEval } from './helpers';
 
 function uciToSan(fen: string, uci: string): string {

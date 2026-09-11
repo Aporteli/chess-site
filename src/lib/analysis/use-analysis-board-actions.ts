@@ -1,10 +1,10 @@
-import { useCallback } from "react";
-import { useStockfish } from "@/lib/chess/use-stockfish";
-import { useAnalysisStore } from "./analysis-store";
-import { playMoveSound } from "./play-sound";
+import { useCallback } from 'react';
+import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
+import { useAnalysisStore } from './store/analysis-store';
+import { playMoveSound } from './play-sound';
 
 export function useAnalysisBoardActions() {
-  const engine = useStockfish();
+  const engine = useStockfishEngine();
 
   const handlePieceDrop = useCallback(
     ({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) => {
@@ -13,7 +13,7 @@ export function useAnalysisBoardActions() {
       const { game, sound } = useAnalysisStore.getState();
 
       try {
-        const move = game.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+        const move = game.move({ from: sourceSquare, to: targetSquare, promotion: 'q' });
         if (!move) return false;
 
         playMoveSound(move, game.inCheck(), game.isCheckmate(), sound);

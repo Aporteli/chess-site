@@ -1,7 +1,8 @@
 'use client';
 
 import { Flame, Target } from 'lucide-react';
-import { masteryPct, nextReviewLabel } from '@/lib/chess';
+import { masteryPct } from '@/lib/chess/srs/srs-metrics';
+import { nextReviewLabel } from '@/lib/chess/srs/srs-format';
 import { useTrainer } from '@/lib/trainer/context';
 
 const LEVEL_LABELS = [

@@ -84,14 +84,14 @@ body {
   background-image:
     repeating-linear-gradient(
       92deg,
-      rgba(0, 0, 0, 0.16) 0px,
-      rgba(0, 0, 0, 0.16) 1px,
+      rgba(0, 0, 0, 0.12) 0px,
+      rgba(0, 0, 0, 0.12) 1px,
       transparent 1px,
-      transparent 6px
+      transparent 5px
     ),
-    linear-gradient(160deg, #3a2313, #1c1108 55%, #2a1a0d);
+    /* გლუვი გადასვლა 55%-ის მკვეთრი გაჩერების გარეშე */
+    linear-gradient(160deg, #3a2313, #2a1a0d 50%, #1c1108);
 }
-
 /* Respect reduced-motion preference across the app. */
 @media (prefers-reduced-motion: reduce) {
   *,

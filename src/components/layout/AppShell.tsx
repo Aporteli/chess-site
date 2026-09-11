@@ -15,7 +15,7 @@ export function AppShell({ activeKey, children }: AppShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-dvh bg-bg-deepest lg:h-dvh lg:overflow-hidden">
+    <div className="min-h-dvh bg-bg-deepest landscape:h-dvh landscape:overflow-hidden lg:h-dvh lg:overflow-hidden">
       <Sidebar
         activeKey={activeKey}
         collapsed={collapsed}
@@ -26,7 +26,7 @@ export function AppShell({ activeKey, children }: AppShellProps) {
 
       <div
         className={[
-          "flex min-h-dvh flex-col transition-[padding] duration-200 ease-out lg:h-full lg:min-h-0",
+          "flex min-h-dvh flex-col transition-[padding] duration-200 ease-out landscape:h-full landscape:min-h-0 lg:h-full lg:min-h-0",
           collapsed ? "lg:pl-[76px]" : "lg:pl-[248px]",
         ].join(" ")}
       >

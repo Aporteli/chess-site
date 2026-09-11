@@ -1,6 +1,6 @@
-import { Chessboard, type Arrow } from "react-chessboard";
-import { useAnalysisStore } from "@/lib/analysis/analysis-store";
-import { useChessBoardOptions } from "@/lib/analysis/use-chess-board-options";
+import { Chessboard, type Arrow } from 'react-chessboard';
+import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
+import { useChessBoardOptions } from '@/lib/analysis/use-chess-board-options';
 
 export function ChessBoard() {
   const boardOptions = useChessBoardOptions();

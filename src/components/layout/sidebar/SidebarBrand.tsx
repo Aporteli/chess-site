@@ -10,7 +10,7 @@ export function SidebarBrand({ collapsed, onCloseMobile }: SidebarBrandProps) {
   return (
     <div
       className={[
-        "flex h-16 items-center gap-2 border-b border-border-subtle",
+        "flex h-16 items-center gap-2 ",
         collapsed ? "justify-between px-4 lg:justify-center lg:px-2" : "justify-between px-4",
       ].join(" ")}
     >

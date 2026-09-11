@@ -1,20 +1,17 @@
 import {
-  findNearestUnvisitedFork,
   gradeFromAttempt,
   getNode,
   isOurTurn,
   isTrainable,
   mainlineChild,
-  nextLineNode,
   patchNode,
   pathToNode,
-  pickUnvisitedOpponentReply,
   playSfx,
-  randomChild,
   reviewCard,
   sfxForMove,
   type DrillCard,
 } from '@/lib/chess';
+import {findNearestUnvisitedFork,nextLineNode,pickUnvisitedOpponentReply,randomChild} from '@/lib/chess/training';
 import { createEmptyDrill } from '../createEmptyDrill';
 import type { DrillSession } from '../types';
 import { deriveActive } from './deriveActive';

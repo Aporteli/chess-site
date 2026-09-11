@@ -1,3 +1,5 @@
+//CUT: შესამცირებელი ფაილი
+
 'use client';
 
 import { useEffect } from 'react';
@@ -6,8 +8,10 @@ import { TrainerHud } from '@/components/trainer/trainer-hud/TrainerHud';
 import { ModeToggle } from '@/components/trainer/ModeToggle';
 import { MOVE_NAGS } from '@/lib/chess';
 import { useTrainer } from '@/lib/trainer/context';
-import { StockfishProvider, useStockfishEngine } from '@/lib/chess/use-stockfish';
+import { StockfishProvider, useStockfishEngine } from '@/components/stockfish/StockfishContext';
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
+import { HudActionButtons } from './trainer-hud/HudActionButtons';
+import { ActionToolbar } from './action-toolbar/ActionToolbar';
 
 function TrainerEnginePanel() {
   const t = useTrainer();
@@ -91,27 +95,33 @@ export function TrainerWorkspace() {
 
   return (
     <StockfishProvider fen={t.fen}>
-      <div className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col gap-4 p-4 sm:p-5 lg:h-full lg:min-h-0 lg:flex-row lg:items-stretch lg:overflow-hidden lg:gap-5">
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-5 lg:h-full lg:min-h-0 lg:flex-row lg:items-stretch lg:gap-5">
+        
+        {/* მარცხენა მხარე: ჭადრაკის დაფა */}
         <section className="min-w-0 flex-1 lg:overflow-y-auto">
           <BoardWrapper />
-          <p className="mx-auto mt-3 hidden max-w-[620px] text-center text-[11px] text-text-muted lg:block">
-            {t.mode === 'study'
-              ? 'Study — play moves to author the tree. Right-drag arrows, right-click squares. Press ? via the keyboard icon.'
-              : 'Practice — play your book moves. The opponent answers automatically, picking a random branch when there are several replies.'}
-          </p>
         </section>
 
-        <aside className="flex w-full shrink-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:w-[min(100%,400px)] lg:overflow-hidden">
+        {/* მარჯვენა სვეტი: აერთიანებს aside-ს და HudActionButtons-ს */}
+        <div className="flex w-full shrink-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:w-[min(100%,400px)]">
+          <aside className="flex min-h-0 flex-1 flex-col gap-3 lg:overflow-hidden">
+            <div className="shrink-0">
+              <ModeToggle />
+            </div>
+            <div className="shrink-0">
+              <TrainerEnginePanel />
+            </div>
+              <TrainerHud />
+          </aside>
+
           <div className="shrink-0">
-            <ModeToggle />
+            <HudActionButtons />
           </div>
           <div className="shrink-0">
-            <TrainerEnginePanel />
+            <ActionToolbar />
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <TrainerHud />
-          </div>
-        </aside>
+        </div>
+
       </div>
     </StockfishProvider>
   );

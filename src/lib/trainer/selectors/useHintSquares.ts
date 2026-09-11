@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { mainlineChild, nextLineNode, type Chapter, type TrainerMode, type TreeNode } from '@/lib/chess';
+import { mainlineChild, type Chapter, type TrainerMode, type TreeNode } from '@/lib/chess';
 import type { DrillSession } from '../types';
+import { nextLineNode } from '@/lib/chess/training';
 
 export function useHintSquares(
   mode: TrainerMode,

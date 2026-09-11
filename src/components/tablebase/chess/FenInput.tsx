@@ -8,7 +8,7 @@ export function FenInput() {
   const applyFenInput = useTablebaseStore((s) => s.applyFenInput);
 
   return (
-    <label className="block shrink-0 rounded-xl bg-surface p-2.5 shadow-[var(--shadow-border)]">
+    <label className="block shrink-0 h-14 rounded-xl bg-surface p-2 shadow-[var(--shadow-border)] flex flex-col justify-center">
       <span className="mb-0.5 block font-mono text-2xs uppercase tracking-wider text-muted">
         FEN
       </span>
@@ -24,3 +24,4 @@ export function FenInput() {
     </label>
   );
 }
+

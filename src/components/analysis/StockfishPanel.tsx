@@ -1,8 +1,8 @@
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
-import { StockfishProvider, useStockfishEngine } from '@/lib/chess/use-stockfish';
-import { useAnalysisStore } from '@/lib/analysis/analysis-store';
+import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
+import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
 
-function InnerStockfishPanel() {
+export function StockfishPanel() {
   const engine = useStockfishEngine();
 
   const game = useAnalysisStore((state) => state.game);
@@ -36,14 +36,3 @@ function InnerStockfishPanel() {
     />
   );
 }
-
-export function StockfishPanel() {
-  const fen = useAnalysisStore((state) => state.fen);
-
-  return (
-    <StockfishProvider fen={fen}>
-      <InnerStockfishPanel />
-    </StockfishProvider>
-  );
-}
-

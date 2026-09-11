@@ -1,7 +1,10 @@
-import type { SrsCard } from "./types";
+import type { SrsCard } from "../types";
 
 const MIN_EASE = 1.3;
 const MAX_EASE = 2.7;
+const DAY_MS = 86_400_000;
+
+export type SrsGrade = "again" | "hard" | "good" | "easy";
 
 export function newSrsCard(now = Date.now()): SrsCard {
   return {
@@ -19,9 +22,7 @@ export function newSrsCard(now = Date.now()): SrsCard {
   };
 }
 
-export type SrsGrade = "again" | "hard" | "good" | "easy";
-
-function clampEase(ease: number) {
+function clampEase(ease: number): number {
   return Math.min(MAX_EASE, Math.max(MIN_EASE, ease));
 }
 
@@ -32,19 +33,17 @@ function rollingAccuracy(card: SrsCard, correct: boolean): number {
   return prev * 0.82 + next * 0.18;
 }
 
-/** SM-2 variant tuned for opening lines: short first intervals, lapse-aware. */
 export function reviewCard(
   card: SrsCard,
   grade: SrsGrade,
   now = Date.now(),
 ): SrsCard {
-  const day = 86_400_000;
   let { ease, interval, repetitions, lapses } = card;
   const correct = grade !== "again";
 
   if (grade === "again") {
     repetitions = 0;
-    interval = 0;
+    interval = 10 / 1440; // 10 წუთი
     ease = clampEase(ease - 0.22);
     lapses += 1;
   } else if (grade === "hard") {
@@ -72,7 +71,7 @@ export function reviewCard(
     interval,
     repetitions,
     lapses,
-    dueAt: now + interval * day,
+    dueAt: now + Math.round(interval * DAY_MS),
     lastResult: grade,
     lastReviewedAt: now,
     accuracy: rollingAccuracy(card, correct),
@@ -91,42 +90,4 @@ export function gradeFromAttempt(opts: {
   if (opts.mistakes === 1 || opts.hintLevel >= 2) return "hard";
   if (opts.hintLevel === 1) return "good";
   return "easy";
-}
-
-export function isDue(card: SrsCard, now = Date.now()): boolean {
-  return card.dueAt <= now;
-}
-
-export function isWeak(card: SrsCard): boolean {
-  return (
-    card.lapses > 0 ||
-    (card.attempts >= 2 && card.accuracy < 0.72) ||
-    card.ease < 1.9
-  );
-}
-
-export function isNew(card: SrsCard): boolean {
-  return card.attempts === 0;
-}
-
-export function masteryPct(card: SrsCard): number {
-  if (card.attempts === 0) return 0;
-  const intervalScore = Math.min(1, card.interval / 21);
-  const acc = card.accuracy;
-  const lapsePenalty = Math.min(0.35, card.lapses * 0.08);
-  return Math.max(0, Math.min(1, acc * 0.55 + intervalScore * 0.45 - lapsePenalty));
-}
-
-export function srsLevel(card: SrsCard): number {
-  return Math.round(masteryPct(card) * 8);
-}
-
-export function nextReviewLabel(card: SrsCard, now = Date.now()): string {
-  const ms = card.dueAt - now;
-  if (ms <= 0) return "due now";
-  const hours = ms / 3_600_000;
-  if (hours < 18) return `in ${Math.max(1, Math.round(hours))}h`;
-  const days = Math.round(ms / 86_400_000);
-  if (days === 1) return "in 1 day";
-  return `in ${days} days`;
 }

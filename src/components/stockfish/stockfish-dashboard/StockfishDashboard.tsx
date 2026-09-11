@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Settings } from 'lucide-react';
-import type { EngineLine, EngineLimits, EngineSettingsState } from '@/lib/chess/use-stockfish';
+import type { EngineLine, EngineLimits, EngineSettingsState } from '@/lib/stockfish/types';
 import EvaluationBar from '../EvaluationBar';
 import Controls from '../Controls';
 import AnalysisOutput from '../analysis-output/AnalysisOutput';
@@ -49,8 +49,6 @@ export default function StockfishDashboard({
 
   return (
     <div className="flex min-h-0 shrink-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3">
-      <h3 className="border-b border-border-subtle pb-2 font-serif-display text-[15px] text-text-primary">Stockfish</h3>
-      <EvaluationBar score={evalScore} variant="panel" />
       <div className="flex gap-2">
         <div className="min-w-0 flex-1">
           <Controls isAnalyzing={isAnalyzing} onStart={onStart} onStop={onStop} />

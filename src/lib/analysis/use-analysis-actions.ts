@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/react/shallow';
-import { useAnalysisStore } from "./analysis-store";
+import { useAnalysisStore } from './store/analysis-store';
 
 export function useAnalysisActions() {
   return useAnalysisStore(
@@ -7,6 +7,6 @@ export function useAnalysisActions() {
       isUploadBoardOpen: state.isUploadBoardOpen,
       loadPosition: state.loadPosition,
       closeUploadModal: state.closeUploadModal,
-    }))
+    })),
   );
 }

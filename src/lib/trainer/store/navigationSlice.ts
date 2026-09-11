@@ -1,4 +1,5 @@
-import { isOurTurn, mainlineChild, pathToNode, randomChild, saveSession } from '@/lib/chess';
+import { isOurTurn, mainlineChild, pathToNode, saveSession } from '@/lib/chess';
+import { randomChild } from '@/lib/chess/training';
 import { deriveActive } from './deriveActive';
 import type { NavigationActions, TrainerSlice } from './types';
 

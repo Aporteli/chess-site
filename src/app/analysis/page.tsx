@@ -7,12 +7,14 @@ import { UploadBoardModal } from "@/components/board/UploadBoardModal";
 import { useAnalysisKeyboard } from "@/lib/analysis/use-analysis-keyboard";
 import { useLoadSavedPlay } from "@/lib/analysis/use-load-saved-play";
 import { useAnalysisActions } from "@/lib/analysis/use-analysis-actions";
+import { useAnalysisStore } from "@/lib/analysis/store/analysis-store";
+import { StockfishProvider } from "@/components/stockfish/StockfishContext";
 
-export default function AnalysisPage() {
+function AnalysisWorkspace() {
   useLoadSavedPlay();
   useAnalysisKeyboard();
 
-  const { loadPosition, closeUploadModal } = useAnalysisActions();
+  const { loadPosition, closeUploadModal, isUploadBoardOpen } = useAnalysisActions();
 
   return (
     <AppShell activeKey="analysis">
@@ -24,10 +26,20 @@ export default function AnalysisPage() {
       </div>
 
       <UploadBoardModal
-        isOpen={useAnalysisActions().isUploadBoardOpen}
+        isOpen={isUploadBoardOpen}
         onClose={closeUploadModal}
         onPositionLoaded={loadPosition}
       />
     </AppShell>
+  );
+}
+
+export default function AnalysisPage() {
+  const fen = useAnalysisStore((state) => state.fen);
+
+  return (
+    <StockfishProvider fen={fen}>
+      <AnalysisWorkspace />
+    </StockfishProvider>
   );
 }

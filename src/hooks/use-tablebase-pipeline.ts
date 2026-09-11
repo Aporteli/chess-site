@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Chess } from 'chess.js';
-import { useStockfish } from '@/lib/chess/use-stockfish';
+import { useStockfish } from '@/lib/chess/stockfish/use-stockfish';
 import type { EndgameKind, GameOverReason, PipelineStatus } from '@/lib/tablebase/chess/types';
 import { isValidFen, clonePlayed, playMoveSfx } from './tablebase/pipeline/helpers';
 import { useTablebaseEngineActions } from './tablebase/pipeline/use-engine-actions';

@@ -1,125 +1,17 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  createElement,
-  type ReactNode,
-} from "react";
-
-export interface EngineLine {
-  multipv: number;
-  uci: string;
-  pv: string;
-  evaluation: number;
-  depth: number;
-}
-
-export type NnueModel = "nnue-85" | "nnue-108" | "nnue-lite" | "hce";
-
-export const NNUE_OPTIONS: { value: NnueModel; label: string }[] = [
-  { value: "hce", label: "HCE" },
-  { value: "nnue-lite", label: "NNUE · 15MB Lite" },
-  { value: "nnue-85", label: "NNUE · 85MB" },
-  { value: "nnue-108", label: "NNUE · 108MB" },
-];
-
-export type EngineSettingsState = {
-  searchTimeMs: number;
-  multiPv: number;
-  threads: number;
-  hashMb: number;
-  nnueModel: NnueModel;
-};
-
-export type EngineLimits = {
-  searchTimeMin: number;
-  searchTimeMax: number;
-  multiPvMax: number;
-  threadsMax: number;
-  hashMin: number;
-  hashMax: number;
-};
-
-interface EngineEvaluation {
-  bestMove: string | null;
-  evaluation: number | null;
-  isThinking: boolean;
-  lines: EngineLine[];
-  depth: number;
-  nps: number;
-  nodes: number;
-  resultFen: string | null;
-}
-
-export type EngineSearchComplete = {
-  fen: string;
-  bestMove: string | null;
-};
-
-const DEFAULT_SETTINGS: EngineSettingsState = {
-  searchTimeMs: 1000,
-  multiPv: 1,
-  threads: 1,
-  hashMb: 8,
-  nnueModel: "hce",
-};
-
-const DEFAULT_LIMITS: EngineLimits = {
-  searchTimeMin: 250,
-  searchTimeMax: 30000,
-  multiPvMax: 5,
-  threadsMax: 1,
-  hashMin: 8,
-  hashMax: 16,
-};
-const PHONE_LIMITS: EngineLimits = {
-  searchTimeMin: 250,
-  searchTimeMax: 8000,
-  multiPvMax: 3,
-  threadsMax: 1,
-  hashMin: 8,
-  hashMax: 8,
-};
-
-const ENGINE_SCRIPTS = ["/stockfish.wasm.js", "/stockfish.js"];
-
-function isMobileDevice() {
-  if (typeof navigator === "undefined") return false;
-  const iPadOS =
-    navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || iPadOS;
-}
-
-function engineLines(raw: unknown): string[] {
-  if (typeof raw === "string") {
-    return raw
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(Boolean);
-  }
-  if (typeof raw === "number" || typeof raw === "boolean") return [];
-  if (raw && typeof raw === "object") {
-    const o = raw as { data?: unknown; line?: unknown };
-    if (typeof o.data === "string") return engineLines(o.data);
-    if (typeof o.line === "string") return engineLines(o.line);
-  }
-  return [];
-}
-
-function post(w: Worker | null, msg: string) {
-  if (!w) return false;
-  try {
-    w.postMessage(msg);
-    return true;
-  } catch {
-    return false;
-  }
-}
+  DEFAULT_LIMITS,
+  DEFAULT_SETTINGS,
+  ENGINE_SCRIPTS,
+  PHONE_LIMITS,
+  type EngineEvaluation,
+  type EngineLimits,
+  type EngineSearchComplete,
+  type EngineSettingsState,
+} from "./types";
+import { engineLines, isMobileDevice, parseScore, post } from "./utils";
 
 export function useStockfish() {
   const workerRef = useRef<Worker | null>(null);
@@ -274,24 +166,9 @@ export function useStockfish() {
         return;
       }
 
-      const parseScore = () => {
-        const mate = line.match(/score mate (-?\d+)/);
-        if (mate) {
-          const n = parseInt(mate[1], 10);
-          const isWhite = currentTurnRef.current === "w";
-          return n > 0 ? (isWhite ? 100 : -100) : isWhite ? -100 : 100;
-        }
-        const cp = line.match(/score cp (-?\d+)/);
-        if (cp) {
-          const rawCp = parseInt(cp[1], 10) / 100;
-          return currentTurnRef.current === "b" ? -rawCp : rawCp;
-        }
-        return null;
-      };
-
       if (line.startsWith("info")) {
         if (activeFenRef.current !== fenRef.current) return;
-        const score = parseScore();
+        const score = parseScore(line, currentTurnRef.current);
         const depth = Number(line.match(/\bdepth (\d+)/)?.[1] ?? 0);
         const nps = Number(line.match(/\bnps (\d+)/)?.[1] ?? 0);
         const nodes = Number(line.match(/\bnodes (\d+)/)?.[1] ?? 0);
@@ -513,31 +390,4 @@ export function useStockfish() {
     commitSettings,
     setEnabled,
   };
-}
-
-const StockfishContext = createContext<ReturnType<typeof useStockfish> | null>(
-  null,
-);
-
-export function StockfishProvider({
-  fen,
-  children,
-}: {
-  fen: string;
-  children: ReactNode;
-}) {
-  const engine = useStockfish();
-
-  useEffect(() => {
-    engine.evaluatePosition(fen);
-  }, [fen, engine.evaluatePosition]);
-
-  return createElement(StockfishContext.Provider, { value: engine }, children);
-}
-
-export function useStockfishEngine() {
-  const ctx = useContext(StockfishContext);
-  if (!ctx)
-    throw new Error("useStockfishEngine must be used within StockfishProvider");
-  return ctx;
 }

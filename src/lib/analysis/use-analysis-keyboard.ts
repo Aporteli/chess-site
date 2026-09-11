@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useAnalysisStore } from "./analysis-store";
+import { useEffect } from 'react';
+import { useAnalysisStore } from './store/analysis-store';
 
 export function useAnalysisKeyboard() {
   const undo = useAnalysisStore((state) => state.undo);
@@ -12,25 +12,25 @@ export function useAnalysisKeyboard() {
       if (
         target instanceof HTMLElement &&
         (target.isContentEditable ||
-          target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.tagName === "SELECT")
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT')
       ) {
         return;
       }
 
-      if (event.key === "ArrowLeft") {
+      if (event.key === 'ArrowLeft') {
         event.preventDefault();
         undo();
       }
 
-      if (event.key === "ArrowRight") {
+      if (event.key === 'ArrowRight') {
         event.preventDefault();
         redo();
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo, redo]);
 }

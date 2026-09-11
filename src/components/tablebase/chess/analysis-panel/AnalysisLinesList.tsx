@@ -16,14 +16,7 @@ interface AnalysisLinesListProps {
 
 export function AnalysisLinesList({ lines, building, gameOver, onSelectMove }: AnalysisLinesListProps) {
   return (
-    <div
-      className="flex flex-col gap-2 overflow-y-auto min-h-16 max-h-56 p-1"
-      style={{
-        flexGrow: 1,
-        minHeight: "4rem",
-        maxHeight: "12rem",
-      }}
-    >
+    <div className="flex flex-col gap-2 p-1">
       {lines.length === 0 ? (
         <p className="text-micro italic text-muted">No lines yet.</p>
       ) : (
@@ -34,7 +27,7 @@ export function AnalysisLinesList({ lines, building, gameOver, onSelectMove }: A
               type="button"
               disabled={building || Boolean(gameOver)}
               onClick={() => onSelectMove(line.uci)}
-              className="min-h-10 rounded px-3 py-1 font-mono text-xs text-muted shadow-[var(--shadow-border)] hover:text-fg disabled:opacity-50 bg-surface/80"
+              className="min-h-8 rounded px-3 py-1 font-mono text-xs text-muted shadow-[var(--shadow-border)] hover:text-fg disabled:opacity-50 bg-surface/80"
               style={{ minWidth: "3.5rem" }}
             >
               {line.san ?? line.uci}

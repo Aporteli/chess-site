@@ -1,19 +1,28 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/tablebase/ui/button";
+import { useRef, useState } from 'react';
+import type { RefObject } from 'react';
+import { Camera, Cpu, FlipVertical2, Lightbulb, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react';
+import { handleHint, handleReset } from '@/lib/tablebase/chess/play';
+import { fenTurn } from '@/lib/tablebase/chess/moves';
+import { useClickOutside } from '@/hooks/navbar/use-click-outside';
+import { useTablebaseStore } from '@/stores/tablebase-store';
+import { IconButton } from '../IconButton';
 
 interface AnalysisHeaderProps {
   enabled: boolean;
   onToggleEngine: () => void;
 }
 
-export function AnalysisHeader({ enabled, onToggleEngine }: AnalysisHeaderProps) {
+export function AnalysisHeader() {
   return (
-    <div className="flex items-center justify-between gap-2 flex-shrink-0">
-      <h2 className="font-display text-base text-fg">Analysis</h2>
-      <Button size="tiny" variant={enabled ? "primary" : "secondary"} onClick={onToggleEngine}>
-        {enabled ? "Auto on" : "Auto off"}
-      </Button>
+    <div className="flex shrink-0 items-center justify-between border-b border-fg/10 pb-2">
+    <div className="flex items-center gap-2">
+      <span className="size-2 rounded-full bg-accent animate-pulse" />
+      <h2 className="font-display text-sm font-semibold tracking-wide text-fg uppercase">
+        Analysis
+      </h2>
     </div>
+  </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import type { EngineLine } from '@/lib/chess/use-stockfish';
+import type { EngineLine } from '@/lib/tablebase/chess/types';
 import { VariationLine } from '@/components/stockfish/analysis-output/VariationLine';
 
 interface AnalysisOutputProps {

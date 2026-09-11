@@ -1,6 +1,7 @@
-import { isDue, isNew, isWeak } from "./srs";
-import { collectTrainable, getNode, pathToNode } from "./tree";
-import type { Chapter, DrillCard, DrillFilter, Repertoire, TreeNode } from "./types";
+import { isDue, isNew, isWeak } from './srs/srs-metrics';
+import { getNode, pathToNode } from './tree/tree-navigation';
+import { collectTrainable } from './tree/tree-utils';
+import type { Chapter, DrillCard, DrillFilter, Repertoire, TreeNode } from './types';
 
 export function cardPriority(node: TreeNode, now = Date.now()): number {
   const overdue = Math.max(0, now - node.srs.dueAt) / 86_400_000;
@@ -15,52 +16,50 @@ export function buildQueue(
   filter: DrillFilter,
   now = Date.now(),
 ): DrillCard[] {
-  const chapters = filter === "repertoire" ? repertoire.chapters : [chapter];
-  const cards: DrillCard[] = [];
+  const chapters = filter === 'repertoire' ? repertoire.chapters : [chapter];
+
+  // 1. Map ჩაპტერების სწრაფი O(1) წვდომისთვის
+  const chapterMap = new Map(chapters.map((c) => [c.id, c]));
+  const cardsWithPriority: Array<{ card: DrillCard; priority: number }> = [];
 
   for (const ch of chapters) {
     for (const node of collectTrainable(ch, repertoire.side)) {
       if (!node.parentId) continue;
+
       let reason: DrillFilter | null = null;
-      if (filter === "due" && isDue(node.srs, now)) reason = "due";
-      else if (filter === "weak" && isWeak(node.srs)) reason = "weak";
-      else if (filter === "new" && isNew(node.srs)) reason = "new";
-      else if (filter === "chapter" || filter === "repertoire") reason = filter;
-      else if (filter === "blunders") {
+
+      if (filter === 'due' && isDue(node.srs, now)) reason = 'due';
+      else if (filter === 'weak' && isWeak(node.srs)) reason = 'weak';
+      else if (filter === 'new' && isNew(node.srs)) reason = 'new';
+      else if (filter === 'chapter' || filter === 'repertoire') reason = filter;
+      else if (filter === 'blunders') {
         const isBlunder = node.nags.includes(4) || node.nags.includes(2);
         const parent = getNode(ch, node.parentId);
         const siblingBlunder = parent.children
-          .map((id) => getNode(ch, id))
-          .some((c) => c.nags.includes(4) || c.nags.includes(2));
-        if (isBlunder || siblingBlunder) reason = "blunders";
+          .map((id: string) => getNode(ch, id))
+          .some((c: TreeNode) => c.nags.includes(4) || c.nags.includes(2));
+
+        if (isBlunder || siblingBlunder) reason = 'blunders';
       }
+
+      // 2. პრიორიტეტს ვითვლით ერთხელ შექმნისას და არა sort-ის შიგნით
       if (reason) {
-        cards.push({
-          chapterId: ch.id,
-          nodeId: node.id,
-          parentId: node.parentId,
-          reason,
+        cardsWithPriority.push({
+          card: { chapterId: ch.id, nodeId: node.id, parentId: node.parentId, reason },
+          priority: cardPriority(node, now),
         });
       }
     }
   }
 
-  return cards.sort((a, b) => {
-    const na = getNode(
-      chapters.find((c) => c.id === a.chapterId) ?? chapter,
-      a.nodeId,
-    );
-    const nb = getNode(
-      chapters.find((c) => c.id === b.chapterId) ?? chapter,
-      b.nodeId,
-    );
-    return cardPriority(nb, now) - cardPriority(na, now);
-  });
+  // 3. სწრაფი სორტირება წინასწარ დათვლილი პრიორიტეტებით
+  return cardsWithPriority.sort((a, b) => b.priority - a.priority).map((item) => item.card);
 }
 
 export function dueCounts(repertoire: Repertoire, chapter: Chapter, now = Date.now()) {
   const chapterNodes = collectTrainable(chapter, repertoire.side);
   const all = repertoire.chapters.flatMap((ch) => collectTrainable(ch, repertoire.side));
+
   return {
     due: chapterNodes.filter((n) => isDue(n.srs, now)).length,
     weak: chapterNodes.filter((n) => isWeak(n.srs)).length,

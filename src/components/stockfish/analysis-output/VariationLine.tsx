@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Chess } from "chess.js";
-import type { EngineLine } from "@/lib/chess/use-stockfish";
+import type { EngineLine } from "@/lib/tablebase/chess/types";
 import { pvItems, parseUci } from "@/lib/stockfish/utils";
 import { MoveStrip } from "./MoveStrip";
 import { MiniBoard } from "./MiniBoard";

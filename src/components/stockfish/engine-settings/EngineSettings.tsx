@@ -1,7 +1,7 @@
 'use client';
 
-import type { EngineLimits, EngineSettingsState, NnueModel } from '@/lib/chess/use-stockfish';
-import { NNUE_OPTIONS } from '@/lib/chess/use-stockfish';
+import type { EngineLimits, EngineSettingsState, NnueModel } from '@/lib/stockfish/types';
+import { NNUE_OPTIONS } from '@/lib/stockfish/constants';
 import { SliderRow } from './SliderRow';
 
 interface EngineSettingsProps {

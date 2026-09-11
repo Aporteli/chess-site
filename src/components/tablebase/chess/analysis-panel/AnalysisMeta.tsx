@@ -14,10 +14,10 @@ export function AnalysisMeta({ loading, category, hasLocalLine, evalText, dtz }:
       <span className="uppercase tracking-wider text-accent">
         {loading ? "…" : (category ?? (hasLocalLine ? "local" : "idle"))}
       </span>
-      <span className="tabular-nums">
+      {/* <span className="tabular-nums">
         {evalText}
         {dtz != null ? ` · DTZ ${dtz}` : ""}
-      </span>
+      </span> */}
     </div>
   );
 }

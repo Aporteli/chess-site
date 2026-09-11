@@ -4,7 +4,6 @@ import { Chessboard } from 'react-chessboard';
 import { BoardOverlay } from './BoardOverlay';
 import { PromotionDialog } from './PromotionDialog';
 import { EvalBar } from './EvalBar';
-import { TrainerToolbar } from '@/components/board/TrainerToolbar';
 import { useTrainer } from '@/lib/trainer/context';
 import { useBoardStyles } from '@/hooks/board/use-board-styles';
 import { useBoardOptions } from '@/hooks/board/use-board-options';
@@ -18,8 +17,6 @@ export function BoardWrapper() {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative mx-auto w-full max-w-[min(100%,620px)]">
-        <TrainerToolbar />
-
         <div className="relative flex w-full items-stretch gap-2">
           <EvalBar flipped={t.flipped} />
 

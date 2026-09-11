@@ -7,7 +7,7 @@ export default function TrainerPage() {
     <TrainerProvider>
       <AppShell activeKey="trainer">
         <TrainerGate>
-          <TrainerWorkspace />
+            <TrainerWorkspace />
         </TrainerGate>
       </AppShell>
     </TrainerProvider>

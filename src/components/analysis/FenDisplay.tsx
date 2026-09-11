@@ -1,4 +1,4 @@
-import { useAnalysisStore } from "@/lib/analysis/analysis-store";
+import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
 
 export function FenDisplay() {
   const fen = useAnalysisStore((state) => state.fen);

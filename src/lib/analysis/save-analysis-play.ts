@@ -1,5 +1,5 @@
-import type { Chess } from "chess.js";
-import type { SaveState } from "./analysis-store";
+import type { Chess } from 'chess.js';
+import type { SaveState } from './store/analysis-store';
 
 type SaveResult = {
   state: SaveState;
@@ -15,26 +15,20 @@ export async function saveAnalysisPlay(
 ): Promise<SaveResult> {
   if (!authenticated) {
     return {
-      state: "error",
-      message: "Sign in first, then save from Analysis.",
+      state: 'error',
+      message: 'Sign in first, then save from Analysis.',
     };
   }
 
-  const result = game.isCheckmate()
-    ? game.turn() === "w"
-      ? "0-1"
-      : "1-0"
-    : game.isDraw()
-      ? "1/2-1/2"
-      : "*";
+  const result = game.isCheckmate() ? (game.turn() === 'w' ? '0-1' : '1-0') : game.isDraw() ? '1/2-1/2' : '*';
 
   try {
-    const response = await fetch("/api/plays", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('/api/plays', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: `Analysis · ${history.length} moves`,
-        source: "analysis",
+        source: 'analysis',
         result,
         pgn: game.pgn(),
         startFen,
@@ -46,19 +40,19 @@ export async function saveAnalysisPlay(
 
     if (!response.ok) {
       return {
-        state: "error",
-        message: data?.error ?? "Could not save play.",
+        state: 'error',
+        message: data?.error ?? 'Could not save play.',
       };
     }
 
     return {
-      state: "saved",
-      message: "Saved. Open Profile to see it.",
+      state: 'saved',
+      message: 'Saved. Open Profile to see it.',
     };
   } catch {
     return {
-      state: "error",
-      message: "Could not save play.",
+      state: 'error',
+      message: 'Could not save play.',
     };
   }
 }

@@ -1,7 +1,7 @@
-import { EvalBar } from "@/components/board/EvalBar";
-import { BoardToolbar } from "./BoardToolbar";
-import { ChessBoard } from "./ChessBoard";
-import { useAnalysisStore } from "@/lib/analysis/analysis-store";
+import { EvalBar } from '@/components/board/EvalBar';
+import { BoardToolbar } from './BoardToolbar';
+import { ChessBoard } from './ChessBoard';
+import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
 
 export function BoardWithEvaluation() {
   const flipped = useAnalysisStore((state) => state.flipped);
@@ -19,6 +19,3 @@ export function BoardWithEvaluation() {
     </>
   );
 }
-
-
-

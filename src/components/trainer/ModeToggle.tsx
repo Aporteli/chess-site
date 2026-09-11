@@ -4,7 +4,7 @@ import { BookOpen, Dumbbell, Play } from 'lucide-react';
 import { useTrainer } from '@/lib/trainer/context';
 
 export function ModeToggle() {
-  const { mode, setMode, startPractice, due, drill } = useTrainer();
+  const { mode, setMode, due } = useTrainer();
 
   return (
     <div className="space-y-2">
@@ -37,12 +37,6 @@ export function ModeToggle() {
           )}
         </button>
       </div>
-      <button
-        onClick={() => startPractice()}
-        className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-b from-accent-gold-bright to-accent-gold px-3 py-2.5 text-[13px] font-semibold text-[#241a10] shadow-[0_1px_0_0_rgba(255,255,255,0.35)_inset] transition-transform active:scale-[0.98]">
-        <Play className="h-3.5 w-3.5" />
-        {mode === 'drill' && drill && !drill.lineComplete ? 'Restart training' : 'Start Training'}
-      </button>
     </div>
   );
 }

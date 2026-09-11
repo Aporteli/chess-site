@@ -1,7 +1,6 @@
 "use client";
 
 import { useTrainer } from "@/lib/trainer/context";
-import { ToolbarButtons } from "./ToolbarButtons";
 import { ToolbarNavigation } from "./ToolbarNavigation";
 
 export function ActionToolbar() {
@@ -11,13 +10,6 @@ export function ActionToolbar() {
 
   return (
     <div className="rounded-xl border border-border-subtle bg-bg-surface p-3">
-      <ToolbarButtons
-        inLine={inLine}
-        onRequestHint={t.requestHint}
-        onRevealSolution={t.revealSolution}
-        onStartPractice={() => t.startPractice()}
-      />
-
       <ToolbarNavigation
         onGoStart={t.goStart}
         onGoBack={t.goBack}

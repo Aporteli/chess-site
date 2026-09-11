@@ -1,6 +1,5 @@
 import {
   chessFromFen,
-  emptyChapter,
   fenTurn,
   replaceRepertoire,
   resetStore,
@@ -8,6 +7,7 @@ import {
   uid,
   type Repertoire,
 } from '@/lib/chess';
+import { emptyChapter } from '@/lib/chess/tree/chapter-factory';
 import { deriveActive } from './deriveActive';
 import type { LibraryActions, TrainerSlice } from './types';
 

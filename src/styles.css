@@ -1,10 +1,10 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @theme {
-  --font-display: "Newsreader", "Times New Roman", serif;
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  --font-display: 'Newsreader', 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
 
   --color-bg: #12100e;
   --color-surface: #1b1714;
@@ -59,7 +59,7 @@
   }
 
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
 
@@ -76,8 +76,11 @@
 
 .wood-frame {
   background:
-    radial-gradient(ellipse at 28% 18%, rgba(255, 220, 170, 0.1), transparent 52%),
-    linear-gradient(155deg, #5c4028 0%, #3a2718 55%, #2a1c12 100%);
+    /* 1. რადიალური განათება გავზარდეთ და შევარბილეთ, რომ მკვეთრი ზღვარი არ შეიქმნას */
+    radial-gradient(ellipse at 30% 20%, rgba(255, 220, 170, 0.12), transparent 70%),
+    /* 2. კუთხე შევცვალეთ 135deg-ზე (დიაგონალური) და 55%-იანი მკვეთრი გაჩერება ამოვიღეთ */
+    linear-gradient(135deg, #5c4028 0%, #422d1c 40%, #2a1c12 100%);
+    
   box-shadow:
     0 0 0 1px rgba(239, 231, 216, 0.1),
     0 18px 40px rgba(0, 0, 0, 0.35);

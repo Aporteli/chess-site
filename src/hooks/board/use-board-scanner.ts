@@ -2,11 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 
 interface UseBoardScannerOptions {
   isOpen: boolean;
-  onClose: () => void;
-  onPositionLoaded: (fen: string) => boolean | void;
+  onRecognized: (fen: string) => void;
 }
 
-export function useBoardScanner({ isOpen, onClose, onPositionLoaded }: UseBoardScannerOptions) {
+export function useBoardScanner({ isOpen, onRecognized }: UseBoardScannerOptions) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,16 +49,14 @@ export function useBoardScanner({ isOpen, onClose, onPositionLoaded }: UseBoardS
         const data = (await res.json()) as { fen?: string; error?: string };
         if (!res.ok) throw new Error(data.error || "Could not read that image");
         if (!data.fen) throw new Error("No position came back from the scanner");
-        const ok = onPositionLoaded(data.fen);
-        if (ok === false) throw new Error("That FEN could not be loaded onto the board");
-        onClose();
+        onRecognized(data.fen);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Recognition failed");
       } finally {
         setLoading(false);
       }
     },
-    [onClose, onPositionLoaded, toUploadFile],
+    [onRecognized, toUploadFile],
   );
 
   useEffect(() => {

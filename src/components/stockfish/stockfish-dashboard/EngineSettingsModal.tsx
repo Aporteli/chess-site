@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import type { EngineLimits, EngineSettingsState } from "@/lib/chess/use-stockfish";
+import type { EngineLimits, EngineSettingsState } from "@/lib/stockfish/types";
 import EngineSettings from "../engine-settings/EngineSettings";
 
 interface EngineSettingsModalProps {

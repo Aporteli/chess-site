@@ -1,16 +1,16 @@
-import { useEffect } from "react";
-import { Chess } from "chess.js";
-import { useStockfish } from "@/lib/chess/use-stockfish";
-import { useAnalysisStore } from "./analysis-store";
+import { useEffect } from 'react';
+import { Chess } from 'chess.js';
+import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
+import { useAnalysisStore } from './store/analysis-store';
 
 type SavedPlayResponse = { play?: { pgn?: string; startFen?: string } };
 
 export function useLoadSavedPlay() {
-  const engine = useStockfish();
+  const engine = useStockfishEngine();
 
   useEffect(() => {
     const initialFen = useAnalysisStore.getState().fen;
-    const playId = new URLSearchParams(window.location.search).get("play");
+    const playId = new URLSearchParams(window.location.search).get('play');
 
     if (!playId) {
       engine.evaluatePosition(initialFen);
