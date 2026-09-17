@@ -12,8 +12,8 @@ import { fenTurn } from '@/lib/tablebase/chess/moves';
 import type { BoardAdapter } from '@/lib/chess/board-adapter';
 import { useSettingsStore } from '@/stores/settings-store';
 import { useTablebaseStore } from '@/stores/tablebase-store';
-import { BoardToolbar } from './BoardToolbar';
-import { BoardActions } from './BoardActions';
+// import { BoardToolbar } from './BoardToolbar';
+// import { BoardActions } from './BoardActions';
 import { GameOverOverlay } from './GameOverOverlay';
 import { EvalBar } from '@/components/board/EvalBar';
 import { StockfishProvider } from '@/components/stockfish/StockfishContext';
@@ -65,13 +65,13 @@ export function BoardColumn() {
 
   return (
     <StockfishProvider fen={fen}>
-      <div className="board-column justify-center">
-        <BoardToolbar />
+      <div className="board-column">
+        {/* <BoardToolbar /> */}
 
-        <div className="mx-auto flex w-full max-w-[var(--board-size,52rem)] items-stretch gap-2">
+        <div className="board-stage">
           <EvalBar flipped={flipped} />
 
-          <div className="wood-frame relative aspect-square min-w-0 flex-1 rounded-xl p-2 sm:rounded-2xl sm:p-2.5">
+          <div className="wood-frame relative min-h-0 min-w-0 rounded-xl p-2 sm:rounded-2xl sm:p-2.5">
             <div className="relative h-full w-full overflow-hidden rounded-md ring-1 ring-fg/15">
               {ready ? (
                 <Chessboard options={options} />
@@ -82,7 +82,7 @@ export function BoardColumn() {
           </div>
         </div>
 
-        <BoardActions />
+        {/* <BoardActions /> */}
         <GameOverOverlay />
       </div>
     </StockfishProvider>

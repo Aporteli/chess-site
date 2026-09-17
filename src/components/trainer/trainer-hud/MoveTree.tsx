@@ -15,10 +15,10 @@ export function MoveTree() {
   const moveCount = nodeCount(t.chapter);
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border-subtle bg-bg-surface p-3 font-sans">
+    <div className="flex flex-col rounded-xl border border-border-subtle bg-bg-surface p-3 font-sans">
       <MoveTreeHeader moveCount={moveCount} />
 
-      <div className="max-h-[380px] overflow-y-auto space-y-2 pr-1 thin-scrollbar">
+      <div className="space-y-2">
         {turns.length === 0 && (
           <p className="py-4 text-center text-xs text-text-muted">No moves yet. Make a move on the board.</p>
         )}

@@ -38,7 +38,7 @@ export function AnnotationEditor() {
         onChange={(e) => t.updateCurrent({ comment: e.target.value })}
         placeholder="Commentary on this move…"
         rows={3}
-        className="mb-2 w-full resize-none rounded-lg border border-border-default bg-bg-elevated px-2.5 py-2 font-serif-display text-[13px] italic text-text-primary outline-none placeholder:text-text-muted focus:border-accent-gold/40"
+        className="mb-2 w-full resize-none rounded-lg border border-border-default bg-bg-elevated px-2.5 py-2 font-mono text-[13px] italic text-text-primary outline-none placeholder:text-text-muted focus:border-accent-gold/40"
       />
       <textarea
         value={node.annotation}

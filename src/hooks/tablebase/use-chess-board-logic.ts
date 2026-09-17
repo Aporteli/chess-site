@@ -120,7 +120,7 @@ export function useChessBoardLogic() {
       lightSquareStyle: { backgroundColor: 'var(--color-board-light)' },
       darkSquareStyle: { backgroundColor: 'var(--color-board-dark)' },
       dropSquareStyle: { boxShadow: 'inset 0 0 0 3px var(--color-hint)' },
-      boardStyle: { width: '100%', height: '100%', borderRadius: 0 },
+      boardStyle: { width: '100%', aspectRatio: '1 / 1', borderRadius: 0 },
       onPieceDrop: handlePieceDrop,
       onSquareClick: handleSquareClick,
     };

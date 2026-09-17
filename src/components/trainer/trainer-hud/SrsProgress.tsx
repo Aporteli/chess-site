@@ -32,7 +32,7 @@ export function SrsProgress() {
     <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
       {' '}
       <div className="mb-3.5 flex items-baseline justify-between">
-        <h3 className="font-serif-display text-[15px] text-text-primary">Line mastery</h3>
+        <h3 className="font-mono text-[15px] text-text-primary">Line mastery</h3>
         <span className="font-mono text-[10.5px] tracking-wide text-text-muted">
           {String(level).padStart(2, '0')} / {String(srsState.maxLevel).padStart(2, '0')}
         </span>
@@ -55,7 +55,7 @@ export function SrsProgress() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-serif-display text-[17px] leading-none text-accent-gold-bright">
+            <span className="font-mono text-[17px] leading-none text-accent-gold-bright">
               {Math.round(pct * 100)}%
             </span>
           </div>

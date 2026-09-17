@@ -17,7 +17,7 @@ export function PromotionDialog({ color, onPick, onCancel }: PromotionDialogProp
   return (
     <div className="absolute inset-0 z-20 grid place-items-center bg-black/45 backdrop-blur-[2px]">
       <div className="rounded-xl border border-border-default bg-bg-surface p-3 shadow-panel">
-        <p className="mb-2 text-center font-serif-display text-[13px] text-text-secondary">
+        <p className="mb-2 text-center font-mono text-[13px] text-text-secondary">
           Promote to
         </p>
         <div className="flex gap-1.5">

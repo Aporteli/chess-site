@@ -10,7 +10,7 @@ export function RepertoireHeader({ onImportClick, onResetClick }: RepertoireHead
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
         <p className="text-[11px] uppercase tracking-[0.16em] text-accent-gold/70">Library</p>
-        <h1 className="font-serif-display text-[28px] font-medium text-text-primary">Courses & repertoire</h1>
+        <h1 className="font-mono text-[28px] font-medium text-text-primary">Courses & repertoire</h1>
         <p className="mt-1 max-w-xl text-[13.5px] text-text-secondary">
           Distinct White and Black files, each with branching chapters. Open a file to author the tree or drill it with
           spaced repetition.

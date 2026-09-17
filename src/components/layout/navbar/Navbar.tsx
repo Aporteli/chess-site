@@ -33,8 +33,8 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
   );
 
   return (
-    <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md pr-17">
-      <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-5">
+    <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md ">
+      <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-3">
         
         {/* 1. მარცხენა სექცია: მობილურის მენიუ + დესკტოპის დროპდაუნები */}
         <div className="flex items-center gap-2">

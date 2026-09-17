@@ -13,7 +13,7 @@ export function RepertoireBar() {
   return (
     <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-serif-display text-[13px] text-text-secondary">Repertoire</h3>
+        <h3 className="font-mono text-[13px] text-text-secondary">Repertoire</h3>
         <button
           onClick={() => setCreating((v) => !v)}
           className="grid h-6 w-6 place-items-center rounded-md text-text-muted hover:bg-bg-elevated hover:text-accent-gold-bright"
@@ -63,7 +63,7 @@ export function RepertoireBar() {
 
       <div className="mt-3 border-t border-border-subtle pt-2">
         <div className="mb-1.5 flex items-center justify-between">
-          <h3 className="font-serif-display text-[13px] text-text-secondary">Chapters</h3>
+          <h3 className="font-mono text-[13px] text-text-secondary">Chapters</h3>
           <button
             onClick={() => {
               const title = window.prompt('Chapter name', 'New chapter');

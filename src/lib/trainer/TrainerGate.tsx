@@ -9,7 +9,7 @@ export function TrainerGate({ children }: { children: ReactNode }) {
   if (!value) {
     return (
       <div className="flex min-h-[50vh]  items-center justify-center px-6">
-        <p className="font-serif-display text-[15px] italic text-text-muted">Opening the study…</p>
+        <p className="font-mono text-[15px] italic text-text-muted">Opening the study…</p>
       </div>
     );
   }

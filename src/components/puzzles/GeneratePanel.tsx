@@ -17,7 +17,7 @@ export function GeneratePanel() {
 
   return (
     <div className="rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
-      <h2 className="font-serif text-lg text-accent-gold-bright">Generate</h2>
+      <h2 className="font-mono text-lg text-accent-gold-bright">Generate</h2>
       
 
       <form onSubmit={handleSubmit} className="mt-3 space-y-3">

@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
-  const displayName = user.name || "მომხმარებელი";
+  const displayName = user.name || "User";
   const initial = user.name ? user.name[0].toUpperCase() : "U";
 
   return (
@@ -28,18 +28,18 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         ) : (
           <div
             aria-hidden
-            className="grid h-[88px] w-[88px] shrink-0 place-items-center rounded-2xl border border-accent-gold/40 bg-accent-gold-dim font-serif-display text-3xl text-accent-gold-bright"
+            className="grid h-[88px] w-[88px] shrink-0 place-items-center rounded-2xl border border-accent-gold/40 bg-accent-gold-dim font-mono text-3xl text-accent-gold-bright"
           >
             {initial}
           </div>
         )}
 
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-serif-display text-xl text-text-primary">
+          <h2 className="truncate font-mono text-xl text-text-primary">
             {displayName}
           </h2>
           <p className="mt-1 truncate text-[13.5px] text-text-secondary">
-            {user.email ?? "ელ-ფოსტა მითითებული არ არის"}
+            {user.email ?? "Email not provided"}
           </p>
         </div>
       </div>
@@ -51,10 +51,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </span>
           <div className="min-w-0">
             <dt className="font-mono text-[10.5px] uppercase tracking-wider text-text-muted">
-              სახელი
+              Name
             </dt>
             <dd className="mt-0.5 truncate text-[14px] text-text-primary">
-              {user.name || "მითითებული არ არის"}
+              {user.name || "Not provided"}
             </dd>
           </div>
         </div>
@@ -65,10 +65,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </span>
           <div className="min-w-0">
             <dt className="font-mono text-[10.5px] uppercase tracking-wider text-text-muted">
-              ელ-ფოსტა
+              Email
             </dt>
             <dd className="mt-0.5 break-all text-[14px] text-text-primary">
-              {user.email || "მითითებული არ არის"}
+              {user.email || "Not provided"}
             </dd>
           </div>
         </div>

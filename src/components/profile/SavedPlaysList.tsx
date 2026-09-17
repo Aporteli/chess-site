@@ -17,7 +17,7 @@ export function SavedPlaysList({ plays }: SavedPlaysListProps) {
   return (
     <section className="overflow-hidden rounded-2xl border border-border-default bg-bg-surface shadow-panel">
       <div className="border-b border-border-subtle px-5 py-4 sm:px-7">
-        <h2 className="font-serif-display text-lg text-text-primary">
+        <h2 className="font-mono text-lg text-text-primary">
           Saved plays
         </h2>
         <p className="mt-1 text-[13px] text-text-secondary">

@@ -9,11 +9,13 @@ import { MoveList } from "@/components/puzzles/MoveList";
 export default function PuzzlesPage() {
   return (
     <AppShell activeKey="puzzles">
-      <div className="flex min-h-0 flex-1 flex-col p-3 pb-6 lg:p-4">
-        <div className="board-workspace mx-auto w-full max-w-[1500px]">
-          <section className="board-column justify-center">
-            <div className="board-square relative">
-              <PuzzleBoard />
+      <div className="flex h-full min-h-0 flex-1 flex-col p-2">
+        <div className="board-workspace w-full">
+          <section className="board-column">
+            <div className="board-stage">
+              <div className="wood-frame relative min-h-0 min-w-0 rounded-xl p-2 sm:rounded-2xl sm:p-2.5">
+                <PuzzleBoard />
+              </div>
             </div>
           </section>
 

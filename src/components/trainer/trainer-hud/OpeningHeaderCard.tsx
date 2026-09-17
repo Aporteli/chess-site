@@ -21,7 +21,7 @@ export function OpeningHeaderCard() {
           {openingMeta.side === 'white' ? 'White repertoire' : 'Black repertoire'}
         </span>
       </div>
-      <h2 className="font-serif-display text-[20px] font-medium leading-snug text-text-primary">{openingMeta.name}</h2>
+      <h2 className="font-mono text-[20px] font-medium leading-snug text-text-primary">{openingMeta.name}</h2>
       <p className="mt-0.5 text-[13px] text-text-secondary">{openingMeta.variation}</p>
     </div>
   );

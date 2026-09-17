@@ -20,5 +20,5 @@ export const BOARD_STYLE = {
       fontSize: "10px",
       fontWeight: 600,
     },
-    boardStyle: { width: "100%", height: "100%", borderRadius: 0 },
+    boardStyle: { width: "100%", aspectRatio: "1 / 1", borderRadius: 0 },
   };

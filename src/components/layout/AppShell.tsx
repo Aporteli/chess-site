@@ -40,7 +40,7 @@ export function AppShell({ activeKey, children }: AppShellProps) {
       {/* Main Content Area */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Navbar onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <main className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-hidden">
           {children}
         </main>
       </div>

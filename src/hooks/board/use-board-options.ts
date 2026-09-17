@@ -34,7 +34,7 @@ export function useBoardOptions(t: any, squareStyles: Record<string, React.CSSPr
       darkSquareNotationStyle: { color: "rgba(243, 230, 200, 0.82)", fontSize: "10px", fontWeight: 600 },
       lightSquareNotationStyle: { color: "rgba(90, 61, 32, 0.72)", fontSize: "10px", fontWeight: 600 },
       squareStyles,
-      boardStyle: { width: "100%", height: "100%", borderRadius: 0 },
+      boardStyle: { width: "100%", aspectRatio: "1 / 1", borderRadius: 0 },
       canDragPiece: ({ piece }: { piece: { pieceType: string } }) => {
         const color = piece.pieceType.startsWith("w") ? "w" : "b";
         if (t.mode === "study") return color === turn;

@@ -8,7 +8,7 @@ export function MoveHistory() {
   return (
     <div className="flex min-h-[120px] flex-1 flex-col overflow-hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="mb-1.5 flex shrink-0 items-center justify-between gap-2">
-        <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">სვლების ისტორია</h2>
+        <h2 className="font-mono text-[10px] uppercase tracking-wider text-text-muted">Move History</h2>
         <div className="flex min-w-0 items-center gap-2">
           <span
             className={`rounded px-1.5 py-0.5 font-mono text-[9px] ${
@@ -32,7 +32,7 @@ export function MoveHistory() {
       </div>
       <div className="flex flex-1 flex-wrap content-start gap-1 overflow-y-auto pr-1 font-mono text-xs">
         {history.length === 0 ? (
-          <span className="text-xs italic text-text-muted">სვლები ჯერ არ გაკეთებულა</span>
+          <span className="text-xs italic text-text-muted">No moves yet</span>
         ) : (
           history.map((san, index) => (
             <span

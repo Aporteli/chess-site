@@ -10,13 +10,13 @@ export function SidebarBrand({ collapsed, onCloseMobile }: SidebarBrandProps) {
   return (
     <div
       className={[
-        "flex h-16 items-center gap-2 border-b border-[#383838]",
+        "flex h-16 items-center gap-2 ",
         collapsed ? "justify-between px-4 lg:justify-center lg:px-2" : "justify-between px-4",
       ].join(" ")}
     >
       <Link href="/" className="flex min-w-0 items-center gap-2.5">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[#383838] bg-[#2A2A2A] text-[#769656]">
-          <span className="font-serif-display text-lg leading-none">♞</span>
+          <span className="font-mono text-lg leading-none">♞</span>
         </span>
         <span
           className={[

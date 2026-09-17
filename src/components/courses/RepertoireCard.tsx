@@ -24,7 +24,7 @@ export function RepertoireCard({ rep, isOnlyOne, onDelete, onSelect }: Repertoir
           <span className="rounded-md border border-border-default px-2 py-0.5 text-[10.5px] uppercase tracking-wide text-text-muted">
             {rep.side}
           </span>
-          <h2 className="mt-2 font-serif-display text-[20px] text-text-primary">
+          <h2 className="mt-2 font-mono text-[20px] text-text-primary">
             {rep.name}
           </h2>
           <p className="mt-1 text-[13px] text-text-secondary">

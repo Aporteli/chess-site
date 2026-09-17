@@ -26,7 +26,7 @@ export function PgnDialog({
     <div className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="w-full max-w-xl rounded-2xl border border-border-default bg-bg-surface shadow-panel">
         <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
-          <h2 className="font-serif-display text-[17px] text-text-primary">
+          <h2 className="font-mono text-[17px] text-text-primary">
             {mode === "import" ? "Import PGN" : "Export PGN"}
           </h2>
           <button

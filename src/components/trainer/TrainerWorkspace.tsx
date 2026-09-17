@@ -98,36 +98,27 @@ export function TrainerWorkspace() {
 
   return (
     <StockfishProvider fen={t.fen}>
-      <div className="flex min-h-0 w-full flex-1 flex-col p-3 pb-6 sm:p-4 lg:p-5">
-        {/* Board and panel: side by side from lg / in landscape, stacked otherwise */}
-        <div className="board-workspace mx-auto w-full max-w-[1500px]">
-          <section className="board-column justify-center">
+      <div className="flex h-full min-h-0 w-full flex-1 flex-col p-2">
+        <div className="board-workspace w-full [--eval-gutter:1.375rem]">
+          <section className="board-column">
             <BoardWrapper />
           </section>
 
-          {/* Tools & HUD: one scroll area beside the board, stacked below it on phones */}
-          <div className="board-panel thin-scrollbar">
-            {/* Mode Toggle - Always visible */}
+          <div className="board-panel thin-scrollbar overflow-hidden!">
             <div className="shrink-0">
               <ModeToggle />
             </div>
 
-            {/* Engine Panel */}
             <div className="shrink-0">
               <TrainerEnginePanel />
             </div>
 
-            <div>
+            <div className="min-h-0 flex-1 overflow-y-auto thin-scrollbar">
               <TrainerHud />
             </div>
 
-            {/* Action Buttons - Bottom section */}
-            <div className="shrink-0">
+            <div className="shrink-0 space-y-2">
               <HudActionButtons />
-            </div>
-
-            {/* Action Toolbar - Bottom fixed */}
-            <div className="shrink-0">
               <ActionToolbar />
             </div>
           </div>

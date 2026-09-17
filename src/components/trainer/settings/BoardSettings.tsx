@@ -9,7 +9,7 @@ export function BoardSettings() {
 
   return (
     <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-4">
-      <h3 className="mb-2 font-serif-display text-[15px] text-text-primary">Board</h3>
+      <h3 className="mb-2 font-mono text-[15px] text-text-primary">Board</h3>
       
       <SettingRow
         label="Move sounds"

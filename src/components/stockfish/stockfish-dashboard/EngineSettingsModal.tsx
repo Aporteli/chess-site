@@ -41,7 +41,7 @@ export function EngineSettingsModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <h4 className="font-serif-display text-[15px] text-text-primary">Engine settings</h4>
+          <h4 className="font-mono text-[15px] text-text-primary">Engine settings</h4>
           <button
             type="button"
             aria-label="Close settings"

@@ -53,7 +53,7 @@ export function ConfirmDialog({
           <div className="min-w-0 flex-1 pt-0.5">
             <h2
               id="confirm-title"
-              className="font-serif-display text-[17px] text-text-primary"
+              className="font-mono text-[17px] text-text-primary"
             >
               {title}
             </h2>

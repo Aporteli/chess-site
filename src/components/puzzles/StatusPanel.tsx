@@ -65,7 +65,7 @@ export function StatusPanel() {
             <p className="font-mono text-[10px] uppercase tracking-wider text-text-muted">
               Rating
             </p>
-            <p className="mt-0.5 font-serif text-2xl text-accent-gold-bright">
+            <p className="mt-0.5 font-mono text-2xl text-accent-gold-bright">
               {rating}
             </p>
           </div>

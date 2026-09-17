@@ -23,11 +23,11 @@ export function HintBox() {
     >
       <span
         aria-hidden
-        className={["font-serif-display absolute -top-3 right-3 text-[64px] leading-none", style.mark].join(" ")}
+        className={["font-mono absolute -top-3 right-3 text-[64px] leading-none", style.mark].join(" ")}
       >
         “
       </span>
-      <p className={["relative font-serif-display text-[15px] italic leading-relaxed", style.text].join(" ")}>
+      <p className={["relative font-mono text-[15px] italic leading-relaxed", style.text].join(" ")}>
         {prompt.text}
       </p>
       {node.annotation && prompt.kind !== "error" && node.comment && (

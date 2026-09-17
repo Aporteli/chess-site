@@ -27,13 +27,13 @@ export default async function ProfilePage() {
       <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10">
         <header>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
-            ანგარიში
+            Profile
           </p>
-          <h1 className="mt-1 font-serif-display text-2xl font-medium text-text-primary sm:text-[28px]">
-            მომხმარებლის პროფილი
+          <h1 className="mt-1 font-mono text-2xl font-medium text-text-primary sm:text-[28px]">
+            User Profile
           </h1>
           <p className="mt-1.5 text-[13.5px] text-text-secondary">
-            შენი ანგარიშის დეტალები და სესიის მართვა
+            Your account details and session management
           </p>
         </header>
 

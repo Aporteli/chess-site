@@ -27,7 +27,7 @@ export function DrillFilters() {
   return (
     <div className="hidden rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="font-serif-display text-[15px] text-text-primary">Queue</h3>
+        <h3 className="font-mono text-[15px] text-text-primary">Queue</h3>
         {drill && (
           <span className="font-mono text-[10.5px] text-text-muted">
             {Math.min(drill.index + (drill.lineComplete ? 0 : 1), drill.queue.length)} / {drill.queue.length}

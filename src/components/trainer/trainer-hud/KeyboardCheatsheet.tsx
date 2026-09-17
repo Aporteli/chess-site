@@ -20,7 +20,7 @@ export function KeyboardCheatsheet({ open, onClose }: { open: boolean; onClose: 
       <div
         className="w-full max-w-md rounded-2xl border border-border-default bg-bg-surface p-5 shadow-panel"
         onClick={(e) => e.stopPropagation()}>
-        <h2 className="font-serif-display text-[18px] text-text-primary">Board ergonomics</h2>
+        <h2 className="font-mono text-[18px] text-text-primary">Board ergonomics</h2>
         <p className="mt-1 text-[12px] text-text-muted">
           Built for long study sessions — keep your hands on the keyboard.
         </p>

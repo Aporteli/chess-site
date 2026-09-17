@@ -99,7 +99,7 @@ export function PuzzleBoard() {
       lightSquareStyle: { backgroundColor: 'var(--color-board-light)' },
       darkSquareStyle: { backgroundColor: 'var(--color-board-dark)' },
       dropSquareStyle: { boxShadow: 'inset 0 0 0 3px var(--color-hint)' },
-      boardStyle: { width: '100%', height: '100%', borderRadius: 0 },
+      boardStyle: { width: '100%', aspectRatio: '1 / 1', borderRadius: 0 },
       squareStyles: { ...lastMoveStyles, ...hintStyles },
       arrows: hintArrows,
       onPieceDrop: handlePieceDrop,
@@ -108,11 +108,11 @@ export function PuzzleBoard() {
   );
 
   return (
-    <div className="relative aspect-square w-full">
+    <div className="relative h-full w-full overflow-hidden rounded-md ring-1 ring-fg/15">
       {boardFen ? (
         <Chessboard options={options} />
       ) : (
-        <div className="grid h-full w-full place-items-center rounded-lg bg-elevated text-sm text-muted">
+        <div className="grid h-full w-full place-items-center bg-elevated text-sm text-muted">
           Generate a puzzle to begin
         </div>
       )}
