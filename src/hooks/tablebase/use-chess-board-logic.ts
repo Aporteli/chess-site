@@ -3,10 +3,14 @@ import { Chess, type Square } from 'chess.js';
 import type { Arrow } from 'react-chessboard';
 import { handlePieceDrop } from '@/lib/tablebase/chess/play';
 import { fenTurn } from '@/lib/tablebase/chess/moves';
+import { useSettingsStore } from '@/stores/settings-store';
 import { useTablebaseStore } from '@/stores/tablebase-store';
 
-// Helper ფუნქცია სტილების მისანიჭებლად (ჰუკის გარეთ)
-function getSquareStyles(fromSq: string | null, legalTargets: Set<string>, hintUci: string | null) {
+function getSquareStyles(
+  fromSq: string | null,
+  legalTargets: Set<string>,
+  hintUci: string | null,
+) {
   const styles: Record<string, React.CSSProperties> = {};
 
   if (fromSq) {
@@ -21,8 +25,12 @@ function getSquareStyles(fromSq: string | null, legalTargets: Set<string>, hintU
   }
 
   if (hintUci && hintUci.length >= 4) {
-    styles[hintUci.slice(0, 2)] = { boxShadow: 'inset 0 0 0 3px var(--color-hint)' };
-    styles[hintUci.slice(2, 4)] = { boxShadow: 'inset 0 0 0 3px var(--color-win)' };
+    styles[hintUci.slice(0, 2)] = {
+      boxShadow: 'inset 0 0 0 3px var(--color-hint)',
+    };
+    styles[hintUci.slice(2, 4)] = {
+      boxShadow: 'inset 0 0 0 3px var(--color-win)',
+    };
   }
 
   return styles;
@@ -30,10 +38,13 @@ function getSquareStyles(fromSq: string | null, legalTargets: Set<string>, hintU
 
 export function useChessBoardLogic() {
   const fen = useTablebaseStore((s) => s.fen);
-  const flipped = useTablebaseStore((s) => s.flipped);
   const building = useTablebaseStore((s) => s.pipeline !== 'idle');
   const gameOver = useTablebaseStore((s) => s.gameOver);
   const hintUci = useTablebaseStore((s) => s.hintUci);
+
+  const flipped = useSettingsStore((s) => s.flipped);
+  const animations = useSettingsStore((s) => s.animations);
+  const coordinates = useSettingsStore((s) => s.coordinates);
 
   const human = flipped ? 'b' : 'w';
   const [ready, setReady] = useState(false);
@@ -46,7 +57,9 @@ export function useChessBoardLogic() {
     if (!fromSq) return new Set<string>();
     try {
       const g = new Chess(fen);
-      return new Set(g.moves({ square: fromSq as Square, verbose: true }).map((m) => m.to));
+      return new Set(
+        g.moves({ square: fromSq as Square, verbose: true }).map((m) => m.to),
+      );
     } catch {
       return new Set<string>();
     }
@@ -74,7 +87,7 @@ export function useChessBoardLogic() {
         setFromSq(null);
       }
     },
-    [building, gameOver, fromSq, legalTargets, fen, human]
+    [building, gameOver, fromSq, legalTargets, fen, human],
   );
 
   const options = useMemo(() => {
@@ -83,7 +96,13 @@ export function useChessBoardLogic() {
 
     const arrows: Arrow[] =
       hintUci && hintUci.length >= 4
-        ? [{ startSquare: hintUci.slice(0, 2), endSquare: hintUci.slice(2, 4), color: '#c5ccd4' }]
+        ? [
+            {
+              startSquare: hintUci.slice(0, 2),
+              endSquare: hintUci.slice(2, 4),
+              color: '#c5ccd4',
+            },
+          ]
         : [];
 
     return {
@@ -95,9 +114,9 @@ export function useChessBoardLogic() {
       squareStyles,
       arrows,
       allowDragOffBoard: false,
-      animationDurationInMs: 180,
-      showAnimations: true,
-      showNotation: true,
+      animationDurationInMs: animations ? 180 : 0,
+      showAnimations: animations,
+      showNotation: coordinates,
       lightSquareStyle: { backgroundColor: 'var(--color-board-light)' },
       darkSquareStyle: { backgroundColor: 'var(--color-board-dark)' },
       dropSquareStyle: { boxShadow: 'inset 0 0 0 3px var(--color-hint)' },
@@ -105,7 +124,19 @@ export function useChessBoardLogic() {
       onPieceDrop: handlePieceDrop,
       onSquareClick: handleSquareClick,
     };
-  }, [building, fen, flipped, fromSq, gameOver, hintUci, human, legalTargets, handleSquareClick]);
+  }, [
+    building,
+    fen,
+    flipped,
+    fromSq,
+    gameOver,
+    hintUci,
+    human,
+    legalTargets,
+    handleSquareClick,
+    animations,
+    coordinates,
+  ]);
 
   return { ready, options };
 }

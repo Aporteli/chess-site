@@ -1,82 +1,119 @@
-import React from 'react';
-import { Camera, Lightbulb, Volume2, VolumeX, FlipVertical2, RotateCcw, Cpu } from 'lucide-react';
-import { useTablebaseStore } from '@/stores/tablebase-store';
-import { useRef, useState, RefObject } from 'react';
+'use client';
+
+import { useRef } from 'react';
+import {
+  Camera,
+  Lightbulb,
+  Volume2,
+  VolumeX,
+  FlipVertical2,
+  RotateCcw,
+  Cpu,
+} from 'lucide-react';
 import { useClickOutside } from '@/hooks/navbar/use-click-outside';
-import { handleHint, handleReset } from '@/lib/tablebase/chess/play';
-import { fenTurn } from '@/lib/tablebase/chess/moves';
+import { performHint, performReset } from '@/lib/chess/board-adapter';
+import { useActiveBoardStore } from '@/stores/active-board-store';
+import { useSettingsStore } from '@/stores/settings-store';
 
 const menuItemClass =
   'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-xs text-muted transition-colors hover:bg-elevated hover:text-fg disabled:pointer-events-none disabled:opacity-40';
 
-export function SettingsDropdown() {
-  const [open, setOpen] = useState(false);
+interface SettingsDropdownProps {
+  onClose: () => void;
+}
+
+export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const fen = useTablebaseStore((s) => s.fen);
-  const sound = useTablebaseStore((s) => s.sound);
-  const building = useTablebaseStore((s) => s.pipeline !== 'idle');
-  const gameOver = useTablebaseStore((s) => s.gameOver);
-  const flipped = useTablebaseStore((s) => s.flipped);
-  const setUploadOpen = useTablebaseStore((s) => s.setUploadOpen);
-  const toggleSound = useTablebaseStore((s) => s.toggleSound);
-  const toggleFlip = useTablebaseStore((s) => s.toggleFlip);
-  const enabled = useTablebaseStore((s) => s.engineEnabled);
-  const onToggleEngine = useTablebaseStore((s) => s.toggleEngine);
+  const sound = useSettingsStore((s) => s.sound);
+  const flipped = useSettingsStore((s) => s.flipped);
+  const engineEnabled = useSettingsStore((s) => s.engineEnabled);
+  const toggleSound = useSettingsStore((s) => s.toggleSound);
+  const toggleFlip = useSettingsStore((s) => s.toggleFlip);
+  const toggleEngine = useSettingsStore((s) => s.toggleEngine);
 
-  useClickOutside(menuRef as RefObject<HTMLElement>, open, () => setOpen(false));
+  const adapter = useActiveBoardStore((s) => s.adapter);
+  const supportsUpload = useActiveBoardStore((s) => s.supportsUpload);
+  const openUpload = useActiveBoardStore((s) => s.openUpload);
+  const hintDisabled = useActiveBoardStore((s) => s.hintDisabled);
+  const resetDisabled = useActiveBoardStore((s) => s.resetDisabled);
 
-  const turn = fenTurn(fen);
-  const human = flipped ? 'b' : 'w';
-  const hintDisabled = building || !!gameOver || turn !== human;
+  useClickOutside(menuRef as React.RefObject<HTMLElement>, true, onClose);
 
   const closeAnd = (run: () => void) => () => {
-    setOpen(false);
+    onClose();
     run();
   };
+
   return (
-    <div>
-      <div className="absolute right-0 top-full z-50 mt-1 w-56">
-        <div className="flex flex-col gap-0.5 rounded-xl bg-surface p-1.5 shadow-xl ring-1 ring-fg/10">
+    <div ref={menuRef} className="absolute right-0 top-full z-50 mt-1 w-56">
+      <div className="flex flex-col gap-0.5 rounded-xl bg-surface p-1.5 shadow-xl ring-1 ring-fg/10">
+        {supportsUpload && openUpload && (
           <button
             type="button"
             className={menuItemClass}
-            disabled={building}
-            onClick={closeAnd(() => setUploadOpen(true))}>
+            onClick={closeAnd(openUpload)}
+          >
             <Camera className="size-4" />
             Add position from FEN
           </button>
+        )}
 
-          <button type="button" className={menuItemClass} disabled={hintDisabled} onClick={closeAnd(handleHint)}>
-            <Lightbulb className="size-4" />
-            Show hint
-          </button>
+        <button
+          type="button"
+          className={menuItemClass}
+          disabled={!adapter || hintDisabled}
+          onClick={closeAnd(() => adapter && performHint(adapter))}
+        >
+          <Lightbulb className="size-4" />
+          Show hint
+        </button>
 
-          <button type="button" className={menuItemClass} onClick={closeAnd(toggleSound)}>
-            {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
-            {sound ? 'Mute sounds' : 'Enable sounds'}
-          </button>
+        <button
+          type="button"
+          className={menuItemClass}
+          onClick={closeAnd(toggleSound)}
+        >
+          {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+          {sound ? 'Mute sounds' : 'Enable sounds'}
+        </button>
 
-          <button type="button" className={menuItemClass} onClick={closeAnd(toggleFlip)}>
-            <FlipVertical2 className="size-4" />
-            Flip board
-          </button>
+        <button
+          type="button"
+          className={menuItemClass}
+          onClick={closeAnd(toggleFlip)}
+        >
+          <FlipVertical2 className="size-4" />
+          Flip board
+        </button>
 
-          <button type="button" className={menuItemClass} onClick={closeAnd(handleReset)}>
-            <RotateCcw className="size-4" />
-            Restart position
-          </button>
+        <button
+          type="button"
+          className={menuItemClass}
+          disabled={!adapter || resetDisabled}
+          onClick={closeAnd(() => adapter && performReset(adapter))}
+        >
+          <RotateCcw className="size-4" />
+          Restart position
+        </button>
 
-          <div className="my-0.5 h-px bg-fg/10" />
+        <div className="my-0.5 h-px bg-fg/10" />
 
-          <button type="button" className={menuItemClass} onClick={closeAnd(onToggleEngine)}>
-            <Cpu className="size-4" />
-            Engine
-            <span className={`ml-auto text-2xs font-medium ${enabled ? 'text-accent' : 'text-subtle'}`}>
-              {enabled ? 'On' : 'Off'}
-            </span>
-          </button>
-        </div>
+        <button
+          type="button"
+          className={menuItemClass}
+          onClick={closeAnd(toggleEngine)}
+        >
+          <Cpu className="size-4" />
+          Engine
+          <span
+            className={`ml-auto text-2xs font-medium ${
+              engineEnabled ? 'text-accent' : 'text-subtle'
+            }`}
+          >
+            {engineEnabled ? 'On' : 'Off'}
+          </span>
+        </button>
       </div>
     </div>
   );

@@ -16,6 +16,10 @@ export const createUiActions: StateCreator<AnalysisStore, [], [], UiActions> = (
     }));
   },
 
+  setHint: (hintUci) => {
+    set({ hintUci });
+  },
+
   setArrows: (arrows: Arrow[]) => {
     set({
       arrows,

@@ -1,6 +1,7 @@
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
 import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
 import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export function StockfishPanel() {
   const engine = useStockfishEngine();
@@ -31,7 +32,9 @@ export function StockfishPanel() {
       moveNumber={Number(fen.split(' ')[5] || 1)}
       fen={fen}
       enabled={engine.enabled}
-      onToggleEnabled={() => engine.setEnabled(!engine.enabled)}
+      onToggleEnabled={() =>
+        useSettingsStore.getState().setEngineEnabled(!engine.enabled)
+      }
       onPlayMove={handlePlayMove}
     />
   );

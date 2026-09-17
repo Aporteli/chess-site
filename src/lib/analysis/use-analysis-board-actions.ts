@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useStockfishEngine } from '@/components/stockfish/StockfishContext';
 import { useAnalysisStore } from './store/analysis-store';
 import { playMoveSound } from './play-sound';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export function useAnalysisBoardActions() {
   const engine = useStockfishEngine();
@@ -10,7 +11,8 @@ export function useAnalysisBoardActions() {
     ({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string | null }) => {
       if (!targetSquare) return false;
 
-      const { game, sound } = useAnalysisStore.getState();
+      const { game } = useAnalysisStore.getState();
+      const sound = useSettingsStore.getState().sound;
 
       try {
         const move = game.move({ from: sourceSquare, to: targetSquare, promotion: 'q' });
@@ -24,6 +26,7 @@ export function useAnalysisBoardActions() {
           history: [...useAnalysisStore.getState().history, move.san],
           undoneMoves: [],
           arrows: [],
+          hintUci: null,
           revision: useAnalysisStore.getState().revision + 1,
         });
 

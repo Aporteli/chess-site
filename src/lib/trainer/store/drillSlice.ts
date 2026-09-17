@@ -14,6 +14,7 @@ import {
 import {findNearestUnvisitedFork,nextLineNode,pickUnvisitedOpponentReply,randomChild} from '@/lib/chess/training';
 import { createEmptyDrill } from '../createEmptyDrill';
 import type { DrillSession } from '../types';
+import { useSettingsStore } from '@/stores/settings-store';
 import { deriveActive } from './deriveActive';
 import type { DrillActions, TrainerSlice } from './types';
 
@@ -90,7 +91,7 @@ export const createDrillSlice: TrainerSlice<DrillActions> = (set, get) => ({
       const chosen = ch.nodes[nextMoveNode.id] ?? nextMoveNode;
 
       set({ path: pathToNode(ch, chosen.id) });
-      playSfx(sfxForMove(chosen.move!.flags), get().settings.sound);
+      playSfx(sfxForMove(chosen.move!.flags), useSettingsStore.getState().sound);
       set((state) => ({ drill: state.drill ? { ...state.drill, opponentThinking: false, lineComplete: false } : state.drill }));
 
       if (chosen.children.length === 0) {

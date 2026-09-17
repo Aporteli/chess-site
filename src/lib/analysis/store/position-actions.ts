@@ -19,6 +19,7 @@ export const createPositionActions: StateCreator<AnalysisStore, [], [], Position
         undoneMoves: [],
 
         arrows: [],
+        hintUci: null,
 
         startFen: nextFen,
 
@@ -45,6 +46,7 @@ export const createPositionActions: StateCreator<AnalysisStore, [], [], Position
       undoneMoves: [],
 
       arrows: [],
+      hintUci: null,
 
       startFen: fen,
 
@@ -80,6 +82,7 @@ export const createPositionActions: StateCreator<AnalysisStore, [], [], Position
         undoneMoves: [],
 
         arrows: [],
+        hintUci: null,
 
         revision: state.revision + 1,
       }));
@@ -108,6 +111,7 @@ export const createPositionActions: StateCreator<AnalysisStore, [], [], Position
         history: [],
         undoneMoves: [],
         arrows: [],
+        hintUci: null,
         startFen: nextFen,
         revision: state.revision + 1,
       }));

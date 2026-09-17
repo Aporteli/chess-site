@@ -18,8 +18,7 @@ export type TablebaseState = {
   fen: string;
   fenInput: string;
   fenValid: boolean;
-  flipped: boolean;
-  sound: boolean;
+  // NOTE: `flipped`, `sound`, `engineEnabled` moved to `useSettingsStore`.
   result: TablebaseResponse | null;
   resultFen: string | null;
   loading: boolean;
@@ -32,7 +31,6 @@ export type TablebaseState = {
   deck: EndgameDeck;
   activeCard: EndgameCard | null;
   pipeline: PipelineStatus;
-  engineEnabled: boolean;
   localLines: EngineLine[];
 };
 
@@ -42,9 +40,7 @@ export type TablebaseActions = {
   setCatalog: (c: EndgameEntry[]) => void;
   setUploadOpen: (open: boolean) => void;
   setConfirm: (c: ConfirmRequest | null) => void;
-  toggleFlip: () => void;
-  toggleSound: () => void;
-  toggleEngine: () => void;
+  // toggleFlip / toggleSound / toggleEngine removed — see useSettingsStore.
   setHintUci: (uci: string | null) => void;
   setError: (error: string | null) => void;
   setPipeline: (pipeline: PipelineStatus) => void;

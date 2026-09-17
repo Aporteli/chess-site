@@ -5,6 +5,7 @@ import { lookupTablebase } from "@/lib/tablebase/chess/lookup";
 import { pickBestMove } from "@/lib/tablebase/chess/minimax";
 import { pieceCount } from "@/lib/tablebase/chess/pieces";
 import { runtime } from "@/stores/runtime";
+import { useSettingsStore } from "@/stores/settings-store";
 import { humanColorOf, useTablebaseStore } from "@/stores/tablebase-store";
 
 export function useEngineLoop() {
@@ -16,14 +17,14 @@ export function useEngineLoop() {
   const resultFen = useTablebaseStore((s) => s.resultFen);
   const loading = useTablebaseStore((s) => s.loading);
   const error = useTablebaseStore((s) => s.error);
-  const engineEnabled = useTablebaseStore((s) => s.engineEnabled);
-  const flipped = useTablebaseStore((s) => s.flipped);
+
+  // Settings live in their own store now, so changes propagate here too.
+  const engineEnabled = useSettingsStore((s) => s.engineEnabled);
+  const flipped = useSettingsStore((s) => s.flipped);
 
   useEffect(() => {
     if (!fenValid || building) return;
-    const id = window.setTimeout(() => {
-      void lookupTablebase(fen);
-    }, 80);
+    const id = window.setTimeout(() => void lookupTablebase(fen), 80);
     return () => window.clearTimeout(id);
   }, [fen, building, fenValid]);
 
@@ -32,11 +33,7 @@ export function useEngineLoop() {
     const store = useTablebaseStore.getState();
     const human = humanColorOf(store);
     let probe: Chess;
-    try {
-      probe = new Chess(fen);
-    } catch {
-      return;
-    }
+    try { probe = new Chess(fen); } catch { return; }
     if (probe.isGameOver() || probe.turn() === human) return;
     if (runtime.repliedFen === fen) return;
     if (runtime.replyFen !== fen) runtime.replyFen = fen;
@@ -50,15 +47,7 @@ export function useEngineLoop() {
       applyEngineReply(fen, best?.uci ?? null);
     }
   }, [
-    building,
-    engineEnabled,
-    error,
-    fen,
-    fenValid,
-    flipped,
-    gameOver,
-    loading,
-    result,
-    resultFen,
+    building, engineEnabled, error, fen, fenValid, flipped, gameOver,
+    loading, result, resultFen,
   ]);
 }

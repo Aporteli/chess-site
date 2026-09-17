@@ -1,22 +1,27 @@
 import { useMemo } from "react";
 import type { Arrow } from "react-chessboard";
+import { useSettingsStore } from "@/stores/settings-store";
 
 export function useBoardOptions(t: any, squareStyles: Record<string, React.CSSProperties>) {
   const turn = t.fen.split(" ")[1] === "b" ? "b" : "w";
+  const settingsFlipped = useSettingsStore((s) => s.flipped);
+  const animations = useSettingsStore((s) => s.animations);
+  const coordinates = useSettingsStore((s) => s.coordinates);
+  const flipped = Boolean(t.flipped) !== settingsFlipped;
 
   return useMemo(
     () => ({
       id: "movetrainer-board",
       position: t.fen,
-      boardOrientation: (t.flipped ? "black" : "white") as "white" | "black",
+      boardOrientation: (flipped ? "black" : "white") as "white" | "black",
       allowDragging: true,
       allowDrawingArrows: true,
       allowDragOffBoard: false,
       arrows: t.arrows,
       onArrowsChange: ({ arrows }: { arrows: Arrow[] }) => t.setArrows(arrows),
-      animationDurationInMs: t.settings.animations ? 180 : 0,
-      showAnimations: t.settings.animations,
-      showNotation: t.settings.coordinates,
+      animationDurationInMs: animations ? 180 : 0,
+      showAnimations: animations,
+      showNotation: coordinates,
       lightSquareStyle: {
         backgroundColor: "#e8d9b5",
         backgroundImage: "linear-gradient(155deg, rgba(255,255,255,0.12), transparent 55%)",
@@ -62,6 +67,6 @@ export function useBoardOptions(t: any, squareStyles: Record<string, React.CSSPr
       },
       onSquareRightClick: ({ square }: { square: string }) => t.toggleHighlight(square),
     }),
-    [t, squareStyles, turn],
+    [t, squareStyles, turn, flipped, animations, coordinates],
   );
 }

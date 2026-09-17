@@ -1,4 +1,5 @@
 import { ENDGAMES } from "@/lib/tablebase/chess/catalog";
+import { useSettingsStore } from "@/stores/settings-store";
 import type { TablebaseState } from "./types";
 
 export function selectedKindOf(s: TablebaseState): string {
@@ -10,6 +11,7 @@ export function typedCardsOf(s: TablebaseState) {
   return s.deck.cards.filter((c) => c.kind === kind);
 }
 
-export function humanColorOf(s: TablebaseState): "w" | "b" {
-  return s.flipped ? "b" : "w";
+/** Reads `flipped` from the global settings store. */
+export function humanColorOf(_s: TablebaseState): "w" | "b" {
+  return useSettingsStore.getState().flipped ? "b" : "w";
 }

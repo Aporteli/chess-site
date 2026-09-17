@@ -18,6 +18,8 @@ export const createInitialAnalysisState =
 
     sound: true,
 
+    hintUci: null,
+
     arrows: [],
 
     isUploadBoardOpen: false,

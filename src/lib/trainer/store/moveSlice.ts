@@ -8,13 +8,14 @@ import {
   playSfx,
   sfxForMove,
 } from '@/lib/chess';
+import { useSettingsStore } from '@/stores/settings-store';
 import { deriveActive } from './deriveActive';
 import type { MoveActions, TrainerSlice } from './types';
 
 export const createMoveSlice: TrainerSlice<MoveActions> = (set, get) => ({
   playUserMove: (from, to, promotion) => {
     const { chapter, node, repertoire } = deriveActive(get());
-    const { mode, drill, path, settings } = get();
+    const { mode, drill, path } = get();
     if (!chapter || !node || !repertoire) return false;
 
     if (needsPromotion(node.fen, from, to) && !promotion) {
@@ -45,7 +46,7 @@ export const createMoveSlice: TrainerSlice<MoveActions> = (set, get) => ({
           mate: played.san.includes('#'),
           promotion: played.isPromotion(),
         }),
-        settings.sound,
+        useSettingsStore.getState().sound,
       );
       if (existing) {
         set({ path: [...path, existing.id] });
@@ -61,13 +62,13 @@ export const createMoveSlice: TrainerSlice<MoveActions> = (set, get) => ({
     if (!isOurTurn(node.fen, repertoire.side)) return false;
 
     if (!existing) {
-      playSfx('error', settings.sound);
+      playSfx('error', useSettingsStore.getState().sound);
       get().flashStatus('mistake');
       set({ drill: { ...drill, mistakes: drill.mistakes + 1, awaitingRetry: true }, selectedSquare: null });
       return false;
     }
 
-    playSfx('success', settings.sound);
+    playSfx('success', useSettingsStore.getState().sound);
     get().flashStatus('correct');
     set({ path: pathToNode(chapter, existing.id), selectedSquare: null, promotion: null });
 

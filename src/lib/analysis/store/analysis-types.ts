@@ -9,6 +9,7 @@ export type AnalysisState = {
   undoneMoves: string[];
   flipped: boolean;
   sound: boolean;
+  hintUci: string | null;
   arrows: Arrow[];
   isUploadBoardOpen: boolean;
   startFen: string;
@@ -20,6 +21,7 @@ export type AnalysisState = {
 export type UiActions = {
   toggleSound: () => void;
   toggleBoard: () => void;
+  setHint: (uci: string | null) => void;
 
   setArrows: (arrows: Arrow[]) => void;
 

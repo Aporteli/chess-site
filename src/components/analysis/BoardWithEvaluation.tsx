@@ -1,10 +1,10 @@
 import { EvalBar } from '@/components/board/EvalBar';
 import { BoardToolbar } from './BoardToolbar';
 import { ChessBoard } from './ChessBoard';
-import { useAnalysisStore } from '@/lib/analysis/store/analysis-store';
+import { useSettingsStore } from '@/stores/settings-store';
 
 export function BoardWithEvaluation() {
-  const flipped = useAnalysisStore((state) => state.flipped);
+  const flipped = useSettingsStore((state) => state.flipped);
 
   return (
     <>

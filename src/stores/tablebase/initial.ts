@@ -9,9 +9,7 @@ export const initialTablebaseState: TablebaseState = {
   confirm: null,
   fen: START_FEN,
   fenInput: START_FEN,
-  fenValid: true,
-  flipped: false,
-  sound: true,
+  fenValid: true, 
   result: null,
   resultFen: null,
   loading: false,
@@ -30,6 +28,5 @@ export const initialTablebaseState: TablebaseState = {
   },
   activeCard: null,
   pipeline: "idle",
-  engineEnabled: true,
   localLines: [],
 };

@@ -29,6 +29,7 @@ export const createMoveActions: StateCreator<AnalysisStore, [], [], MoveActions>
         undoneMoves: [],
 
         arrows: [],
+        hintUci: null,
 
         revision: state.revision + 1,
       }));
@@ -64,6 +65,7 @@ export const createMoveActions: StateCreator<AnalysisStore, [], [], MoveActions>
         undoneMoves: [...state.undoneMoves, undoneMove.san],
 
         arrows: [],
+        hintUci: null,
 
         revision: state.revision + 1,
       }));
@@ -100,6 +102,7 @@ export const createMoveActions: StateCreator<AnalysisStore, [], [], MoveActions>
         undoneMoves: state.undoneMoves.slice(0, -1),
 
         arrows: [],
+        hintUci: null,
 
         revision: state.revision + 1,
       }));

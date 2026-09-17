@@ -12,6 +12,7 @@ import { StockfishProvider, useStockfishEngine } from '@/components/stockfish/St
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
 import { HudActionButtons } from './trainer-hud/HudActionButtons';
 import { ActionToolbar } from './action-toolbar/ActionToolbar';
+import { useSettingsStore } from '@/stores/settings-store';
 
 function TrainerEnginePanel() {
   const t = useTrainer();
@@ -35,7 +36,9 @@ function TrainerEnginePanel() {
       moveNumber={moveNumber}
       fen={t.fen}
       enabled={engine.enabled}
-      onToggleEnabled={() => engine.setEnabled(!engine.enabled)}
+      onToggleEnabled={() =>
+        useSettingsStore.getState().setEngineEnabled(!engine.enabled)
+      }
       onPlayMove={(ucis) => {
         for (const uci of ucis) {
           const ok = t.playUserMove(uci.slice(0, 2), uci.slice(2, 4), uci[4]);
@@ -72,7 +75,7 @@ export function TrainerWorkspace() {
       } else if (e.key === 'h' || e.key === 'H') {
         t.requestHint();
       } else if (e.key === 's' || e.key === 'S') {
-        t.setSettings({ sound: !t.settings.sound });
+        useSettingsStore.getState().toggleSound();
       } else if (e.key === 'Escape') {
         t.clearMarks();
       } else if (e.key === 'Enter') {
