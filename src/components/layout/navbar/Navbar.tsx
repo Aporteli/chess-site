@@ -35,7 +35,6 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
   return (
     <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md ">
       <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-3">
-        
         {/* 1. მარცხენა სექცია: მობილურის მენიუ + დესკტოპის დროპდაუნები */}
         <div className="flex items-center gap-2">
           <button
@@ -46,8 +45,9 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
           </button>
 
           {/* დესკტოპზე ხილული დროპდაუნები (sm-დან ზემოთ) */}
-          {pathname === '/tablebase' && (
-            <div className="hidden items-center gap-2 sm:flex">
+             {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
+             {pathname === '/tablebase' && (
+            <div className="hidden items-center gap-2 min-[931px]:flex">
               <EndgameGridList
                 filtered={filtered}
                 currentIndex={index}
@@ -61,36 +61,37 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
             </div>
           )}
 
-          {/* მობილურის ინსტრუმენტების ჩამოსაშლელი ღილაკი (მხოლოდ < sm-ზე) */}
-          <div className="relative sm:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileToolsOpen((v) => !v)}
-              className="flex h-8 items-center gap-1.5 rounded-md bg-[#2A2A2A] px-2.5 text-xs font-mono font-medium text-white hover:bg-[#383838] transition-colors"
-            >
-              <SlidersHorizontal className="size-3.5 text-[#769656]" />
-              <span>Tools</span>
-            </button>
+          {/* მობილურისა და ტაბლეტის ინსტრუმენტების ღილაკი (ჩანს 930px-მდე) */}
+          {pathname === '/tablebase' && (
+            <div className="relative max-[930px]:block hidden">
+              <button
+                type="button"
+                onClick={() => setMobileToolsOpen((v) => !v)}
+                className="flex h-8 items-center gap-1.5 rounded-md bg-[#2A2A2A] px-2.5 text-xs font-mono font-medium text-white hover:bg-[#383838] transition-colors">
+                <SlidersHorizontal className="size-3.5 text-[#769656]" />
+                <span>Tools</span>
+              </button>
 
-            {pathname === '/tablebase' && mobileToolsOpen && (
-              <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
-                <div onClick={() => setMobileToolsOpen(false)}>
-                  <EndgameGridList
-                    filtered={filtered}
-                    currentIndex={index}
-                    building={building}
-                    onLoad={loadEndgame}
-                    onDelete={deleteKind}
-                    onAdd={() => setUploadOpen(true)}
-                    onDeleteAll={deleteAllKinds}
-                  />
+              {mobileToolsOpen && (
+                <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
+                  <div onClick={() => setMobileToolsOpen(false)}>
+                    <EndgameGridList
+                      filtered={filtered}
+                      currentIndex={index}
+                      building={building}
+                      onLoad={loadEndgame}
+                      onDelete={deleteKind}
+                      onAdd={() => setUploadOpen(true)}
+                      onDeleteAll={deleteAllKinds}
+                    />
+                  </div>
+                  <div onClick={() => setMobileToolsOpen(false)}>
+                    <VariationsDropdown />
+                  </div>
                 </div>
-                <div onClick={() => setMobileToolsOpen(false)}>
-                  <VariationsDropdown />
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 2. მარჯვენა სექცია: ძებნა, პარამეტრები, პროფილი */}
@@ -114,7 +115,6 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
 
           <NavAuth />
         </div>
-
       </div>
     </header>
   );
