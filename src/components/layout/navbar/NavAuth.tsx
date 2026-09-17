@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
@@ -11,7 +13,7 @@ export function NavAuth() {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="shrink-0 rounded-lg border border-border-default bg-bg-elevated px-3 py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:border-accent-gold/40 hover:text-accent-gold-bright"
+          className="shrink-0 rounded-lg border border-[#383838] bg-[#2A2A2A] px-3 py-1.5 font-mono text-[13px] font-medium text-[#A0A0A0] transition-colors hover:border-[#E63946] hover:text-[#E63946]"
         >
           Sign out
         </button>
@@ -22,7 +24,7 @@ export function NavAuth() {
   return (
     <Link
       href="/auth/signin"
-      className="shrink-0 rounded-lg border border-accent-gold/40 bg-accent-gold-dim px-3 py-1.5 text-[13px] font-medium text-accent-gold-bright transition-colors hover:border-accent-gold/70"
+      className="shrink-0 rounded-lg bg-[#769656] px-3 py-1.5 font-mono text-[13px] font-medium text-white transition-colors hover:bg-[#81B64C]"
     >
       Sign In
     </Link>

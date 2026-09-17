@@ -15,47 +15,13 @@ type NavEntry = {
 };
 
 const allNavEntries: NavEntry[] = [
-  {
-    key: 'trainer',
-    label: 'Openings / Trainer',
-    href: '/trainer',
-    icon: Swords,
-  },
-  {
-    key: 'puzzles',
-    label: 'Puzzles',
-    href: '/puzzles',
-    icon: Puzzle,
-  },
-  {
-    key: 'analysis',
-    label: 'Analysis Board',
-    href: '/analysis',
-    icon: ScanSearch,
-  },
-  {
-    key: 'courses',
-    label: 'Courses & Repertoire',
-    href: '/courses',
-    icon: Library,
-  },
-  {
-    key: 'tablebase',
-    label: 'Tablebase',
-    href: '/tablebase',
-    icon: TableIcon,
-  },
-  {
-    key: 'profile',
-    label: 'Profile',
-    href: '/profile',
-    icon: UserRound,
-  },
-  {
-    key: 'settings',
-    label: 'Settings',
-    icon: Settings,
-  },
+  { key: 'trainer', label: 'Openings / Trainer', href: '/trainer', icon: Swords },
+  { key: 'puzzles', label: 'Puzzles', href: '/puzzles', icon: Puzzle },
+  { key: 'analysis', label: 'Analysis Board', href: '/analysis', icon: ScanSearch },
+  { key: 'courses', label: 'Courses & Repertoire', href: '/courses', icon: Library },
+  { key: 'tablebase', label: 'Tablebase', href: '/tablebase', icon: TableIcon },
+  { key: 'profile', label: 'Profile', href: '/profile', icon: UserRound },
+  { key: 'settings', label: 'Settings', icon: Settings },
 ];
 
 export const navItems: NavItem[] = allNavEntries.filter((entry) =>
@@ -84,7 +50,6 @@ interface SidebarProps {
 export function Sidebar({ activeKey, collapsed, onToggleCollapsed, mobileOpen, onCloseMobile }: SidebarProps) {
   return (
     <>
-      {/* Mobile scrim */}
       {mobileOpen && (
         <button
           aria-label="Close navigation"
@@ -93,16 +58,14 @@ export function Sidebar({ activeKey, collapsed, onToggleCollapsed, mobileOpen, o
         />
       )}
 
+      {/* bg-[#1E1E1E] - საშუალო ტონი, რომელიც გამოჰყოფს საიდბარს ძირითადი #121212 ფონისგან */}
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border-subtle bg-bg-surface lg:static lg:shrink-0',
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[#383838] bg-[#1E1E1E] shadow-xl lg:static lg:shrink-0',
           'transition-[width,transform] duration-200 ease-out lg:transition-[width]',
-          // Mobile width: full sidebar width
           'w-[248px]',
-          // Desktop width: depends on collapsed state
           'lg:h-auto',
           collapsed ? 'lg:w-[76px]' : 'lg:w-[248px]',
-          // Mobile visibility toggle
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}>
         <SidebarBrand collapsed={collapsed} onCloseMobile={onCloseMobile} />
@@ -123,7 +86,7 @@ export function Sidebar({ activeKey, collapsed, onToggleCollapsed, mobileOpen, o
 
         <SidebarCollapseToggle collapsed={collapsed} onToggleCollapsed={onToggleCollapsed} />
 
-        <div className="space-y-1 border-t border-border-subtle px-3 py-3">
+        <div className="space-y-1 border-t border-[#383838] px-3 py-3">
           {secondaryNavItems.map((item) => (
             <SidebarNavItem
               key={item.key}

@@ -8,8 +8,8 @@ export function FenInput() {
   const applyFenInput = useTablebaseStore((s) => s.applyFenInput);
 
   return (
-    <label className="block shrink-0 h-14 rounded-xl bg-surface p-2 shadow-[var(--shadow-border)] flex flex-col justify-center">
-      <span className="mb-0.5 block font-mono text-2xs uppercase tracking-wider text-muted">
+    <label className="flex shrink-0 h-14 flex-col justify-center rounded-xl border border-[#383838] bg-[#2A2A2A] p-2.5 shadow-lg">
+      <span className="mb-0.5 block font-mono text-[10px] uppercase tracking-wider text-[#A0A0A0]">
         FEN
       </span>
       <input
@@ -17,11 +17,10 @@ export function FenInput() {
         value={fenInput}
         onChange={(e) => applyFenInput(e.target.value)}
         spellCheck={false}
-        className={`w-full bg-transparent font-mono text-2xs outline-none ${
-          fenValid ? "text-muted" : "text-danger"
+        className={`w-full bg-transparent font-mono text-xs outline-none transition-colors ${
+          fenValid ? "text-white focus:text-[#769656]" : "text-[#E63946]"
         }`}
       />
     </label>
   );
 }
-

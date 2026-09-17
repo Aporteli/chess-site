@@ -17,18 +17,21 @@ export function GameOverOverlay() {
   if (!gameOver) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/70 p-4">
-      <div className="w-full max-w-sm rounded-xl bg-surface p-5 shadow-[var(--shadow-border)]">
-        <p className="mb-4 font-display text-lg text-fg text-balance">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="w-full max-w-sm rounded-xl border border-[#383838] bg-[#1E1E1E] p-5 shadow-2xl">
+        <p className="mb-5 font-mono text-base font-medium text-white text-balance text-center">
           {gameOverCopy(gameOver)}
         </p>
         <div className="flex gap-2">
-          <Button className="flex-1" onClick={() => handleReset()}>
+          <Button 
+            className="flex-1 bg-[#2A2A2A] text-white border border-[#383838] hover:bg-[#383838] transition-colors" 
+            onClick={() => handleReset()}
+          >
             Replay
           </Button>
           <Button
             variant="primary"
-            className="flex-1"
+            className="flex-1 bg-[#769656] text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors"
             disabled={building}
             onClick={() => handleNext()}
           >

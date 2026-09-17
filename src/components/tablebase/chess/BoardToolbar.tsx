@@ -17,11 +17,11 @@ export function BoardToolbar() {
   }
 
   return (
-    <div className="mb-2 flex w-full shrink-0 items-center justify-between px-1 mt-2">
-      <span className="font-mono text-micro text-muted tabular-nums">
-        Turn: {turn === "w" ? "White" : "Black"}
-        {inCheck ? " · check" : ""}
-        {loading ? " · tablebase" : ""}
+    <div className="mb-2 mt-2 flex w-full shrink-0 items-center justify-between px-1">
+      <span className="font-mono text-xs text-[#A0A0A0] tabular-nums">
+        Turn: <span className="font-semibold text-white">{turn === "w" ? "White" : "Black"}</span>
+        {inCheck && <span className="text-[#E63946]"> · Check</span>}
+        {loading && <span className="text-[#769656]"> · Tablebase...</span>}
       </span>
     </div>
   );

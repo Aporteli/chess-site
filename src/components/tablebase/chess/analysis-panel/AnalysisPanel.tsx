@@ -27,8 +27,15 @@ export function AnalysisPanel() {
       : '—';
 
   return (
-    <section className="flex shrink-0 flex-col gap-2 rounded-xl bg-surface p-3 shadow-[var(--shadow-border)]">
-      <AnalysisHeader/>
+    /* bg-[#2A2A2A] - შემაღლებული პანელის ფონი, მკვეთრად გამოყოფს ბლოკს #121212 ფონისგან */
+    <section
+      className="flex shrink-0 flex-col gap-2 rounded-xl border border-[#383838] bg-[#2A2A2A] p-3"
+      style={{
+        boxShadow:
+          "0 2px 8px 0 rgba(0,0,0,0.09), 0 1.5px 5px -2px rgba(0,0,0,0.10)",
+      }}
+    >
+      <AnalysisHeader />
       <AnalysisMeta
         loading={loading}
         category={result?.category}

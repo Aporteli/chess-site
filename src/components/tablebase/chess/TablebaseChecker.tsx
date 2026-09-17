@@ -14,8 +14,8 @@ export function TablebaseChecker() {
   useEngineLoop();
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col p-3 pb-6 lg:p-4">
-      {/* --board-reserve: turn line above the board + undo/redo row below it */}
+    /* bg-[#121212] - ყველაზე მუქი ძირითადი ფონი, რომელიც ქმნის სიღრმეს */
+    <div className="flex min-h-0 flex-1 flex-col bg-[#121212] p-3 pb-6 text-white lg:p-4">
       <div className="board-workspace mx-auto w-full max-w-[1500px] [--board-reserve:4.5rem]">
         <BoardColumn />
         <aside className="board-panel thin-scrollbar">

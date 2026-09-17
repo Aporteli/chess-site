@@ -21,18 +21,25 @@ export function EvalBar({ flipped }: { flipped: boolean }) {
 
   return (
     <div
-      className={`relative w-3.5 shrink-0 self-stretch overflow-hidden rounded-full border border-accent-gold/50 bg-bg-deepest shadow-lg ${flipped ? 'flex flex-col' : 'flex flex-col justify-end'}`}
+      className={`relative w-3.5 shrink-0 self-stretch overflow-hidden rounded-full border border-[#383838] bg-[#1E1E1E] shadow-lg ${
+        flipped ? 'flex flex-col' : 'flex flex-col justify-end'
+      }`}
       title={evalLabel}>
+      {/* თეთრის პოზიციის ბარი */}
       <div
-        className="w-full bg-text-primary transition-all duration-300"
+        className="w-full bg-[#FFFFFF] transition-all duration-300"
         style={{ height: `${flipped ? 100 - whiteBarHeight : whiteBarHeight}%` }}
       />
-      <div className="pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-0.5 w-full -translate-y-1/2 bg-accent-gold/50" />
+      
+      {/* ცენტრალური ხაზი (0.0) */}
+      <div className="pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-0.5 w-full -translate-y-1/2 bg-[#769656]" />
+      
+      {/* 25%-იანი და 75%-იანი დამხმარე ხაზები */}
       <div className="pointer-events-none absolute left-0 right-0" style={{ top: '25%' }}>
-        <div className="mx-auto h-0.5 w-full bg-accent-gold/30" />
+        <div className="mx-auto h-0.5 w-full bg-[#383838]" />
       </div>
       <div className="pointer-events-none absolute left-0 right-0" style={{ top: '75%' }}>
-        <div className="mx-auto h-0.5 w-full bg-accent-gold/30" />
+        <div className="mx-auto h-0.5 w-full bg-[#383838]" />
       </div>
     </div>
   );

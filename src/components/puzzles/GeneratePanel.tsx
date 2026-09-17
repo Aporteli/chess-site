@@ -18,9 +18,7 @@ export function GeneratePanel() {
   return (
     <div className="rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
       <h2 className="font-serif text-lg text-accent-gold-bright">Generate</h2>
-      <p className="mt-1 font-mono text-[11px] text-text-muted">
-        Optional starting FEN. Blank position uses a random tactic.
-      </p>
+      
 
       <form onSubmit={handleSubmit} className="mt-3 space-y-3">
         <label className="flex flex-col gap-1.5">

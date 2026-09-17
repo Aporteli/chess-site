@@ -16,13 +16,13 @@ interface AnalysisHeaderProps {
 
 export function AnalysisHeader() {
   return (
-    <div className="flex shrink-0 items-center justify-between border-b border-fg/10 pb-2">
-    <div className="flex items-center gap-2">
-      <span className="size-2 rounded-full bg-accent animate-pulse" />
-      <h2 className="font-display text-sm font-semibold tracking-wide text-fg uppercase">
-        Analysis
-      </h2>
+    <div className="flex shrink-0 items-center justify-between border-b border-[#383838] pb-2">
+      <div className="flex items-center gap-2">
+        <span className="size-2 rounded-full bg-[#769656] animate-pulse" />
+        <h2 className="font-mono text-sm font-semibold tracking-wide text-white uppercase">
+          Analysis
+        </h2>
+      </div>
     </div>
-  </div>
   );
 }

@@ -15,7 +15,7 @@ export function BoardActions() {
         type="button"
         onClick={undo}
         disabled={busy || !canUndo}
-        className="rounded-md bg-bg-elevated py-1 px-3 text-[13px] font-medium text-text-secondary border border-border-default shadow hover:bg-bg-surface hover:text-accent-gold-bright transition-colors disabled:opacity-50"
+        className="rounded-md bg-[#2A2A2A] py-1.5 px-3.5 font-mono text-[13px] font-medium text-[#A0A0A0] border border-[#383838] transition-colors hover:bg-[#383838] hover:text-white disabled:opacity-40 disabled:hover:bg-[#2A2A2A] disabled:hover:text-[#A0A0A0]"
         aria-label="Undo move"
       >
         Undo
@@ -24,7 +24,7 @@ export function BoardActions() {
         type="button"
         onClick={redo}
         disabled={busy || !canRedo}
-        className="rounded-md bg-bg-elevated py-1 px-3 text-[13px] font-medium text-text-secondary border border-border-default shadow hover:bg-bg-surface hover:text-accent-teal-bright transition-colors disabled:opacity-50"
+        className="rounded-md bg-[#2A2A2A] py-1.5 px-3.5 font-mono text-[13px] font-medium text-[#A0A0A0] border border-[#383838] transition-colors hover:bg-[#383838] hover:text-white disabled:opacity-40 disabled:hover:bg-[#2A2A2A] disabled:hover:text-[#A0A0A0]"
         aria-label="Redo move"
       >
         Redo

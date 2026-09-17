@@ -16,7 +16,7 @@ import { useActiveBoardStore } from '@/stores/active-board-store';
 import { useSettingsStore } from '@/stores/settings-store';
 
 const menuItemClass =
-  'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-xs text-muted transition-colors hover:bg-elevated hover:text-fg disabled:pointer-events-none disabled:opacity-40';
+  'flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left font-mono text-xs text-white transition-colors hover:bg-[#2A2A2A] hover:text-[#769656] disabled:pointer-events-none disabled:opacity-40';
 
 interface SettingsDropdownProps {
   onClose: () => void;
@@ -47,14 +47,14 @@ export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
 
   return (
     <div ref={menuRef} className="absolute right-0 top-full z-50 mt-1 w-56">
-      <div className="flex flex-col gap-0.5 rounded-xl bg-surface p-1.5 shadow-xl ring-1 ring-fg/10">
+      <div className="flex flex-col gap-0.5 rounded-xl border border-[#383838] bg-[#1E1E1E] p-1.5 shadow-2xl">
         {supportsUpload && openUpload && (
           <button
             type="button"
             className={menuItemClass}
             onClick={closeAnd(openUpload)}
           >
-            <Camera className="size-4" />
+            <Camera className="size-4 text-[#A0A0A0]" />
             Add position from FEN
           </button>
         )}
@@ -65,7 +65,7 @@ export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
           disabled={!adapter || hintDisabled}
           onClick={closeAnd(() => adapter && performHint(adapter))}
         >
-          <Lightbulb className="size-4" />
+          <Lightbulb className="size-4 text-[#A0A0A0]" />
           Show hint
         </button>
 
@@ -74,7 +74,7 @@ export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
           className={menuItemClass}
           onClick={closeAnd(toggleSound)}
         >
-          {sound ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+          {sound ? <Volume2 className="size-4 text-[#A0A0A0]" /> : <VolumeX className="size-4 text-[#A0A0A0]" />}
           {sound ? 'Mute sounds' : 'Enable sounds'}
         </button>
 
@@ -83,7 +83,7 @@ export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
           className={menuItemClass}
           onClick={closeAnd(toggleFlip)}
         >
-          <FlipVertical2 className="size-4" />
+          <FlipVertical2 className="size-4 text-[#A0A0A0]" />
           Flip board
         </button>
 
@@ -93,22 +93,22 @@ export function SettingsDropdown({ onClose }: SettingsDropdownProps) {
           disabled={!adapter || resetDisabled}
           onClick={closeAnd(() => adapter && performReset(adapter))}
         >
-          <RotateCcw className="size-4" />
+          <RotateCcw className="size-4 text-[#A0A0A0]" />
           Restart position
         </button>
 
-        <div className="my-0.5 h-px bg-fg/10" />
+        <div className="my-0.5 h-px bg-[#383838]" />
 
         <button
           type="button"
           className={menuItemClass}
           onClick={closeAnd(toggleEngine)}
         >
-          <Cpu className="size-4" />
+          <Cpu className="size-4 text-[#A0A0A0]" />
           Engine
           <span
-            className={`ml-auto text-2xs font-medium ${
-              engineEnabled ? 'text-accent' : 'text-subtle'
+            className={`ml-auto text-3xs font-medium ${
+              engineEnabled ? 'text-[#769656]' : 'text-[#A0A0A0]'
             }`}
           >
             {engineEnabled ? 'On' : 'Off'}
