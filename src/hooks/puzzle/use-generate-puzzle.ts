@@ -14,7 +14,8 @@ export function useGeneratePuzzle() {
     setError(null);
 
     try {
-      const data = await fetchGeneratedPuzzle({ fen: fenInput, sideToMove });
+      const data = await fetchGeneratedPuzzle();
+      setFenInput(data.fen);
       setPuzzle(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate puzzle.");

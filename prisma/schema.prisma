@@ -20,8 +20,6 @@ model User {
 model Play {
   id         String   @id @default(uuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   title      String?
   source     String   @default("analysis")
   white      String?
@@ -31,9 +29,21 @@ model Play {
   pgn        String   @default("")
   startFen   String   @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
   currentFen String?
-
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+}
+
+model Puzzle {
+  id        String   @id
+  seq       Int      @unique @default(autoincrement())
+
+  fen       String
+  moves     String
+  rating    Int
+  themes    String[]
+
+  @@index([rating])
 }

@@ -143,6 +143,15 @@ exports.Prisma.PlayScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PuzzleScalarFieldEnum = {
+  id: 'id',
+  seq: 'seq',
+  fen: 'fen',
+  moves: 'moves',
+  rating: 'rating',
+  themes: 'themes'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -161,7 +170,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Play: 'Play'
+  Play: 'Play',
+  Puzzle: 'Puzzle'
 };
 
 /**

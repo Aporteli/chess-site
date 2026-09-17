@@ -23,6 +23,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  * A saved chess game / play belonging to a user.
  */
 export type Play = $Result.DefaultSelection<Prisma.$PlayPayload>
+/**
+ * Model Puzzle
+ * 
+ */
+export type Puzzle = $Result.DefaultSelection<Prisma.$PuzzlePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -164,6 +169,16 @@ export class PrismaClient<
     * ```
     */
   get play(): Prisma.PlayDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.puzzle`: Exposes CRUD operations for the **Puzzle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Puzzles
+    * const puzzles = await prisma.puzzle.findMany()
+    * ```
+    */
+  get puzzle(): Prisma.PuzzleDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -612,7 +627,8 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
-    Play: 'Play'
+    Play: 'Play',
+    Puzzle: 'Puzzle'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -628,7 +644,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "play"
+      modelProps: "user" | "play" | "puzzle"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -780,6 +796,80 @@ export namespace Prisma {
           }
         }
       }
+      Puzzle: {
+        payload: Prisma.$PuzzlePayload<ExtArgs>
+        fields: Prisma.PuzzleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PuzzleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PuzzleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          findFirst: {
+            args: Prisma.PuzzleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PuzzleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          findMany: {
+            args: Prisma.PuzzleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>[]
+          }
+          create: {
+            args: Prisma.PuzzleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          createMany: {
+            args: Prisma.PuzzleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PuzzleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>[]
+          }
+          delete: {
+            args: Prisma.PuzzleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          update: {
+            args: Prisma.PuzzleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          deleteMany: {
+            args: Prisma.PuzzleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PuzzleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PuzzleUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>[]
+          }
+          upsert: {
+            args: Prisma.PuzzleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PuzzlePayload>
+          }
+          aggregate: {
+            args: Prisma.PuzzleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePuzzle>
+          }
+          groupBy: {
+            args: Prisma.PuzzleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PuzzleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PuzzleCountArgs<ExtArgs>
+            result: $Utils.Optional<PuzzleCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -905,6 +995,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     play?: PlayOmit
+    puzzle?: PuzzleOmit
   }
 
   /* Types for Logging */
@@ -3248,6 +3339,1053 @@ export namespace Prisma {
 
 
   /**
+   * Model Puzzle
+   */
+
+  export type AggregatePuzzle = {
+    _count: PuzzleCountAggregateOutputType | null
+    _avg: PuzzleAvgAggregateOutputType | null
+    _sum: PuzzleSumAggregateOutputType | null
+    _min: PuzzleMinAggregateOutputType | null
+    _max: PuzzleMaxAggregateOutputType | null
+  }
+
+  export type PuzzleAvgAggregateOutputType = {
+    seq: number | null
+    rating: number | null
+  }
+
+  export type PuzzleSumAggregateOutputType = {
+    seq: number | null
+    rating: number | null
+  }
+
+  export type PuzzleMinAggregateOutputType = {
+    id: string | null
+    seq: number | null
+    fen: string | null
+    moves: string | null
+    rating: number | null
+  }
+
+  export type PuzzleMaxAggregateOutputType = {
+    id: string | null
+    seq: number | null
+    fen: string | null
+    moves: string | null
+    rating: number | null
+  }
+
+  export type PuzzleCountAggregateOutputType = {
+    id: number
+    seq: number
+    fen: number
+    moves: number
+    rating: number
+    themes: number
+    _all: number
+  }
+
+
+  export type PuzzleAvgAggregateInputType = {
+    seq?: true
+    rating?: true
+  }
+
+  export type PuzzleSumAggregateInputType = {
+    seq?: true
+    rating?: true
+  }
+
+  export type PuzzleMinAggregateInputType = {
+    id?: true
+    seq?: true
+    fen?: true
+    moves?: true
+    rating?: true
+  }
+
+  export type PuzzleMaxAggregateInputType = {
+    id?: true
+    seq?: true
+    fen?: true
+    moves?: true
+    rating?: true
+  }
+
+  export type PuzzleCountAggregateInputType = {
+    id?: true
+    seq?: true
+    fen?: true
+    moves?: true
+    rating?: true
+    themes?: true
+    _all?: true
+  }
+
+  export type PuzzleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Puzzle to aggregate.
+     */
+    where?: PuzzleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Puzzles to fetch.
+     */
+    orderBy?: PuzzleOrderByWithRelationInput | PuzzleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PuzzleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Puzzles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Puzzles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Puzzles
+    **/
+    _count?: true | PuzzleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PuzzleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PuzzleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PuzzleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PuzzleMaxAggregateInputType
+  }
+
+  export type GetPuzzleAggregateType<T extends PuzzleAggregateArgs> = {
+        [P in keyof T & keyof AggregatePuzzle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePuzzle[P]>
+      : GetScalarType<T[P], AggregatePuzzle[P]>
+  }
+
+
+
+
+  export type PuzzleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PuzzleWhereInput
+    orderBy?: PuzzleOrderByWithAggregationInput | PuzzleOrderByWithAggregationInput[]
+    by: PuzzleScalarFieldEnum[] | PuzzleScalarFieldEnum
+    having?: PuzzleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PuzzleCountAggregateInputType | true
+    _avg?: PuzzleAvgAggregateInputType
+    _sum?: PuzzleSumAggregateInputType
+    _min?: PuzzleMinAggregateInputType
+    _max?: PuzzleMaxAggregateInputType
+  }
+
+  export type PuzzleGroupByOutputType = {
+    id: string
+    seq: number
+    fen: string
+    moves: string
+    rating: number
+    themes: string[]
+    _count: PuzzleCountAggregateOutputType | null
+    _avg: PuzzleAvgAggregateOutputType | null
+    _sum: PuzzleSumAggregateOutputType | null
+    _min: PuzzleMinAggregateOutputType | null
+    _max: PuzzleMaxAggregateOutputType | null
+  }
+
+  type GetPuzzleGroupByPayload<T extends PuzzleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PuzzleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PuzzleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PuzzleGroupByOutputType[P]>
+            : GetScalarType<T[P], PuzzleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PuzzleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    seq?: boolean
+    fen?: boolean
+    moves?: boolean
+    rating?: boolean
+    themes?: boolean
+  }, ExtArgs["result"]["puzzle"]>
+
+  export type PuzzleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    seq?: boolean
+    fen?: boolean
+    moves?: boolean
+    rating?: boolean
+    themes?: boolean
+  }, ExtArgs["result"]["puzzle"]>
+
+  export type PuzzleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    seq?: boolean
+    fen?: boolean
+    moves?: boolean
+    rating?: boolean
+    themes?: boolean
+  }, ExtArgs["result"]["puzzle"]>
+
+  export type PuzzleSelectScalar = {
+    id?: boolean
+    seq?: boolean
+    fen?: boolean
+    moves?: boolean
+    rating?: boolean
+    themes?: boolean
+  }
+
+  export type PuzzleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "seq" | "fen" | "moves" | "rating" | "themes", ExtArgs["result"]["puzzle"]>
+
+  export type $PuzzlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Puzzle"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      seq: number
+      fen: string
+      moves: string
+      rating: number
+      themes: string[]
+    }, ExtArgs["result"]["puzzle"]>
+    composites: {}
+  }
+
+  type PuzzleGetPayload<S extends boolean | null | undefined | PuzzleDefaultArgs> = $Result.GetResult<Prisma.$PuzzlePayload, S>
+
+  type PuzzleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PuzzleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PuzzleCountAggregateInputType | true
+    }
+
+  export interface PuzzleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Puzzle'], meta: { name: 'Puzzle' } }
+    /**
+     * Find zero or one Puzzle that matches the filter.
+     * @param {PuzzleFindUniqueArgs} args - Arguments to find a Puzzle
+     * @example
+     * // Get one Puzzle
+     * const puzzle = await prisma.puzzle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PuzzleFindUniqueArgs>(args: SelectSubset<T, PuzzleFindUniqueArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Puzzle that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PuzzleFindUniqueOrThrowArgs} args - Arguments to find a Puzzle
+     * @example
+     * // Get one Puzzle
+     * const puzzle = await prisma.puzzle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PuzzleFindUniqueOrThrowArgs>(args: SelectSubset<T, PuzzleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Puzzle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleFindFirstArgs} args - Arguments to find a Puzzle
+     * @example
+     * // Get one Puzzle
+     * const puzzle = await prisma.puzzle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PuzzleFindFirstArgs>(args?: SelectSubset<T, PuzzleFindFirstArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Puzzle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleFindFirstOrThrowArgs} args - Arguments to find a Puzzle
+     * @example
+     * // Get one Puzzle
+     * const puzzle = await prisma.puzzle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PuzzleFindFirstOrThrowArgs>(args?: SelectSubset<T, PuzzleFindFirstOrThrowArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Puzzles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Puzzles
+     * const puzzles = await prisma.puzzle.findMany()
+     * 
+     * // Get first 10 Puzzles
+     * const puzzles = await prisma.puzzle.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const puzzleWithIdOnly = await prisma.puzzle.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PuzzleFindManyArgs>(args?: SelectSubset<T, PuzzleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Puzzle.
+     * @param {PuzzleCreateArgs} args - Arguments to create a Puzzle.
+     * @example
+     * // Create one Puzzle
+     * const Puzzle = await prisma.puzzle.create({
+     *   data: {
+     *     // ... data to create a Puzzle
+     *   }
+     * })
+     * 
+     */
+    create<T extends PuzzleCreateArgs>(args: SelectSubset<T, PuzzleCreateArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Puzzles.
+     * @param {PuzzleCreateManyArgs} args - Arguments to create many Puzzles.
+     * @example
+     * // Create many Puzzles
+     * const puzzle = await prisma.puzzle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PuzzleCreateManyArgs>(args?: SelectSubset<T, PuzzleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Puzzles and returns the data saved in the database.
+     * @param {PuzzleCreateManyAndReturnArgs} args - Arguments to create many Puzzles.
+     * @example
+     * // Create many Puzzles
+     * const puzzle = await prisma.puzzle.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Puzzles and only return the `id`
+     * const puzzleWithIdOnly = await prisma.puzzle.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PuzzleCreateManyAndReturnArgs>(args?: SelectSubset<T, PuzzleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Puzzle.
+     * @param {PuzzleDeleteArgs} args - Arguments to delete one Puzzle.
+     * @example
+     * // Delete one Puzzle
+     * const Puzzle = await prisma.puzzle.delete({
+     *   where: {
+     *     // ... filter to delete one Puzzle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PuzzleDeleteArgs>(args: SelectSubset<T, PuzzleDeleteArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Puzzle.
+     * @param {PuzzleUpdateArgs} args - Arguments to update one Puzzle.
+     * @example
+     * // Update one Puzzle
+     * const puzzle = await prisma.puzzle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PuzzleUpdateArgs>(args: SelectSubset<T, PuzzleUpdateArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Puzzles.
+     * @param {PuzzleDeleteManyArgs} args - Arguments to filter Puzzles to delete.
+     * @example
+     * // Delete a few Puzzles
+     * const { count } = await prisma.puzzle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PuzzleDeleteManyArgs>(args?: SelectSubset<T, PuzzleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Puzzles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Puzzles
+     * const puzzle = await prisma.puzzle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PuzzleUpdateManyArgs>(args: SelectSubset<T, PuzzleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Puzzles and returns the data updated in the database.
+     * @param {PuzzleUpdateManyAndReturnArgs} args - Arguments to update many Puzzles.
+     * @example
+     * // Update many Puzzles
+     * const puzzle = await prisma.puzzle.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Puzzles and only return the `id`
+     * const puzzleWithIdOnly = await prisma.puzzle.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PuzzleUpdateManyAndReturnArgs>(args: SelectSubset<T, PuzzleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Puzzle.
+     * @param {PuzzleUpsertArgs} args - Arguments to update or create a Puzzle.
+     * @example
+     * // Update or create a Puzzle
+     * const puzzle = await prisma.puzzle.upsert({
+     *   create: {
+     *     // ... data to create a Puzzle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Puzzle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PuzzleUpsertArgs>(args: SelectSubset<T, PuzzleUpsertArgs<ExtArgs>>): Prisma__PuzzleClient<$Result.GetResult<Prisma.$PuzzlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Puzzles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleCountArgs} args - Arguments to filter Puzzles to count.
+     * @example
+     * // Count the number of Puzzles
+     * const count = await prisma.puzzle.count({
+     *   where: {
+     *     // ... the filter for the Puzzles we want to count
+     *   }
+     * })
+    **/
+    count<T extends PuzzleCountArgs>(
+      args?: Subset<T, PuzzleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PuzzleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Puzzle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PuzzleAggregateArgs>(args: Subset<T, PuzzleAggregateArgs>): Prisma.PrismaPromise<GetPuzzleAggregateType<T>>
+
+    /**
+     * Group by Puzzle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PuzzleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PuzzleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PuzzleGroupByArgs['orderBy'] }
+        : { orderBy?: PuzzleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PuzzleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPuzzleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Puzzle model
+   */
+  readonly fields: PuzzleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Puzzle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PuzzleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Puzzle model
+   */
+  interface PuzzleFieldRefs {
+    readonly id: FieldRef<"Puzzle", 'String'>
+    readonly seq: FieldRef<"Puzzle", 'Int'>
+    readonly fen: FieldRef<"Puzzle", 'String'>
+    readonly moves: FieldRef<"Puzzle", 'String'>
+    readonly rating: FieldRef<"Puzzle", 'Int'>
+    readonly themes: FieldRef<"Puzzle", 'String[]'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Puzzle findUnique
+   */
+  export type PuzzleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter, which Puzzle to fetch.
+     */
+    where: PuzzleWhereUniqueInput
+  }
+
+  /**
+   * Puzzle findUniqueOrThrow
+   */
+  export type PuzzleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter, which Puzzle to fetch.
+     */
+    where: PuzzleWhereUniqueInput
+  }
+
+  /**
+   * Puzzle findFirst
+   */
+  export type PuzzleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter, which Puzzle to fetch.
+     */
+    where?: PuzzleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Puzzles to fetch.
+     */
+    orderBy?: PuzzleOrderByWithRelationInput | PuzzleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Puzzles.
+     */
+    cursor?: PuzzleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Puzzles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Puzzles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Puzzles.
+     */
+    distinct?: PuzzleScalarFieldEnum | PuzzleScalarFieldEnum[]
+  }
+
+  /**
+   * Puzzle findFirstOrThrow
+   */
+  export type PuzzleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter, which Puzzle to fetch.
+     */
+    where?: PuzzleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Puzzles to fetch.
+     */
+    orderBy?: PuzzleOrderByWithRelationInput | PuzzleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Puzzles.
+     */
+    cursor?: PuzzleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Puzzles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Puzzles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Puzzles.
+     */
+    distinct?: PuzzleScalarFieldEnum | PuzzleScalarFieldEnum[]
+  }
+
+  /**
+   * Puzzle findMany
+   */
+  export type PuzzleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter, which Puzzles to fetch.
+     */
+    where?: PuzzleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Puzzles to fetch.
+     */
+    orderBy?: PuzzleOrderByWithRelationInput | PuzzleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Puzzles.
+     */
+    cursor?: PuzzleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Puzzles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Puzzles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Puzzles.
+     */
+    distinct?: PuzzleScalarFieldEnum | PuzzleScalarFieldEnum[]
+  }
+
+  /**
+   * Puzzle create
+   */
+  export type PuzzleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Puzzle.
+     */
+    data: XOR<PuzzleCreateInput, PuzzleUncheckedCreateInput>
+  }
+
+  /**
+   * Puzzle createMany
+   */
+  export type PuzzleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Puzzles.
+     */
+    data: PuzzleCreateManyInput | PuzzleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Puzzle createManyAndReturn
+   */
+  export type PuzzleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * The data used to create many Puzzles.
+     */
+    data: PuzzleCreateManyInput | PuzzleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Puzzle update
+   */
+  export type PuzzleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Puzzle.
+     */
+    data: XOR<PuzzleUpdateInput, PuzzleUncheckedUpdateInput>
+    /**
+     * Choose, which Puzzle to update.
+     */
+    where: PuzzleWhereUniqueInput
+  }
+
+  /**
+   * Puzzle updateMany
+   */
+  export type PuzzleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Puzzles.
+     */
+    data: XOR<PuzzleUpdateManyMutationInput, PuzzleUncheckedUpdateManyInput>
+    /**
+     * Filter which Puzzles to update
+     */
+    where?: PuzzleWhereInput
+    /**
+     * Limit how many Puzzles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Puzzle updateManyAndReturn
+   */
+  export type PuzzleUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * The data used to update Puzzles.
+     */
+    data: XOR<PuzzleUpdateManyMutationInput, PuzzleUncheckedUpdateManyInput>
+    /**
+     * Filter which Puzzles to update
+     */
+    where?: PuzzleWhereInput
+    /**
+     * Limit how many Puzzles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Puzzle upsert
+   */
+  export type PuzzleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Puzzle to update in case it exists.
+     */
+    where: PuzzleWhereUniqueInput
+    /**
+     * In case the Puzzle found by the `where` argument doesn't exist, create a new Puzzle with this data.
+     */
+    create: XOR<PuzzleCreateInput, PuzzleUncheckedCreateInput>
+    /**
+     * In case the Puzzle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PuzzleUpdateInput, PuzzleUncheckedUpdateInput>
+  }
+
+  /**
+   * Puzzle delete
+   */
+  export type PuzzleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+    /**
+     * Filter which Puzzle to delete.
+     */
+    where: PuzzleWhereUniqueInput
+  }
+
+  /**
+   * Puzzle deleteMany
+   */
+  export type PuzzleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Puzzles to delete
+     */
+    where?: PuzzleWhereInput
+    /**
+     * Limit how many Puzzles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Puzzle without action
+   */
+  export type PuzzleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Puzzle
+     */
+    select?: PuzzleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Puzzle
+     */
+    omit?: PuzzleOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -3288,6 +4426,18 @@ export namespace Prisma {
   };
 
   export type PlayScalarFieldEnum = (typeof PlayScalarFieldEnum)[keyof typeof PlayScalarFieldEnum]
+
+
+  export const PuzzleScalarFieldEnum: {
+    id: 'id',
+    seq: 'seq',
+    fen: 'fen',
+    moves: 'moves',
+    rating: 'rating',
+    themes: 'themes'
+  };
+
+  export type PuzzleScalarFieldEnum = (typeof PuzzleScalarFieldEnum)[keyof typeof PuzzleScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -3358,6 +4508,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -3507,6 +4671,65 @@ export namespace Prisma {
     currentFen?: StringNullableWithAggregatesFilter<"Play"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Play"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Play"> | Date | string
+  }
+
+  export type PuzzleWhereInput = {
+    AND?: PuzzleWhereInput | PuzzleWhereInput[]
+    OR?: PuzzleWhereInput[]
+    NOT?: PuzzleWhereInput | PuzzleWhereInput[]
+    id?: StringFilter<"Puzzle"> | string
+    seq?: IntFilter<"Puzzle"> | number
+    fen?: StringFilter<"Puzzle"> | string
+    moves?: StringFilter<"Puzzle"> | string
+    rating?: IntFilter<"Puzzle"> | number
+    themes?: StringNullableListFilter<"Puzzle">
+  }
+
+  export type PuzzleOrderByWithRelationInput = {
+    id?: SortOrder
+    seq?: SortOrder
+    fen?: SortOrder
+    moves?: SortOrder
+    rating?: SortOrder
+    themes?: SortOrder
+  }
+
+  export type PuzzleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    seq?: number
+    AND?: PuzzleWhereInput | PuzzleWhereInput[]
+    OR?: PuzzleWhereInput[]
+    NOT?: PuzzleWhereInput | PuzzleWhereInput[]
+    fen?: StringFilter<"Puzzle"> | string
+    moves?: StringFilter<"Puzzle"> | string
+    rating?: IntFilter<"Puzzle"> | number
+    themes?: StringNullableListFilter<"Puzzle">
+  }, "id" | "seq">
+
+  export type PuzzleOrderByWithAggregationInput = {
+    id?: SortOrder
+    seq?: SortOrder
+    fen?: SortOrder
+    moves?: SortOrder
+    rating?: SortOrder
+    themes?: SortOrder
+    _count?: PuzzleCountOrderByAggregateInput
+    _avg?: PuzzleAvgOrderByAggregateInput
+    _max?: PuzzleMaxOrderByAggregateInput
+    _min?: PuzzleMinOrderByAggregateInput
+    _sum?: PuzzleSumOrderByAggregateInput
+  }
+
+  export type PuzzleScalarWhereWithAggregatesInput = {
+    AND?: PuzzleScalarWhereWithAggregatesInput | PuzzleScalarWhereWithAggregatesInput[]
+    OR?: PuzzleScalarWhereWithAggregatesInput[]
+    NOT?: PuzzleScalarWhereWithAggregatesInput | PuzzleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Puzzle"> | string
+    seq?: IntWithAggregatesFilter<"Puzzle"> | number
+    fen?: StringWithAggregatesFilter<"Puzzle"> | string
+    moves?: StringWithAggregatesFilter<"Puzzle"> | string
+    rating?: IntWithAggregatesFilter<"Puzzle"> | number
+    themes?: StringNullableListFilter<"Puzzle">
   }
 
   export type UserCreateInput = {
@@ -3671,6 +4894,67 @@ export namespace Prisma {
     currentFen?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PuzzleCreateInput = {
+    id: string
+    seq?: number
+    fen: string
+    moves: string
+    rating: number
+    themes?: PuzzleCreatethemesInput | string[]
+  }
+
+  export type PuzzleUncheckedCreateInput = {
+    id: string
+    seq?: number
+    fen: string
+    moves: string
+    rating: number
+    themes?: PuzzleCreatethemesInput | string[]
+  }
+
+  export type PuzzleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fen?: StringFieldUpdateOperationsInput | string
+    moves?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    themes?: PuzzleUpdatethemesInput | string[]
+  }
+
+  export type PuzzleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seq?: IntFieldUpdateOperationsInput | number
+    fen?: StringFieldUpdateOperationsInput | string
+    moves?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    themes?: PuzzleUpdatethemesInput | string[]
+  }
+
+  export type PuzzleCreateManyInput = {
+    id: string
+    seq?: number
+    fen: string
+    moves: string
+    rating: number
+    themes?: PuzzleCreatethemesInput | string[]
+  }
+
+  export type PuzzleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fen?: StringFieldUpdateOperationsInput | string
+    moves?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    themes?: PuzzleUpdatethemesInput | string[]
+  }
+
+  export type PuzzleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seq?: IntFieldUpdateOperationsInput | number
+    fen?: StringFieldUpdateOperationsInput | string
+    moves?: StringFieldUpdateOperationsInput | string
+    rating?: IntFieldUpdateOperationsInput | number
+    themes?: PuzzleUpdatethemesInput | string[]
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -3853,6 +5137,76 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type PuzzleCountOrderByAggregateInput = {
+    id?: SortOrder
+    seq?: SortOrder
+    fen?: SortOrder
+    moves?: SortOrder
+    rating?: SortOrder
+    themes?: SortOrder
+  }
+
+  export type PuzzleAvgOrderByAggregateInput = {
+    seq?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type PuzzleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    seq?: SortOrder
+    fen?: SortOrder
+    moves?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type PuzzleMinOrderByAggregateInput = {
+    id?: SortOrder
+    seq?: SortOrder
+    fen?: SortOrder
+    moves?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type PuzzleSumOrderByAggregateInput = {
+    seq?: SortOrder
+    rating?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type PlayCreateNestedManyWithoutUserInput = {
     create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
@@ -3919,6 +5273,23 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPlaysInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlaysInput, UserUpdateWithoutPlaysInput>, UserUncheckedUpdateWithoutPlaysInput>
+  }
+
+  export type PuzzleCreatethemesInput = {
+    set: string[]
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type PuzzleUpdatethemesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4028,6 +5399,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type PlayCreateWithoutUserInput = {

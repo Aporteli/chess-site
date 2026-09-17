@@ -5,10 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { usePuzzleStore } from '@/stores/puzzle-store';
 import { usePuzzleHandlers } from '@/hooks/use-puzzle-handlers';
 import { usePuzzleHint } from '@/hooks/puzzle/use-puzzle-hint';
-import {
-  useRegisterBoard,
-  usePublishBoardFlags,
-} from '@/hooks/board/use-register-board';
+import { useRegisterBoard, usePublishBoardFlags } from '@/hooks/board/use-register-board';
 import type { BoardAdapter } from '@/lib/chess/board-adapter';
 import { useSettingsStore } from '@/stores/settings-store';
 import { lineIndex } from '@/lib/utils';
@@ -21,6 +18,7 @@ export function PuzzleBoard() {
   const hintLevel = usePuzzleStore((s) => s.hintLevel);
   const loading = usePuzzleStore((s) => s.loading);
   const setBoardFen = usePuzzleStore((s) => s.setBoardFen);
+  const ply = usePuzzleStore((s) => s.ply);
 
   const flipped = useSettingsStore((s) => s.flipped);
   const animations = useSettingsStore((s) => s.animations);
@@ -40,7 +38,8 @@ export function PuzzleBoard() {
       getFen: () => usePuzzleStore.getState().boardFen ?? '',
       getHumanColor: () => {
         const p = usePuzzleStore.getState().puzzle;
-        return p ? fenTurn(p.fen) : 'w';
+        if (!p) return 'w';
+        return fenTurn(p.fen) === 'w' ? 'b' : 'w';
       },
       isBusy: () => usePuzzleStore.getState().loading,
       isGameOver: () => usePuzzleStore.getState().status === 'Solved',
@@ -75,8 +74,17 @@ export function PuzzleBoard() {
 
   // -------- Render --------
   const turn = boardFen ? fenTurn(boardFen) : 'w';
-  const human = puzzle ? fenTurn(puzzle.fen) : 'w';
+  const human = puzzle ? (fenTurn(puzzle.fen) === 'w' ? 'b' : 'w') : 'w';
   const canDrag = Boolean(boardFen) && !loading && status !== 'Solved' && turn === human;
+
+  const lastUci = puzzle && ply > 0 ? puzzle.solution[ply - 1] : undefined;
+  const lastMoveStyles =
+    lastUci && lastUci.length >= 4
+      ? {
+          [lastUci.slice(0, 2)]: { backgroundColor: 'rgba(232, 197, 121, 0.45)' },
+          [lastUci.slice(2, 4)]: { backgroundColor: 'rgba(232, 197, 121, 0.45)' },
+        }
+      : {};
 
   const options = useMemo(
     () => ({
@@ -92,11 +100,11 @@ export function PuzzleBoard() {
       darkSquareStyle: { backgroundColor: 'var(--color-board-dark)' },
       dropSquareStyle: { boxShadow: 'inset 0 0 0 3px var(--color-hint)' },
       boardStyle: { width: '100%', height: '100%', borderRadius: 0 },
-      squareStyles: hintStyles,
+      squareStyles: { ...lastMoveStyles, ...hintStyles },
       arrows: hintArrows,
       onPieceDrop: handlePieceDrop,
     }),
-    [boardFen, flipped, canDrag, hintStyles, hintArrows, handlePieceDrop, animations, coordinates],
+    [boardFen, flipped, canDrag, lastMoveStyles, hintStyles, hintArrows, handlePieceDrop, animations, coordinates],
   );
 
   return (
