@@ -15,8 +15,16 @@ export function SidebarBrand({ collapsed, onCloseMobile }: SidebarBrandProps) {
       ].join(" ")}
     >
       <Link href="/" className="flex min-w-0 items-center gap-2.5">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[#383838] bg-[#2A2A2A] text-[#769656]">
-          <span className="font-mono text-lg leading-none">♞</span>
+        <span className="grid h-9 w-9 shrink-0 place-items-center ">
+          <img
+            src="/pawn_1.svg"
+            alt="PawnX Logo"
+            className="h-9 w-9"
+            width={26}
+            height={26}
+            draggable="false"
+          />
+    
         </span>
         <span
           className={[
@@ -24,7 +32,7 @@ export function SidebarBrand({ collapsed, onCloseMobile }: SidebarBrandProps) {
             collapsed ? "lg:hidden" : "",
           ].join(" ")}
         >
-          MoveTrainer
+          PawnX
         </span>
       </Link>
       <button

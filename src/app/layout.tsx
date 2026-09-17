@@ -5,7 +5,7 @@ import { Providers } from "./providers";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-serif",
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
@@ -24,8 +24,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MoveTrainer",
+  title: "PawnX",
   description: "Grandmaster-grade opening trainer — repertoire trees, spaced repetition, and master-book reference.",
+  icons: {
+    icon: "/pawn_1.svg",
+  },
 };
 
 export default function RootLayout({
