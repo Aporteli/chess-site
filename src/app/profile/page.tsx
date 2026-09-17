@@ -24,21 +24,28 @@ export default async function ProfilePage() {
 
   return (
     <AppShell activeKey="profile">
-      <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10">
-        <header>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
-            Profile
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <header className="mb-8 border-b border-border-subtle pb-5">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-gold">
+            Overview
           </p>
-          <h1 className="mt-1 font-mono text-2xl font-medium text-text-primary sm:text-[28px]">
+          <h1 className="mt-1 font-mono text-2xl font-semibold text-text-primary sm:text-3xl">
             User Profile
           </h1>
           <p className="mt-1.5 text-[13.5px] text-text-secondary">
-            Your account details and session management
+            Your account details, saved games, and session management
           </p>
         </header>
 
-        <ProfileHeader user={session.user} />
-        <SavedPlaysList plays={plays} />
+        {/* Grid Layout: მარცხნივ პროფილი/ინფო (1 სვეტი), მარჯვნივ თამაშები (2 სვეტი) */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <ProfileHeader user={session.user} playsCount={plays.length} />
+          </div>
+          <div className="lg:col-span-2">
+            <SavedPlaysList plays={plays} />
+          </div>
+        </div>
       </div>
     </AppShell>
   );
