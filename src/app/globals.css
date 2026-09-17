@@ -147,6 +147,80 @@ body {
   height: 100% !important;
 }
 
+/* ------------------------------------------------------------------ */
+/* Board workspace — shared by /trainer, /puzzles, /analysis and       */
+/* /tablebase.                                                         */
+/*                                                                     */
+/* Portrait / narrow: board on top at full width, panel underneath,    */
+/* the page scrolls. Landscape or lg+: board and panel side by side,   */
+/* nothing scrolls except the panel.                                   */
+/*                                                                     */
+/* `--board-size` is the single source of truth for the board edge —    */
+/* the smallest of its share of the row, the viewport height left      */
+/* under the navbar, and a comfortable maximum. The board therefore    */
+/* stays square, always fits on screen without scrolling, and stays    */
+/* wider than the side panel on every screen.                          */
+/*                                                                     */
+/* Knobs (set per page with e.g. `[--board-reserve:5rem]`):            */
+/*   --board-chrome   navbar + page padding                            */
+/*   --board-reserve  toolbars stacked above/below the board           */
+/*   --board-share    max share of the row the board may take          */
+/*   --board-max      upper bound on the board edge                    */
+/* ------------------------------------------------------------------ */
+.board-workspace {
+  --board-size: min(
+    var(--board-max, 52rem),
+    calc(100dvh - var(--board-chrome, 6.5rem) - var(--board-reserve, 0px))
+  );
+
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.board-column,
+.board-panel {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.board-panel {
+  gap: 0.75rem;
+}
+
+/* A square that never outgrows the room available to it. */
+.board-square {
+  width: 100%;
+  max-width: var(--board-size, 52rem);
+  margin-inline: auto;
+  aspect-ratio: 1 / 1;
+}
+
+@media (min-width: 1024px), (orientation: landscape) {
+  .board-workspace {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+
+  .board-column {
+    height: 100%;
+    width: min(var(--board-share, 62%), var(--board-size, 52rem));
+    flex: none;
+  }
+
+  .board-panel {
+    height: 100%;
+    max-width: 30rem;
+    flex: 1 1 0;
+    overflow-y: auto;
+  }
+}
+
 input[type="range"] {
   accent-color: var(--color-accent-gold);
 }

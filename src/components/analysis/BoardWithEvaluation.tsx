@@ -12,7 +12,7 @@ export function BoardWithEvaluation() {
         <EvalBar flipped={flipped} />
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col xl:flex-none">
+      <div className="flex min-w-0 flex-1 flex-col">
         <BoardToolbar />
         <ChessBoard />
       </div>

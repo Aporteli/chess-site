@@ -15,8 +15,8 @@ export function BoardWrapper() {
   const options = useBoardOptions(t, squareStyles);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative mx-auto w-full max-w-[min(100%,620px)]">
+    <div className="flex flex-col items-center">
+      <div className="relative mx-auto w-full max-w-[var(--board-size,52rem)]">
         <div className="relative flex w-full items-stretch gap-2">
           <EvalBar flipped={t.flipped} />
 

@@ -5,7 +5,7 @@ export function BoardToolbar() {
   const toggleTurn = useAnalysisStore((state) => state.toggleTurn);
 
   return (
-    <div className="mb-1.5 flex w-full shrink-0 items-center justify-between px-1 xl:w-[min(100cqw-4.5rem,calc(100dvh-10rem))]">
+    <div className="mb-1.5 flex w-full shrink-0 items-center justify-between px-1">
       <button
         onClick={toggleTurn}
         aria-label="Toggle side to move"

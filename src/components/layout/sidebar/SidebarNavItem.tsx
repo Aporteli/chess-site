@@ -40,7 +40,10 @@ export function SidebarNavItem({
   );
 
   const baseClasses = [
-    "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-[13.5px] font-medium transition-colors",
+    "flex w-full items-center gap-3 rounded-lg border transition-colors",
+    // Responsive padding: larger on mobile (touch-friendly), smaller on desktop
+    "px-3 py-2.5 sm:px-3 sm:py-2.5 lg:px-3 lg:py-2",
+    "text-[13.5px] font-medium",
     collapsed ? "justify-center" : "",
     isActive
       ? "border-accent-gold/20 bg-accent-gold-dim text-accent-gold-bright"

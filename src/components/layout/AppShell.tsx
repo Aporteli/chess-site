@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "./sidebar/Sidebar";
 import { Navbar } from "@/components/layout/navbar/Navbar";
 import type { NavKey } from "@/lib/types";
@@ -14,8 +14,21 @@ export function AppShell({ activeKey, children }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  // Below xl the expanded rail costs the board ~170px of width, which is
+  // where space is tightest, so default to the icon rail there.
+  useEffect(() => {
+    const narrow = window.matchMedia("(max-width: 1279px)");
+    const sync = () => setCollapsed(narrow.matches);
+
+    sync();
+    narrow.addEventListener("change", sync);
+    return () => narrow.removeEventListener("change", sync);
+  }, []);
+
   return (
-    <div className="min-h-dvh bg-bg-deepest landscape:h-dvh landscape:overflow-hidden lg:h-dvh lg:overflow-hidden">
+    // Fixed-height app frame: the viewport never scrolls, `main` does.
+    <div className="flex h-dvh flex-col overflow-hidden bg-bg-deepest lg:flex-row">
+      {/* Sidebar - in-flow rail on desktop, overlay on mobile */}
       <Sidebar
         activeKey={activeKey}
         collapsed={collapsed}
@@ -24,14 +37,10 @@ export function AppShell({ activeKey, children }: AppShellProps) {
         onCloseMobile={() => setMobileNavOpen(false)}
       />
 
-      <div
-        className={[
-          "flex min-h-dvh flex-col transition-[padding] duration-200 ease-out landscape:h-full landscape:min-h-0 lg:h-full lg:min-h-0",
-          collapsed ? "lg:pl-[76px]" : "lg:pl-[248px]",
-        ].join(" ")}
-      >
+      {/* Main Content Area */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Navbar onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
           {children}
         </main>
       </div>

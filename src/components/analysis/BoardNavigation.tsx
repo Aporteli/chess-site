@@ -8,7 +8,7 @@ export function BoardNavigation() {
   const redo = useAnalysisStore((state) => state.redo);
 
   return (
-    <div className="flex flex-row justify-center gap-2.5 xl:flex-col">
+    <div className="flex shrink-0 flex-row justify-center gap-2.5">
       <button
         onClick={undo}
         disabled={historyLength === 0}

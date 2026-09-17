@@ -95,10 +95,14 @@ export function Sidebar({ activeKey, collapsed, onToggleCollapsed, mobileOpen, o
 
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border-subtle bg-bg-surface',
-          'transition-[width,transform] duration-200 ease-out',
-          collapsed ? 'lg:w-[76px]' : 'lg:w-[248px]',
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border-subtle bg-bg-surface lg:static lg:shrink-0',
+          'transition-[width,transform] duration-200 ease-out lg:transition-[width]',
+          // Mobile width: full sidebar width
           'w-[248px]',
+          // Desktop width: depends on collapsed state
+          'lg:h-auto',
+          collapsed ? 'lg:w-[76px]' : 'lg:w-[248px]',
+          // Mobile visibility toggle
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         ].join(' ')}>
         <SidebarBrand collapsed={collapsed} onCloseMobile={onCloseMobile} />

@@ -95,33 +95,40 @@ export function TrainerWorkspace() {
 
   return (
     <StockfishProvider fen={t.fen}>
-      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-5 lg:h-full lg:min-h-0 lg:flex-row lg:items-stretch lg:gap-5">
-        
-        {/* მარცხენა მხარე: ჭადრაკის დაფა */}
-        <section className="min-w-0 flex-1 lg:overflow-y-auto">
-          <BoardWrapper />
-        </section>
+      <div className="flex min-h-0 w-full flex-1 flex-col p-3 pb-6 sm:p-4 lg:p-5">
+        {/* Board and panel: side by side from lg / in landscape, stacked otherwise */}
+        <div className="board-workspace mx-auto w-full max-w-[1500px]">
+          <section className="board-column justify-center">
+            <BoardWrapper />
+          </section>
 
-        {/* მარჯვენა სვეტი: აერთიანებს aside-ს და HudActionButtons-ს */}
-        <div className="flex w-full shrink-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:w-[min(100%,400px)]">
-          <aside className="flex min-h-0 flex-1 flex-col gap-3 lg:overflow-hidden">
+          {/* Tools & HUD: one scroll area beside the board, stacked below it on phones */}
+          <div className="board-panel thin-scrollbar">
+            {/* Mode Toggle - Always visible */}
             <div className="shrink-0">
               <ModeToggle />
             </div>
+
+            {/* Engine Panel */}
             <div className="shrink-0">
               <TrainerEnginePanel />
             </div>
-              <TrainerHud />
-          </aside>
 
-          <div className="shrink-0">
-            <HudActionButtons />
-          </div>
-          <div className="shrink-0">
-            <ActionToolbar />
+            <div>
+              <TrainerHud />
+            </div>
+
+            {/* Action Buttons - Bottom section */}
+            <div className="shrink-0">
+              <HudActionButtons />
+            </div>
+
+            {/* Action Toolbar - Bottom fixed */}
+            <div className="shrink-0">
+              <ActionToolbar />
+            </div>
           </div>
         </div>
-
       </div>
     </StockfishProvider>
   );

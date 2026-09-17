@@ -18,8 +18,9 @@ function AnalysisWorkspace() {
 
   return (
     <AppShell activeKey="analysis">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3 pb-6 xl:overflow-hidden xl:p-3">
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-cols-12 xl:items-stretch xl:gap-5 xl:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col p-3 pb-6 lg:p-4">
+        {/* --board-reserve: turn toolbar + undo/redo row stacked with the board */}
+        <div className="board-workspace mx-auto w-full max-w-[1500px] [--board-reserve:4.5rem]">
           <AnalysisBoardSection />
           <AnalysisControls />
         </div>
