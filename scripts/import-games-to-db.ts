@@ -3,34 +3,32 @@ import fs from 'node:fs/promises';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma';
 
-const DB_URL = process.env.DATABASE_URL;
-const USER_EMAIL = process.env.IMPORT_USER_EMAIL;
-
-if (!DB_URL) {
-  console.error('❌ Missing DATABASE_URL in .env');
-  throw new Error('DATABASE_URL is required');
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+  return value;
 }
 
-if (!USER_EMAIL) {
-  console.error('❌ Missing IMPORT_USER_EMAIL in .env');
-  throw new Error('IMPORT_USER_EMAIL is required');
-}
+const dbUrl = requiredEnv('DATABASE_URL');
+const userEmail = requiredEnv('IMPORT_USER_EMAIL');
 
 console.log(`✓ DB_URL found`);
-console.log(`✓ USER_EMAIL = ${USER_EMAIL}`);
+console.log(`✓ USER_EMAIL = ${userEmail}`);
 
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: DB_URL }),
+  adapter: new PrismaPg({ connectionString: dbUrl }),
 });
 
 async function main() {
   // 1. მოძებნე ან შექმენი user
   const user = await prisma.user.upsert({
-    where: { email: USER_EMAIL },
+    where: { email: userEmail },
     update: {},
     create: {
-      email: USER_EMAIL,
-      name: USER_EMAIL.split('@')[0],
+      email: userEmail,
+      name: userEmail.split('@')[0],
       password: '',
     },
   });

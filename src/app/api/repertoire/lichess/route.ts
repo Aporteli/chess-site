@@ -45,19 +45,16 @@ function parseStudyList(raw: string): LichessStudySummary[] {
   return studies;
 }
 
-async function requireLichessToken() {
+function lichessToken(): string | NextResponse {
   const token = process.env.LICHESS_TOKEN;
   if (!token) {
-    return {
-      token: null,
-      error: NextResponse.json(
-        { error: "LICHESS_TOKEN is not configured." },
-        { status: 500 },
-      ),
-    };
+    return NextResponse.json(
+      { error: "LICHESS_TOKEN is not configured." },
+      { status: 500 },
+    );
   }
 
-  return { token, error: null };
+  return token;
 }
 
 export async function GET(request: Request) {
@@ -77,8 +74,8 @@ export async function GET(request: Request) {
     );
   }
 
-  const { token, error } = await requireLichessToken();
-  if (!token) return error;
+  const token = lichessToken();
+  if (typeof token !== "string") return token;
 
   const response = await fetch(
     `https://lichess.org/api/study/by/${encodeURIComponent(username)}`,
@@ -139,8 +136,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const { token, error } = await requireLichessToken();
-    if (!token) return error;
+    const token = lichessToken();
+    if (typeof token !== "string") return token;
 
     const response = await fetch(
       `https://lichess.org/api/study/${studyId}.pgn`,
