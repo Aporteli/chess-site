@@ -114,7 +114,9 @@ export function ProfileHeader({ user, playsCount }: ProfileHeaderProps) {
           icon={<ShieldCheck className="h-4 w-4" />}
           label="Account"
           value="Verified"
-          last
+          last    
+
+          
         />
       </div>
 
