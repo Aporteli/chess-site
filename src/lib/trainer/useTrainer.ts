@@ -74,6 +74,7 @@ export interface TrainerContextValue {
   deleteCurrent: () => void;
   promoteCurrent: () => void;
   importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
+  importLichessStudy: (pgn: string) => { ok: boolean; message: string };
   exportActiveChapter: () => string;
   exportActiveRepertoire: () => string;
   createChapter: (name: string) => void;
@@ -157,6 +158,7 @@ export function useTrainerValue(): TrainerContextValue | null {
     deleteCurrent: state.deleteCurrent,
     promoteCurrent: state.promoteCurrent,
     importPgnText: state.importPgnText,
+    importLichessStudy: state.importLichessStudy,
     exportActiveChapter: state.exportActiveChapter,
     exportActiveRepertoire: state.exportActiveRepertoire,
     createChapter: state.createChapter,

@@ -19,6 +19,16 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model Repertoire
+ * 
+ */
+export type Repertoire = $Result.DefaultSelection<Prisma.$RepertoirePayload>
+/**
+ * Model Chapter
+ * 
+ */
+export type Chapter = $Result.DefaultSelection<Prisma.$ChapterPayload>
+/**
  * Model Play
  * A saved chess game / play belonging to a user.
  */
@@ -159,6 +169,26 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.repertoire`: Exposes CRUD operations for the **Repertoire** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Repertoires
+    * const repertoires = await prisma.repertoire.findMany()
+    * ```
+    */
+  get repertoire(): Prisma.RepertoireDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.chapter`: Exposes CRUD operations for the **Chapter** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Chapters
+    * const chapters = await prisma.chapter.findMany()
+    * ```
+    */
+  get chapter(): Prisma.ChapterDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.play`: Exposes CRUD operations for the **Play** model.
@@ -627,6 +657,8 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    Repertoire: 'Repertoire',
+    Chapter: 'Chapter',
     Play: 'Play',
     Puzzle: 'Puzzle'
   };
@@ -644,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "play" | "puzzle"
+      modelProps: "user" | "repertoire" | "chapter" | "play" | "puzzle"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -719,6 +751,154 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      Repertoire: {
+        payload: Prisma.$RepertoirePayload<ExtArgs>
+        fields: Prisma.RepertoireFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RepertoireFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RepertoireFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          findFirst: {
+            args: Prisma.RepertoireFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RepertoireFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          findMany: {
+            args: Prisma.RepertoireFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>[]
+          }
+          create: {
+            args: Prisma.RepertoireCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          createMany: {
+            args: Prisma.RepertoireCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RepertoireCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>[]
+          }
+          delete: {
+            args: Prisma.RepertoireDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          update: {
+            args: Prisma.RepertoireUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          deleteMany: {
+            args: Prisma.RepertoireDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RepertoireUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RepertoireUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>[]
+          }
+          upsert: {
+            args: Prisma.RepertoireUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RepertoirePayload>
+          }
+          aggregate: {
+            args: Prisma.RepertoireAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRepertoire>
+          }
+          groupBy: {
+            args: Prisma.RepertoireGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RepertoireGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RepertoireCountArgs<ExtArgs>
+            result: $Utils.Optional<RepertoireCountAggregateOutputType> | number
+          }
+        }
+      }
+      Chapter: {
+        payload: Prisma.$ChapterPayload<ExtArgs>
+        fields: Prisma.ChapterFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChapterFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChapterFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          findFirst: {
+            args: Prisma.ChapterFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChapterFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          findMany: {
+            args: Prisma.ChapterFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>[]
+          }
+          create: {
+            args: Prisma.ChapterCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          createMany: {
+            args: Prisma.ChapterCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChapterCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>[]
+          }
+          delete: {
+            args: Prisma.ChapterDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          update: {
+            args: Prisma.ChapterUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChapterDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChapterUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ChapterUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>[]
+          }
+          upsert: {
+            args: Prisma.ChapterUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChapterPayload>
+          }
+          aggregate: {
+            args: Prisma.ChapterAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChapter>
+          }
+          groupBy: {
+            args: Prisma.ChapterGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChapterGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChapterCountArgs<ExtArgs>
+            result: $Utils.Optional<ChapterCountAggregateOutputType> | number
           }
         }
       }
@@ -994,6 +1174,8 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    repertoire?: RepertoireOmit
+    chapter?: ChapterOmit
     play?: PlayOmit
     puzzle?: PuzzleOmit
   }
@@ -1077,10 +1259,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     plays: number
+    repertoires: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     plays?: boolean | UserCountOutputTypeCountPlaysArgs
+    repertoires?: boolean | UserCountOutputTypeCountRepertoiresArgs
   }
 
   // Custom InputTypes
@@ -1099,6 +1283,44 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPlaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlayWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRepertoiresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RepertoireWhereInput
+  }
+
+
+  /**
+   * Count Type RepertoireCountOutputType
+   */
+
+  export type RepertoireCountOutputType = {
+    chapters: number
+  }
+
+  export type RepertoireCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    chapters?: boolean | RepertoireCountOutputTypeCountChaptersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * RepertoireCountOutputType without action
+   */
+  export type RepertoireCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RepertoireCountOutputType
+     */
+    select?: RepertoireCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * RepertoireCountOutputType without action
+   */
+  export type RepertoireCountOutputTypeCountChaptersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChapterWhereInput
   }
 
 
@@ -1271,6 +1493,7 @@ export namespace Prisma {
     password?: boolean
     createdAt?: boolean
     plays?: boolean | User$playsArgs<ExtArgs>
+    repertoires?: boolean | User$repertoiresArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1301,6 +1524,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "password" | "createdAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     plays?: boolean | User$playsArgs<ExtArgs>
+    repertoires?: boolean | User$repertoiresArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1310,6 +1534,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       plays: Prisma.$PlayPayload<ExtArgs>[]
+      repertoires: Prisma.$RepertoirePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1712,6 +1937,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     plays<T extends User$playsArgs<ExtArgs> = {}>(args?: Subset<T, User$playsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    repertoires<T extends User$repertoiresArgs<ExtArgs> = {}>(args?: Subset<T, User$repertoiresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2163,6 +2389,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.repertoires
+   */
+  export type User$repertoiresArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    where?: RepertoireWhereInput
+    orderBy?: RepertoireOrderByWithRelationInput | RepertoireOrderByWithRelationInput[]
+    cursor?: RepertoireWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RepertoireScalarFieldEnum | RepertoireScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2178,6 +2428,2249 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Repertoire
+   */
+
+  export type AggregateRepertoire = {
+    _count: RepertoireCountAggregateOutputType | null
+    _min: RepertoireMinAggregateOutputType | null
+    _max: RepertoireMaxAggregateOutputType | null
+  }
+
+  export type RepertoireMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    side: string | null
+    description: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RepertoireMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    side: string | null
+    description: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RepertoireCountAggregateOutputType = {
+    id: number
+    userId: number
+    name: number
+    side: number
+    description: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RepertoireMinAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    side?: true
+    description?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RepertoireMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    side?: true
+    description?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RepertoireCountAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    side?: true
+    description?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RepertoireAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Repertoire to aggregate.
+     */
+    where?: RepertoireWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Repertoires to fetch.
+     */
+    orderBy?: RepertoireOrderByWithRelationInput | RepertoireOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RepertoireWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Repertoires from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Repertoires.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Repertoires
+    **/
+    _count?: true | RepertoireCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RepertoireMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RepertoireMaxAggregateInputType
+  }
+
+  export type GetRepertoireAggregateType<T extends RepertoireAggregateArgs> = {
+        [P in keyof T & keyof AggregateRepertoire]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRepertoire[P]>
+      : GetScalarType<T[P], AggregateRepertoire[P]>
+  }
+
+
+
+
+  export type RepertoireGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RepertoireWhereInput
+    orderBy?: RepertoireOrderByWithAggregationInput | RepertoireOrderByWithAggregationInput[]
+    by: RepertoireScalarFieldEnum[] | RepertoireScalarFieldEnum
+    having?: RepertoireScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RepertoireCountAggregateInputType | true
+    _min?: RepertoireMinAggregateInputType
+    _max?: RepertoireMaxAggregateInputType
+  }
+
+  export type RepertoireGroupByOutputType = {
+    id: string
+    userId: string
+    name: string
+    side: string
+    description: string
+    createdAt: Date
+    updatedAt: Date
+    _count: RepertoireCountAggregateOutputType | null
+    _min: RepertoireMinAggregateOutputType | null
+    _max: RepertoireMaxAggregateOutputType | null
+  }
+
+  type GetRepertoireGroupByPayload<T extends RepertoireGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RepertoireGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RepertoireGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RepertoireGroupByOutputType[P]>
+            : GetScalarType<T[P], RepertoireGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RepertoireSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    side?: boolean
+    description?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    chapters?: boolean | Repertoire$chaptersArgs<ExtArgs>
+    _count?: boolean | RepertoireCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["repertoire"]>
+
+  export type RepertoireSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    side?: boolean
+    description?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["repertoire"]>
+
+  export type RepertoireSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    side?: boolean
+    description?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["repertoire"]>
+
+  export type RepertoireSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    side?: boolean
+    description?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RepertoireOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "side" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["repertoire"]>
+  export type RepertoireInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    chapters?: boolean | Repertoire$chaptersArgs<ExtArgs>
+    _count?: boolean | RepertoireCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type RepertoireIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type RepertoireIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $RepertoirePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Repertoire"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      chapters: Prisma.$ChapterPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      name: string
+      side: string
+      description: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["repertoire"]>
+    composites: {}
+  }
+
+  type RepertoireGetPayload<S extends boolean | null | undefined | RepertoireDefaultArgs> = $Result.GetResult<Prisma.$RepertoirePayload, S>
+
+  type RepertoireCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RepertoireFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RepertoireCountAggregateInputType | true
+    }
+
+  export interface RepertoireDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Repertoire'], meta: { name: 'Repertoire' } }
+    /**
+     * Find zero or one Repertoire that matches the filter.
+     * @param {RepertoireFindUniqueArgs} args - Arguments to find a Repertoire
+     * @example
+     * // Get one Repertoire
+     * const repertoire = await prisma.repertoire.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RepertoireFindUniqueArgs>(args: SelectSubset<T, RepertoireFindUniqueArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Repertoire that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RepertoireFindUniqueOrThrowArgs} args - Arguments to find a Repertoire
+     * @example
+     * // Get one Repertoire
+     * const repertoire = await prisma.repertoire.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RepertoireFindUniqueOrThrowArgs>(args: SelectSubset<T, RepertoireFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Repertoire that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireFindFirstArgs} args - Arguments to find a Repertoire
+     * @example
+     * // Get one Repertoire
+     * const repertoire = await prisma.repertoire.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RepertoireFindFirstArgs>(args?: SelectSubset<T, RepertoireFindFirstArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Repertoire that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireFindFirstOrThrowArgs} args - Arguments to find a Repertoire
+     * @example
+     * // Get one Repertoire
+     * const repertoire = await prisma.repertoire.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RepertoireFindFirstOrThrowArgs>(args?: SelectSubset<T, RepertoireFindFirstOrThrowArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Repertoires that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Repertoires
+     * const repertoires = await prisma.repertoire.findMany()
+     * 
+     * // Get first 10 Repertoires
+     * const repertoires = await prisma.repertoire.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const repertoireWithIdOnly = await prisma.repertoire.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RepertoireFindManyArgs>(args?: SelectSubset<T, RepertoireFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Repertoire.
+     * @param {RepertoireCreateArgs} args - Arguments to create a Repertoire.
+     * @example
+     * // Create one Repertoire
+     * const Repertoire = await prisma.repertoire.create({
+     *   data: {
+     *     // ... data to create a Repertoire
+     *   }
+     * })
+     * 
+     */
+    create<T extends RepertoireCreateArgs>(args: SelectSubset<T, RepertoireCreateArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Repertoires.
+     * @param {RepertoireCreateManyArgs} args - Arguments to create many Repertoires.
+     * @example
+     * // Create many Repertoires
+     * const repertoire = await prisma.repertoire.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RepertoireCreateManyArgs>(args?: SelectSubset<T, RepertoireCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Repertoires and returns the data saved in the database.
+     * @param {RepertoireCreateManyAndReturnArgs} args - Arguments to create many Repertoires.
+     * @example
+     * // Create many Repertoires
+     * const repertoire = await prisma.repertoire.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Repertoires and only return the `id`
+     * const repertoireWithIdOnly = await prisma.repertoire.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RepertoireCreateManyAndReturnArgs>(args?: SelectSubset<T, RepertoireCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Repertoire.
+     * @param {RepertoireDeleteArgs} args - Arguments to delete one Repertoire.
+     * @example
+     * // Delete one Repertoire
+     * const Repertoire = await prisma.repertoire.delete({
+     *   where: {
+     *     // ... filter to delete one Repertoire
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RepertoireDeleteArgs>(args: SelectSubset<T, RepertoireDeleteArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Repertoire.
+     * @param {RepertoireUpdateArgs} args - Arguments to update one Repertoire.
+     * @example
+     * // Update one Repertoire
+     * const repertoire = await prisma.repertoire.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RepertoireUpdateArgs>(args: SelectSubset<T, RepertoireUpdateArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Repertoires.
+     * @param {RepertoireDeleteManyArgs} args - Arguments to filter Repertoires to delete.
+     * @example
+     * // Delete a few Repertoires
+     * const { count } = await prisma.repertoire.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RepertoireDeleteManyArgs>(args?: SelectSubset<T, RepertoireDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Repertoires.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Repertoires
+     * const repertoire = await prisma.repertoire.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RepertoireUpdateManyArgs>(args: SelectSubset<T, RepertoireUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Repertoires and returns the data updated in the database.
+     * @param {RepertoireUpdateManyAndReturnArgs} args - Arguments to update many Repertoires.
+     * @example
+     * // Update many Repertoires
+     * const repertoire = await prisma.repertoire.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Repertoires and only return the `id`
+     * const repertoireWithIdOnly = await prisma.repertoire.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RepertoireUpdateManyAndReturnArgs>(args: SelectSubset<T, RepertoireUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Repertoire.
+     * @param {RepertoireUpsertArgs} args - Arguments to update or create a Repertoire.
+     * @example
+     * // Update or create a Repertoire
+     * const repertoire = await prisma.repertoire.upsert({
+     *   create: {
+     *     // ... data to create a Repertoire
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Repertoire we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RepertoireUpsertArgs>(args: SelectSubset<T, RepertoireUpsertArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Repertoires.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireCountArgs} args - Arguments to filter Repertoires to count.
+     * @example
+     * // Count the number of Repertoires
+     * const count = await prisma.repertoire.count({
+     *   where: {
+     *     // ... the filter for the Repertoires we want to count
+     *   }
+     * })
+    **/
+    count<T extends RepertoireCountArgs>(
+      args?: Subset<T, RepertoireCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RepertoireCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Repertoire.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RepertoireAggregateArgs>(args: Subset<T, RepertoireAggregateArgs>): Prisma.PrismaPromise<GetRepertoireAggregateType<T>>
+
+    /**
+     * Group by Repertoire.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RepertoireGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RepertoireGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RepertoireGroupByArgs['orderBy'] }
+        : { orderBy?: RepertoireGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RepertoireGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRepertoireGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Repertoire model
+   */
+  readonly fields: RepertoireFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Repertoire.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RepertoireClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    chapters<T extends Repertoire$chaptersArgs<ExtArgs> = {}>(args?: Subset<T, Repertoire$chaptersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Repertoire model
+   */
+  interface RepertoireFieldRefs {
+    readonly id: FieldRef<"Repertoire", 'String'>
+    readonly userId: FieldRef<"Repertoire", 'String'>
+    readonly name: FieldRef<"Repertoire", 'String'>
+    readonly side: FieldRef<"Repertoire", 'String'>
+    readonly description: FieldRef<"Repertoire", 'String'>
+    readonly createdAt: FieldRef<"Repertoire", 'DateTime'>
+    readonly updatedAt: FieldRef<"Repertoire", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Repertoire findUnique
+   */
+  export type RepertoireFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter, which Repertoire to fetch.
+     */
+    where: RepertoireWhereUniqueInput
+  }
+
+  /**
+   * Repertoire findUniqueOrThrow
+   */
+  export type RepertoireFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter, which Repertoire to fetch.
+     */
+    where: RepertoireWhereUniqueInput
+  }
+
+  /**
+   * Repertoire findFirst
+   */
+  export type RepertoireFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter, which Repertoire to fetch.
+     */
+    where?: RepertoireWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Repertoires to fetch.
+     */
+    orderBy?: RepertoireOrderByWithRelationInput | RepertoireOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Repertoires.
+     */
+    cursor?: RepertoireWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Repertoires from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Repertoires.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Repertoires.
+     */
+    distinct?: RepertoireScalarFieldEnum | RepertoireScalarFieldEnum[]
+  }
+
+  /**
+   * Repertoire findFirstOrThrow
+   */
+  export type RepertoireFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter, which Repertoire to fetch.
+     */
+    where?: RepertoireWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Repertoires to fetch.
+     */
+    orderBy?: RepertoireOrderByWithRelationInput | RepertoireOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Repertoires.
+     */
+    cursor?: RepertoireWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Repertoires from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Repertoires.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Repertoires.
+     */
+    distinct?: RepertoireScalarFieldEnum | RepertoireScalarFieldEnum[]
+  }
+
+  /**
+   * Repertoire findMany
+   */
+  export type RepertoireFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter, which Repertoires to fetch.
+     */
+    where?: RepertoireWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Repertoires to fetch.
+     */
+    orderBy?: RepertoireOrderByWithRelationInput | RepertoireOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Repertoires.
+     */
+    cursor?: RepertoireWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Repertoires from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Repertoires.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Repertoires.
+     */
+    distinct?: RepertoireScalarFieldEnum | RepertoireScalarFieldEnum[]
+  }
+
+  /**
+   * Repertoire create
+   */
+  export type RepertoireCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Repertoire.
+     */
+    data: XOR<RepertoireCreateInput, RepertoireUncheckedCreateInput>
+  }
+
+  /**
+   * Repertoire createMany
+   */
+  export type RepertoireCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Repertoires.
+     */
+    data: RepertoireCreateManyInput | RepertoireCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Repertoire createManyAndReturn
+   */
+  export type RepertoireCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * The data used to create many Repertoires.
+     */
+    data: RepertoireCreateManyInput | RepertoireCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Repertoire update
+   */
+  export type RepertoireUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Repertoire.
+     */
+    data: XOR<RepertoireUpdateInput, RepertoireUncheckedUpdateInput>
+    /**
+     * Choose, which Repertoire to update.
+     */
+    where: RepertoireWhereUniqueInput
+  }
+
+  /**
+   * Repertoire updateMany
+   */
+  export type RepertoireUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Repertoires.
+     */
+    data: XOR<RepertoireUpdateManyMutationInput, RepertoireUncheckedUpdateManyInput>
+    /**
+     * Filter which Repertoires to update
+     */
+    where?: RepertoireWhereInput
+    /**
+     * Limit how many Repertoires to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Repertoire updateManyAndReturn
+   */
+  export type RepertoireUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * The data used to update Repertoires.
+     */
+    data: XOR<RepertoireUpdateManyMutationInput, RepertoireUncheckedUpdateManyInput>
+    /**
+     * Filter which Repertoires to update
+     */
+    where?: RepertoireWhereInput
+    /**
+     * Limit how many Repertoires to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Repertoire upsert
+   */
+  export type RepertoireUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Repertoire to update in case it exists.
+     */
+    where: RepertoireWhereUniqueInput
+    /**
+     * In case the Repertoire found by the `where` argument doesn't exist, create a new Repertoire with this data.
+     */
+    create: XOR<RepertoireCreateInput, RepertoireUncheckedCreateInput>
+    /**
+     * In case the Repertoire was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RepertoireUpdateInput, RepertoireUncheckedUpdateInput>
+  }
+
+  /**
+   * Repertoire delete
+   */
+  export type RepertoireDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+    /**
+     * Filter which Repertoire to delete.
+     */
+    where: RepertoireWhereUniqueInput
+  }
+
+  /**
+   * Repertoire deleteMany
+   */
+  export type RepertoireDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Repertoires to delete
+     */
+    where?: RepertoireWhereInput
+    /**
+     * Limit how many Repertoires to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Repertoire.chapters
+   */
+  export type Repertoire$chaptersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    where?: ChapterWhereInput
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    cursor?: ChapterWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
+  }
+
+  /**
+   * Repertoire without action
+   */
+  export type RepertoireDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Repertoire
+     */
+    select?: RepertoireSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Repertoire
+     */
+    omit?: RepertoireOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RepertoireInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Chapter
+   */
+
+  export type AggregateChapter = {
+    _count: ChapterCountAggregateOutputType | null
+    _min: ChapterMinAggregateOutputType | null
+    _max: ChapterMaxAggregateOutputType | null
+  }
+
+  export type ChapterMinAggregateOutputType = {
+    id: string | null
+    repertoireId: string | null
+    name: string | null
+    eco: string | null
+    variation: string | null
+    rootId: string | null
+    startFen: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChapterMaxAggregateOutputType = {
+    id: string | null
+    repertoireId: string | null
+    name: string | null
+    eco: string | null
+    variation: string | null
+    rootId: string | null
+    startFen: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ChapterCountAggregateOutputType = {
+    id: number
+    repertoireId: number
+    name: number
+    eco: number
+    variation: number
+    rootId: number
+    startFen: number
+    nodes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ChapterMinAggregateInputType = {
+    id?: true
+    repertoireId?: true
+    name?: true
+    eco?: true
+    variation?: true
+    rootId?: true
+    startFen?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChapterMaxAggregateInputType = {
+    id?: true
+    repertoireId?: true
+    name?: true
+    eco?: true
+    variation?: true
+    rootId?: true
+    startFen?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ChapterCountAggregateInputType = {
+    id?: true
+    repertoireId?: true
+    name?: true
+    eco?: true
+    variation?: true
+    rootId?: true
+    startFen?: true
+    nodes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ChapterAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Chapter to aggregate.
+     */
+    where?: ChapterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Chapters to fetch.
+     */
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChapterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Chapters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Chapters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Chapters
+    **/
+    _count?: true | ChapterCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChapterMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChapterMaxAggregateInputType
+  }
+
+  export type GetChapterAggregateType<T extends ChapterAggregateArgs> = {
+        [P in keyof T & keyof AggregateChapter]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChapter[P]>
+      : GetScalarType<T[P], AggregateChapter[P]>
+  }
+
+
+
+
+  export type ChapterGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChapterWhereInput
+    orderBy?: ChapterOrderByWithAggregationInput | ChapterOrderByWithAggregationInput[]
+    by: ChapterScalarFieldEnum[] | ChapterScalarFieldEnum
+    having?: ChapterScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChapterCountAggregateInputType | true
+    _min?: ChapterMinAggregateInputType
+    _max?: ChapterMaxAggregateInputType
+  }
+
+  export type ChapterGroupByOutputType = {
+    id: string
+    repertoireId: string
+    name: string
+    eco: string
+    variation: string
+    rootId: string
+    startFen: string
+    nodes: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: ChapterCountAggregateOutputType | null
+    _min: ChapterMinAggregateOutputType | null
+    _max: ChapterMaxAggregateOutputType | null
+  }
+
+  type GetChapterGroupByPayload<T extends ChapterGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChapterGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChapterGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChapterGroupByOutputType[P]>
+            : GetScalarType<T[P], ChapterGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChapterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    repertoireId?: boolean
+    name?: boolean
+    eco?: boolean
+    variation?: boolean
+    rootId?: boolean
+    startFen?: boolean
+    nodes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chapter"]>
+
+  export type ChapterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    repertoireId?: boolean
+    name?: boolean
+    eco?: boolean
+    variation?: boolean
+    rootId?: boolean
+    startFen?: boolean
+    nodes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chapter"]>
+
+  export type ChapterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    repertoireId?: boolean
+    name?: boolean
+    eco?: boolean
+    variation?: boolean
+    rootId?: boolean
+    startFen?: boolean
+    nodes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["chapter"]>
+
+  export type ChapterSelectScalar = {
+    id?: boolean
+    repertoireId?: boolean
+    name?: boolean
+    eco?: boolean
+    variation?: boolean
+    rootId?: boolean
+    startFen?: boolean
+    nodes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ChapterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "repertoireId" | "name" | "eco" | "variation" | "rootId" | "startFen" | "nodes" | "createdAt" | "updatedAt", ExtArgs["result"]["chapter"]>
+  export type ChapterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }
+  export type ChapterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }
+  export type ChapterIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    repertoire?: boolean | RepertoireDefaultArgs<ExtArgs>
+  }
+
+  export type $ChapterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Chapter"
+    objects: {
+      repertoire: Prisma.$RepertoirePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      repertoireId: string
+      name: string
+      eco: string
+      variation: string
+      rootId: string
+      startFen: string
+      nodes: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["chapter"]>
+    composites: {}
+  }
+
+  type ChapterGetPayload<S extends boolean | null | undefined | ChapterDefaultArgs> = $Result.GetResult<Prisma.$ChapterPayload, S>
+
+  type ChapterCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ChapterFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ChapterCountAggregateInputType | true
+    }
+
+  export interface ChapterDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Chapter'], meta: { name: 'Chapter' } }
+    /**
+     * Find zero or one Chapter that matches the filter.
+     * @param {ChapterFindUniqueArgs} args - Arguments to find a Chapter
+     * @example
+     * // Get one Chapter
+     * const chapter = await prisma.chapter.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChapterFindUniqueArgs>(args: SelectSubset<T, ChapterFindUniqueArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Chapter that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ChapterFindUniqueOrThrowArgs} args - Arguments to find a Chapter
+     * @example
+     * // Get one Chapter
+     * const chapter = await prisma.chapter.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChapterFindUniqueOrThrowArgs>(args: SelectSubset<T, ChapterFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Chapter that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterFindFirstArgs} args - Arguments to find a Chapter
+     * @example
+     * // Get one Chapter
+     * const chapter = await prisma.chapter.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChapterFindFirstArgs>(args?: SelectSubset<T, ChapterFindFirstArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Chapter that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterFindFirstOrThrowArgs} args - Arguments to find a Chapter
+     * @example
+     * // Get one Chapter
+     * const chapter = await prisma.chapter.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChapterFindFirstOrThrowArgs>(args?: SelectSubset<T, ChapterFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Chapters that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Chapters
+     * const chapters = await prisma.chapter.findMany()
+     * 
+     * // Get first 10 Chapters
+     * const chapters = await prisma.chapter.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const chapterWithIdOnly = await prisma.chapter.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChapterFindManyArgs>(args?: SelectSubset<T, ChapterFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Chapter.
+     * @param {ChapterCreateArgs} args - Arguments to create a Chapter.
+     * @example
+     * // Create one Chapter
+     * const Chapter = await prisma.chapter.create({
+     *   data: {
+     *     // ... data to create a Chapter
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChapterCreateArgs>(args: SelectSubset<T, ChapterCreateArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Chapters.
+     * @param {ChapterCreateManyArgs} args - Arguments to create many Chapters.
+     * @example
+     * // Create many Chapters
+     * const chapter = await prisma.chapter.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChapterCreateManyArgs>(args?: SelectSubset<T, ChapterCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Chapters and returns the data saved in the database.
+     * @param {ChapterCreateManyAndReturnArgs} args - Arguments to create many Chapters.
+     * @example
+     * // Create many Chapters
+     * const chapter = await prisma.chapter.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Chapters and only return the `id`
+     * const chapterWithIdOnly = await prisma.chapter.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChapterCreateManyAndReturnArgs>(args?: SelectSubset<T, ChapterCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Chapter.
+     * @param {ChapterDeleteArgs} args - Arguments to delete one Chapter.
+     * @example
+     * // Delete one Chapter
+     * const Chapter = await prisma.chapter.delete({
+     *   where: {
+     *     // ... filter to delete one Chapter
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChapterDeleteArgs>(args: SelectSubset<T, ChapterDeleteArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Chapter.
+     * @param {ChapterUpdateArgs} args - Arguments to update one Chapter.
+     * @example
+     * // Update one Chapter
+     * const chapter = await prisma.chapter.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChapterUpdateArgs>(args: SelectSubset<T, ChapterUpdateArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Chapters.
+     * @param {ChapterDeleteManyArgs} args - Arguments to filter Chapters to delete.
+     * @example
+     * // Delete a few Chapters
+     * const { count } = await prisma.chapter.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChapterDeleteManyArgs>(args?: SelectSubset<T, ChapterDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Chapters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Chapters
+     * const chapter = await prisma.chapter.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChapterUpdateManyArgs>(args: SelectSubset<T, ChapterUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Chapters and returns the data updated in the database.
+     * @param {ChapterUpdateManyAndReturnArgs} args - Arguments to update many Chapters.
+     * @example
+     * // Update many Chapters
+     * const chapter = await prisma.chapter.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Chapters and only return the `id`
+     * const chapterWithIdOnly = await prisma.chapter.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ChapterUpdateManyAndReturnArgs>(args: SelectSubset<T, ChapterUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Chapter.
+     * @param {ChapterUpsertArgs} args - Arguments to update or create a Chapter.
+     * @example
+     * // Update or create a Chapter
+     * const chapter = await prisma.chapter.upsert({
+     *   create: {
+     *     // ... data to create a Chapter
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Chapter we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChapterUpsertArgs>(args: SelectSubset<T, ChapterUpsertArgs<ExtArgs>>): Prisma__ChapterClient<$Result.GetResult<Prisma.$ChapterPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Chapters.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterCountArgs} args - Arguments to filter Chapters to count.
+     * @example
+     * // Count the number of Chapters
+     * const count = await prisma.chapter.count({
+     *   where: {
+     *     // ... the filter for the Chapters we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChapterCountArgs>(
+      args?: Subset<T, ChapterCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChapterCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Chapter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChapterAggregateArgs>(args: Subset<T, ChapterAggregateArgs>): Prisma.PrismaPromise<GetChapterAggregateType<T>>
+
+    /**
+     * Group by Chapter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChapterGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChapterGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChapterGroupByArgs['orderBy'] }
+        : { orderBy?: ChapterGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChapterGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChapterGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Chapter model
+   */
+  readonly fields: ChapterFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Chapter.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChapterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    repertoire<T extends RepertoireDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RepertoireDefaultArgs<ExtArgs>>): Prisma__RepertoireClient<$Result.GetResult<Prisma.$RepertoirePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Chapter model
+   */
+  interface ChapterFieldRefs {
+    readonly id: FieldRef<"Chapter", 'String'>
+    readonly repertoireId: FieldRef<"Chapter", 'String'>
+    readonly name: FieldRef<"Chapter", 'String'>
+    readonly eco: FieldRef<"Chapter", 'String'>
+    readonly variation: FieldRef<"Chapter", 'String'>
+    readonly rootId: FieldRef<"Chapter", 'String'>
+    readonly startFen: FieldRef<"Chapter", 'String'>
+    readonly nodes: FieldRef<"Chapter", 'Json'>
+    readonly createdAt: FieldRef<"Chapter", 'DateTime'>
+    readonly updatedAt: FieldRef<"Chapter", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Chapter findUnique
+   */
+  export type ChapterFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter, which Chapter to fetch.
+     */
+    where: ChapterWhereUniqueInput
+  }
+
+  /**
+   * Chapter findUniqueOrThrow
+   */
+  export type ChapterFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter, which Chapter to fetch.
+     */
+    where: ChapterWhereUniqueInput
+  }
+
+  /**
+   * Chapter findFirst
+   */
+  export type ChapterFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter, which Chapter to fetch.
+     */
+    where?: ChapterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Chapters to fetch.
+     */
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Chapters.
+     */
+    cursor?: ChapterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Chapters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Chapters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Chapters.
+     */
+    distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
+  }
+
+  /**
+   * Chapter findFirstOrThrow
+   */
+  export type ChapterFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter, which Chapter to fetch.
+     */
+    where?: ChapterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Chapters to fetch.
+     */
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Chapters.
+     */
+    cursor?: ChapterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Chapters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Chapters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Chapters.
+     */
+    distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
+  }
+
+  /**
+   * Chapter findMany
+   */
+  export type ChapterFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter, which Chapters to fetch.
+     */
+    where?: ChapterWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Chapters to fetch.
+     */
+    orderBy?: ChapterOrderByWithRelationInput | ChapterOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Chapters.
+     */
+    cursor?: ChapterWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Chapters from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Chapters.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Chapters.
+     */
+    distinct?: ChapterScalarFieldEnum | ChapterScalarFieldEnum[]
+  }
+
+  /**
+   * Chapter create
+   */
+  export type ChapterCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Chapter.
+     */
+    data: XOR<ChapterCreateInput, ChapterUncheckedCreateInput>
+  }
+
+  /**
+   * Chapter createMany
+   */
+  export type ChapterCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Chapters.
+     */
+    data: ChapterCreateManyInput | ChapterCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Chapter createManyAndReturn
+   */
+  export type ChapterCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * The data used to create many Chapters.
+     */
+    data: ChapterCreateManyInput | ChapterCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Chapter update
+   */
+  export type ChapterUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Chapter.
+     */
+    data: XOR<ChapterUpdateInput, ChapterUncheckedUpdateInput>
+    /**
+     * Choose, which Chapter to update.
+     */
+    where: ChapterWhereUniqueInput
+  }
+
+  /**
+   * Chapter updateMany
+   */
+  export type ChapterUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Chapters.
+     */
+    data: XOR<ChapterUpdateManyMutationInput, ChapterUncheckedUpdateManyInput>
+    /**
+     * Filter which Chapters to update
+     */
+    where?: ChapterWhereInput
+    /**
+     * Limit how many Chapters to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Chapter updateManyAndReturn
+   */
+  export type ChapterUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * The data used to update Chapters.
+     */
+    data: XOR<ChapterUpdateManyMutationInput, ChapterUncheckedUpdateManyInput>
+    /**
+     * Filter which Chapters to update
+     */
+    where?: ChapterWhereInput
+    /**
+     * Limit how many Chapters to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Chapter upsert
+   */
+  export type ChapterUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Chapter to update in case it exists.
+     */
+    where: ChapterWhereUniqueInput
+    /**
+     * In case the Chapter found by the `where` argument doesn't exist, create a new Chapter with this data.
+     */
+    create: XOR<ChapterCreateInput, ChapterUncheckedCreateInput>
+    /**
+     * In case the Chapter was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChapterUpdateInput, ChapterUncheckedUpdateInput>
+  }
+
+  /**
+   * Chapter delete
+   */
+  export type ChapterDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
+    /**
+     * Filter which Chapter to delete.
+     */
+    where: ChapterWhereUniqueInput
+  }
+
+  /**
+   * Chapter deleteMany
+   */
+  export type ChapterDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Chapters to delete
+     */
+    where?: ChapterWhereInput
+    /**
+     * Limit how many Chapters to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Chapter without action
+   */
+  export type ChapterDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Chapter
+     */
+    select?: ChapterSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Chapter
+     */
+    omit?: ChapterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChapterInclude<ExtArgs> | null
   }
 
 
@@ -2474,9 +4967,6 @@ export namespace Prisma {
       source: string
       white: string | null
       black: string | null
-      /**
-       * Chess result: "1-0", "0-1", "1/2-1/2", or "*" while in progress.
-       */
       result: string
       pgn: string
       startFen: string
@@ -4410,6 +6900,35 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const RepertoireScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    name: 'name',
+    side: 'side',
+    description: 'description',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RepertoireScalarFieldEnum = (typeof RepertoireScalarFieldEnum)[keyof typeof RepertoireScalarFieldEnum]
+
+
+  export const ChapterScalarFieldEnum: {
+    id: 'id',
+    repertoireId: 'repertoireId',
+    name: 'name',
+    eco: 'eco',
+    variation: 'variation',
+    rootId: 'rootId',
+    startFen: 'startFen',
+    nodes: 'nodes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ChapterScalarFieldEnum = (typeof ChapterScalarFieldEnum)[keyof typeof ChapterScalarFieldEnum]
+
+
   export const PlayScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -4448,6 +6967,13 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -4462,6 +6988,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -4494,6 +7029,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -4538,6 +7087,7 @@ export namespace Prisma {
     password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     plays?: PlayListRelationFilter
+    repertoires?: RepertoireListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -4547,6 +7097,7 @@ export namespace Prisma {
     password?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     plays?: PlayOrderByRelationAggregateInput
+    repertoires?: RepertoireOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -4559,6 +7110,7 @@ export namespace Prisma {
     password?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     plays?: PlayListRelationFilter
+    repertoires?: RepertoireListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -4581,6 +7133,154 @@ export namespace Prisma {
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type RepertoireWhereInput = {
+    AND?: RepertoireWhereInput | RepertoireWhereInput[]
+    OR?: RepertoireWhereInput[]
+    NOT?: RepertoireWhereInput | RepertoireWhereInput[]
+    id?: StringFilter<"Repertoire"> | string
+    userId?: StringFilter<"Repertoire"> | string
+    name?: StringFilter<"Repertoire"> | string
+    side?: StringFilter<"Repertoire"> | string
+    description?: StringFilter<"Repertoire"> | string
+    createdAt?: DateTimeFilter<"Repertoire"> | Date | string
+    updatedAt?: DateTimeFilter<"Repertoire"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapters?: ChapterListRelationFilter
+  }
+
+  export type RepertoireOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    side?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    chapters?: ChapterOrderByRelationAggregateInput
+  }
+
+  export type RepertoireWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: RepertoireWhereInput | RepertoireWhereInput[]
+    OR?: RepertoireWhereInput[]
+    NOT?: RepertoireWhereInput | RepertoireWhereInput[]
+    userId?: StringFilter<"Repertoire"> | string
+    name?: StringFilter<"Repertoire"> | string
+    side?: StringFilter<"Repertoire"> | string
+    description?: StringFilter<"Repertoire"> | string
+    createdAt?: DateTimeFilter<"Repertoire"> | Date | string
+    updatedAt?: DateTimeFilter<"Repertoire"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chapters?: ChapterListRelationFilter
+  }, "id">
+
+  export type RepertoireOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    side?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RepertoireCountOrderByAggregateInput
+    _max?: RepertoireMaxOrderByAggregateInput
+    _min?: RepertoireMinOrderByAggregateInput
+  }
+
+  export type RepertoireScalarWhereWithAggregatesInput = {
+    AND?: RepertoireScalarWhereWithAggregatesInput | RepertoireScalarWhereWithAggregatesInput[]
+    OR?: RepertoireScalarWhereWithAggregatesInput[]
+    NOT?: RepertoireScalarWhereWithAggregatesInput | RepertoireScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Repertoire"> | string
+    userId?: StringWithAggregatesFilter<"Repertoire"> | string
+    name?: StringWithAggregatesFilter<"Repertoire"> | string
+    side?: StringWithAggregatesFilter<"Repertoire"> | string
+    description?: StringWithAggregatesFilter<"Repertoire"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Repertoire"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Repertoire"> | Date | string
+  }
+
+  export type ChapterWhereInput = {
+    AND?: ChapterWhereInput | ChapterWhereInput[]
+    OR?: ChapterWhereInput[]
+    NOT?: ChapterWhereInput | ChapterWhereInput[]
+    id?: StringFilter<"Chapter"> | string
+    repertoireId?: StringFilter<"Chapter"> | string
+    name?: StringFilter<"Chapter"> | string
+    eco?: StringFilter<"Chapter"> | string
+    variation?: StringFilter<"Chapter"> | string
+    rootId?: StringFilter<"Chapter"> | string
+    startFen?: StringFilter<"Chapter"> | string
+    nodes?: JsonFilter<"Chapter">
+    createdAt?: DateTimeFilter<"Chapter"> | Date | string
+    updatedAt?: DateTimeFilter<"Chapter"> | Date | string
+    repertoire?: XOR<RepertoireScalarRelationFilter, RepertoireWhereInput>
+  }
+
+  export type ChapterOrderByWithRelationInput = {
+    id?: SortOrder
+    repertoireId?: SortOrder
+    name?: SortOrder
+    eco?: SortOrder
+    variation?: SortOrder
+    rootId?: SortOrder
+    startFen?: SortOrder
+    nodes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    repertoire?: RepertoireOrderByWithRelationInput
+  }
+
+  export type ChapterWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ChapterWhereInput | ChapterWhereInput[]
+    OR?: ChapterWhereInput[]
+    NOT?: ChapterWhereInput | ChapterWhereInput[]
+    repertoireId?: StringFilter<"Chapter"> | string
+    name?: StringFilter<"Chapter"> | string
+    eco?: StringFilter<"Chapter"> | string
+    variation?: StringFilter<"Chapter"> | string
+    rootId?: StringFilter<"Chapter"> | string
+    startFen?: StringFilter<"Chapter"> | string
+    nodes?: JsonFilter<"Chapter">
+    createdAt?: DateTimeFilter<"Chapter"> | Date | string
+    updatedAt?: DateTimeFilter<"Chapter"> | Date | string
+    repertoire?: XOR<RepertoireScalarRelationFilter, RepertoireWhereInput>
+  }, "id">
+
+  export type ChapterOrderByWithAggregationInput = {
+    id?: SortOrder
+    repertoireId?: SortOrder
+    name?: SortOrder
+    eco?: SortOrder
+    variation?: SortOrder
+    rootId?: SortOrder
+    startFen?: SortOrder
+    nodes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ChapterCountOrderByAggregateInput
+    _max?: ChapterMaxOrderByAggregateInput
+    _min?: ChapterMinOrderByAggregateInput
+  }
+
+  export type ChapterScalarWhereWithAggregatesInput = {
+    AND?: ChapterScalarWhereWithAggregatesInput | ChapterScalarWhereWithAggregatesInput[]
+    OR?: ChapterScalarWhereWithAggregatesInput[]
+    NOT?: ChapterScalarWhereWithAggregatesInput | ChapterScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Chapter"> | string
+    repertoireId?: StringWithAggregatesFilter<"Chapter"> | string
+    name?: StringWithAggregatesFilter<"Chapter"> | string
+    eco?: StringWithAggregatesFilter<"Chapter"> | string
+    variation?: StringWithAggregatesFilter<"Chapter"> | string
+    rootId?: StringWithAggregatesFilter<"Chapter"> | string
+    startFen?: StringWithAggregatesFilter<"Chapter"> | string
+    nodes?: JsonWithAggregatesFilter<"Chapter">
+    createdAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Chapter"> | Date | string
   }
 
   export type PlayWhereInput = {
@@ -4739,6 +7439,7 @@ export namespace Prisma {
     password?: string | null
     createdAt?: Date | string
     plays?: PlayCreateNestedManyWithoutUserInput
+    repertoires?: RepertoireCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -4748,6 +7449,7 @@ export namespace Prisma {
     password?: string | null
     createdAt?: Date | string
     plays?: PlayUncheckedCreateNestedManyWithoutUserInput
+    repertoires?: RepertoireUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -4757,6 +7459,7 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plays?: PlayUpdateManyWithoutUserNestedInput
+    repertoires?: RepertoireUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -4766,6 +7469,7 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     plays?: PlayUncheckedUpdateManyWithoutUserNestedInput
+    repertoires?: RepertoireUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -4790,6 +7494,169 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RepertoireCreateInput = {
+    id?: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutRepertoiresInput
+    chapters?: ChapterCreateNestedManyWithoutRepertoireInput
+  }
+
+  export type RepertoireUncheckedCreateInput = {
+    id?: string
+    userId: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chapters?: ChapterUncheckedCreateNestedManyWithoutRepertoireInput
+  }
+
+  export type RepertoireUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutRepertoiresNestedInput
+    chapters?: ChapterUpdateManyWithoutRepertoireNestedInput
+  }
+
+  export type RepertoireUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chapters?: ChapterUncheckedUpdateManyWithoutRepertoireNestedInput
+  }
+
+  export type RepertoireCreateManyInput = {
+    id?: string
+    userId: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RepertoireUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RepertoireUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterCreateInput = {
+    id?: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    repertoire: RepertoireCreateNestedOneWithoutChaptersInput
+  }
+
+  export type ChapterUncheckedCreateInput = {
+    id?: string
+    repertoireId: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChapterUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repertoire?: RepertoireUpdateOneRequiredWithoutChaptersNestedInput
+  }
+
+  export type ChapterUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    repertoireId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterCreateManyInput = {
+    id?: string
+    repertoireId: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChapterUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    repertoireId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlayCreateInput = {
@@ -5004,12 +7871,22 @@ export namespace Prisma {
     none?: PlayWhereInput
   }
 
+  export type RepertoireListRelationFilter = {
+    every?: RepertoireWhereInput
+    some?: RepertoireWhereInput
+    none?: RepertoireWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
   export type PlayOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RepertoireOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -5090,6 +7967,137 @@ export namespace Prisma {
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type ChapterListRelationFilter = {
+    every?: ChapterWhereInput
+    some?: ChapterWhereInput
+    none?: ChapterWhereInput
+  }
+
+  export type ChapterOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RepertoireCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    side?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RepertoireMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    side?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RepertoireMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    side?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type RepertoireScalarRelationFilter = {
+    is?: RepertoireWhereInput
+    isNot?: RepertoireWhereInput
+  }
+
+  export type ChapterCountOrderByAggregateInput = {
+    id?: SortOrder
+    repertoireId?: SortOrder
+    name?: SortOrder
+    eco?: SortOrder
+    variation?: SortOrder
+    rootId?: SortOrder
+    startFen?: SortOrder
+    nodes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChapterMaxOrderByAggregateInput = {
+    id?: SortOrder
+    repertoireId?: SortOrder
+    name?: SortOrder
+    eco?: SortOrder
+    variation?: SortOrder
+    rootId?: SortOrder
+    startFen?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ChapterMinOrderByAggregateInput = {
+    id?: SortOrder
+    repertoireId?: SortOrder
+    name?: SortOrder
+    eco?: SortOrder
+    variation?: SortOrder
+    rootId?: SortOrder
+    startFen?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type PlayCountOrderByAggregateInput = {
@@ -5214,11 +8222,25 @@ export namespace Prisma {
     connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
   }
 
+  export type RepertoireCreateNestedManyWithoutUserInput = {
+    create?: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput> | RepertoireCreateWithoutUserInput[] | RepertoireUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RepertoireCreateOrConnectWithoutUserInput | RepertoireCreateOrConnectWithoutUserInput[]
+    createMany?: RepertoireCreateManyUserInputEnvelope
+    connect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+  }
+
   export type PlayUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
     createMany?: PlayCreateManyUserInputEnvelope
     connect?: PlayWhereUniqueInput | PlayWhereUniqueInput[]
+  }
+
+  export type RepertoireUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput> | RepertoireCreateWithoutUserInput[] | RepertoireUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RepertoireCreateOrConnectWithoutUserInput | RepertoireCreateOrConnectWithoutUserInput[]
+    createMany?: RepertoireCreateManyUserInputEnvelope
+    connect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5247,6 +8269,20 @@ export namespace Prisma {
     deleteMany?: PlayScalarWhereInput | PlayScalarWhereInput[]
   }
 
+  export type RepertoireUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput> | RepertoireCreateWithoutUserInput[] | RepertoireUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RepertoireCreateOrConnectWithoutUserInput | RepertoireCreateOrConnectWithoutUserInput[]
+    upsert?: RepertoireUpsertWithWhereUniqueWithoutUserInput | RepertoireUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RepertoireCreateManyUserInputEnvelope
+    set?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    disconnect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    delete?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    connect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    update?: RepertoireUpdateWithWhereUniqueWithoutUserInput | RepertoireUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RepertoireUpdateManyWithWhereWithoutUserInput | RepertoireUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RepertoireScalarWhereInput | RepertoireScalarWhereInput[]
+  }
+
   export type PlayUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<PlayCreateWithoutUserInput, PlayUncheckedCreateWithoutUserInput> | PlayCreateWithoutUserInput[] | PlayUncheckedCreateWithoutUserInput[]
     connectOrCreate?: PlayCreateOrConnectWithoutUserInput | PlayCreateOrConnectWithoutUserInput[]
@@ -5259,6 +8295,90 @@ export namespace Prisma {
     update?: PlayUpdateWithWhereUniqueWithoutUserInput | PlayUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PlayUpdateManyWithWhereWithoutUserInput | PlayUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PlayScalarWhereInput | PlayScalarWhereInput[]
+  }
+
+  export type RepertoireUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput> | RepertoireCreateWithoutUserInput[] | RepertoireUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RepertoireCreateOrConnectWithoutUserInput | RepertoireCreateOrConnectWithoutUserInput[]
+    upsert?: RepertoireUpsertWithWhereUniqueWithoutUserInput | RepertoireUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RepertoireCreateManyUserInputEnvelope
+    set?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    disconnect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    delete?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    connect?: RepertoireWhereUniqueInput | RepertoireWhereUniqueInput[]
+    update?: RepertoireUpdateWithWhereUniqueWithoutUserInput | RepertoireUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RepertoireUpdateManyWithWhereWithoutUserInput | RepertoireUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RepertoireScalarWhereInput | RepertoireScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutRepertoiresInput = {
+    create?: XOR<UserCreateWithoutRepertoiresInput, UserUncheckedCreateWithoutRepertoiresInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRepertoiresInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ChapterCreateNestedManyWithoutRepertoireInput = {
+    create?: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput> | ChapterCreateWithoutRepertoireInput[] | ChapterUncheckedCreateWithoutRepertoireInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutRepertoireInput | ChapterCreateOrConnectWithoutRepertoireInput[]
+    createMany?: ChapterCreateManyRepertoireInputEnvelope
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+  }
+
+  export type ChapterUncheckedCreateNestedManyWithoutRepertoireInput = {
+    create?: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput> | ChapterCreateWithoutRepertoireInput[] | ChapterUncheckedCreateWithoutRepertoireInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutRepertoireInput | ChapterCreateOrConnectWithoutRepertoireInput[]
+    createMany?: ChapterCreateManyRepertoireInputEnvelope
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutRepertoiresNestedInput = {
+    create?: XOR<UserCreateWithoutRepertoiresInput, UserUncheckedCreateWithoutRepertoiresInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRepertoiresInput
+    upsert?: UserUpsertWithoutRepertoiresInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRepertoiresInput, UserUpdateWithoutRepertoiresInput>, UserUncheckedUpdateWithoutRepertoiresInput>
+  }
+
+  export type ChapterUpdateManyWithoutRepertoireNestedInput = {
+    create?: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput> | ChapterCreateWithoutRepertoireInput[] | ChapterUncheckedCreateWithoutRepertoireInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutRepertoireInput | ChapterCreateOrConnectWithoutRepertoireInput[]
+    upsert?: ChapterUpsertWithWhereUniqueWithoutRepertoireInput | ChapterUpsertWithWhereUniqueWithoutRepertoireInput[]
+    createMany?: ChapterCreateManyRepertoireInputEnvelope
+    set?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    disconnect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    delete?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    update?: ChapterUpdateWithWhereUniqueWithoutRepertoireInput | ChapterUpdateWithWhereUniqueWithoutRepertoireInput[]
+    updateMany?: ChapterUpdateManyWithWhereWithoutRepertoireInput | ChapterUpdateManyWithWhereWithoutRepertoireInput[]
+    deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+  }
+
+  export type ChapterUncheckedUpdateManyWithoutRepertoireNestedInput = {
+    create?: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput> | ChapterCreateWithoutRepertoireInput[] | ChapterUncheckedCreateWithoutRepertoireInput[]
+    connectOrCreate?: ChapterCreateOrConnectWithoutRepertoireInput | ChapterCreateOrConnectWithoutRepertoireInput[]
+    upsert?: ChapterUpsertWithWhereUniqueWithoutRepertoireInput | ChapterUpsertWithWhereUniqueWithoutRepertoireInput[]
+    createMany?: ChapterCreateManyRepertoireInputEnvelope
+    set?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    disconnect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    delete?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    connect?: ChapterWhereUniqueInput | ChapterWhereUniqueInput[]
+    update?: ChapterUpdateWithWhereUniqueWithoutRepertoireInput | ChapterUpdateWithWhereUniqueWithoutRepertoireInput[]
+    updateMany?: ChapterUpdateManyWithWhereWithoutRepertoireInput | ChapterUpdateManyWithWhereWithoutRepertoireInput[]
+    deleteMany?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+  }
+
+  export type RepertoireCreateNestedOneWithoutChaptersInput = {
+    create?: XOR<RepertoireCreateWithoutChaptersInput, RepertoireUncheckedCreateWithoutChaptersInput>
+    connectOrCreate?: RepertoireCreateOrConnectWithoutChaptersInput
+    connect?: RepertoireWhereUniqueInput
+  }
+
+  export type RepertoireUpdateOneRequiredWithoutChaptersNestedInput = {
+    create?: XOR<RepertoireCreateWithoutChaptersInput, RepertoireUncheckedCreateWithoutChaptersInput>
+    connectOrCreate?: RepertoireCreateOrConnectWithoutChaptersInput
+    upsert?: RepertoireUpsertWithoutChaptersInput
+    connect?: RepertoireWhereUniqueInput
+    update?: XOR<XOR<RepertoireUpdateToOneWithWhereWithoutChaptersInput, RepertoireUpdateWithoutChaptersInput>, RepertoireUncheckedUpdateWithoutChaptersInput>
   }
 
   export type UserCreateNestedOneWithoutPlaysInput = {
@@ -5400,6 +8520,29 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
@@ -5466,6 +8609,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type RepertoireCreateWithoutUserInput = {
+    id?: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chapters?: ChapterCreateNestedManyWithoutRepertoireInput
+  }
+
+  export type RepertoireUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chapters?: ChapterUncheckedCreateNestedManyWithoutRepertoireInput
+  }
+
+  export type RepertoireCreateOrConnectWithoutUserInput = {
+    where: RepertoireWhereUniqueInput
+    create: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput>
+  }
+
+  export type RepertoireCreateManyUserInputEnvelope = {
+    data: RepertoireCreateManyUserInput | RepertoireCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PlayUpsertWithWhereUniqueWithoutUserInput = {
     where: PlayWhereUniqueInput
     update: XOR<PlayUpdateWithoutUserInput, PlayUncheckedUpdateWithoutUserInput>
@@ -5500,12 +8673,216 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Play"> | Date | string
   }
 
+  export type RepertoireUpsertWithWhereUniqueWithoutUserInput = {
+    where: RepertoireWhereUniqueInput
+    update: XOR<RepertoireUpdateWithoutUserInput, RepertoireUncheckedUpdateWithoutUserInput>
+    create: XOR<RepertoireCreateWithoutUserInput, RepertoireUncheckedCreateWithoutUserInput>
+  }
+
+  export type RepertoireUpdateWithWhereUniqueWithoutUserInput = {
+    where: RepertoireWhereUniqueInput
+    data: XOR<RepertoireUpdateWithoutUserInput, RepertoireUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RepertoireUpdateManyWithWhereWithoutUserInput = {
+    where: RepertoireScalarWhereInput
+    data: XOR<RepertoireUpdateManyMutationInput, RepertoireUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type RepertoireScalarWhereInput = {
+    AND?: RepertoireScalarWhereInput | RepertoireScalarWhereInput[]
+    OR?: RepertoireScalarWhereInput[]
+    NOT?: RepertoireScalarWhereInput | RepertoireScalarWhereInput[]
+    id?: StringFilter<"Repertoire"> | string
+    userId?: StringFilter<"Repertoire"> | string
+    name?: StringFilter<"Repertoire"> | string
+    side?: StringFilter<"Repertoire"> | string
+    description?: StringFilter<"Repertoire"> | string
+    createdAt?: DateTimeFilter<"Repertoire"> | Date | string
+    updatedAt?: DateTimeFilter<"Repertoire"> | Date | string
+  }
+
+  export type UserCreateWithoutRepertoiresInput = {
+    id?: string
+    email: string
+    name?: string | null
+    password?: string | null
+    createdAt?: Date | string
+    plays?: PlayCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutRepertoiresInput = {
+    id?: string
+    email: string
+    name?: string | null
+    password?: string | null
+    createdAt?: Date | string
+    plays?: PlayUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutRepertoiresInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRepertoiresInput, UserUncheckedCreateWithoutRepertoiresInput>
+  }
+
+  export type ChapterCreateWithoutRepertoireInput = {
+    id?: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChapterUncheckedCreateWithoutRepertoireInput = {
+    id?: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChapterCreateOrConnectWithoutRepertoireInput = {
+    where: ChapterWhereUniqueInput
+    create: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput>
+  }
+
+  export type ChapterCreateManyRepertoireInputEnvelope = {
+    data: ChapterCreateManyRepertoireInput | ChapterCreateManyRepertoireInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutRepertoiresInput = {
+    update: XOR<UserUpdateWithoutRepertoiresInput, UserUncheckedUpdateWithoutRepertoiresInput>
+    create: XOR<UserCreateWithoutRepertoiresInput, UserUncheckedCreateWithoutRepertoiresInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRepertoiresInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRepertoiresInput, UserUncheckedUpdateWithoutRepertoiresInput>
+  }
+
+  export type UserUpdateWithoutRepertoiresInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plays?: PlayUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRepertoiresInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    plays?: PlayUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ChapterUpsertWithWhereUniqueWithoutRepertoireInput = {
+    where: ChapterWhereUniqueInput
+    update: XOR<ChapterUpdateWithoutRepertoireInput, ChapterUncheckedUpdateWithoutRepertoireInput>
+    create: XOR<ChapterCreateWithoutRepertoireInput, ChapterUncheckedCreateWithoutRepertoireInput>
+  }
+
+  export type ChapterUpdateWithWhereUniqueWithoutRepertoireInput = {
+    where: ChapterWhereUniqueInput
+    data: XOR<ChapterUpdateWithoutRepertoireInput, ChapterUncheckedUpdateWithoutRepertoireInput>
+  }
+
+  export type ChapterUpdateManyWithWhereWithoutRepertoireInput = {
+    where: ChapterScalarWhereInput
+    data: XOR<ChapterUpdateManyMutationInput, ChapterUncheckedUpdateManyWithoutRepertoireInput>
+  }
+
+  export type ChapterScalarWhereInput = {
+    AND?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+    OR?: ChapterScalarWhereInput[]
+    NOT?: ChapterScalarWhereInput | ChapterScalarWhereInput[]
+    id?: StringFilter<"Chapter"> | string
+    repertoireId?: StringFilter<"Chapter"> | string
+    name?: StringFilter<"Chapter"> | string
+    eco?: StringFilter<"Chapter"> | string
+    variation?: StringFilter<"Chapter"> | string
+    rootId?: StringFilter<"Chapter"> | string
+    startFen?: StringFilter<"Chapter"> | string
+    nodes?: JsonFilter<"Chapter">
+    createdAt?: DateTimeFilter<"Chapter"> | Date | string
+    updatedAt?: DateTimeFilter<"Chapter"> | Date | string
+  }
+
+  export type RepertoireCreateWithoutChaptersInput = {
+    id?: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutRepertoiresInput
+  }
+
+  export type RepertoireUncheckedCreateWithoutChaptersInput = {
+    id?: string
+    userId: string
+    name: string
+    side: string
+    description?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RepertoireCreateOrConnectWithoutChaptersInput = {
+    where: RepertoireWhereUniqueInput
+    create: XOR<RepertoireCreateWithoutChaptersInput, RepertoireUncheckedCreateWithoutChaptersInput>
+  }
+
+  export type RepertoireUpsertWithoutChaptersInput = {
+    update: XOR<RepertoireUpdateWithoutChaptersInput, RepertoireUncheckedUpdateWithoutChaptersInput>
+    create: XOR<RepertoireCreateWithoutChaptersInput, RepertoireUncheckedCreateWithoutChaptersInput>
+    where?: RepertoireWhereInput
+  }
+
+  export type RepertoireUpdateToOneWithWhereWithoutChaptersInput = {
+    where?: RepertoireWhereInput
+    data: XOR<RepertoireUpdateWithoutChaptersInput, RepertoireUncheckedUpdateWithoutChaptersInput>
+  }
+
+  export type RepertoireUpdateWithoutChaptersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutRepertoiresNestedInput
+  }
+
+  export type RepertoireUncheckedUpdateWithoutChaptersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserCreateWithoutPlaysInput = {
     id?: string
     email: string
     name?: string | null
     password?: string | null
     createdAt?: Date | string
+    repertoires?: RepertoireCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPlaysInput = {
@@ -5514,6 +8891,7 @@ export namespace Prisma {
     name?: string | null
     password?: string | null
     createdAt?: Date | string
+    repertoires?: RepertoireUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPlaysInput = {
@@ -5538,6 +8916,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repertoires?: RepertoireUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPlaysInput = {
@@ -5546,6 +8925,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    repertoires?: RepertoireUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PlayCreateManyUserInput = {
@@ -5558,6 +8938,15 @@ export namespace Prisma {
     pgn?: string
     startFen?: string
     currentFen?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RepertoireCreateManyUserInput = {
+    id?: string
+    name: string
+    side: string
+    description?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5600,6 +8989,83 @@ export namespace Prisma {
     pgn?: StringFieldUpdateOperationsInput | string
     startFen?: StringFieldUpdateOperationsInput | string
     currentFen?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RepertoireUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chapters?: ChapterUpdateManyWithoutRepertoireNestedInput
+  }
+
+  export type RepertoireUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chapters?: ChapterUncheckedUpdateManyWithoutRepertoireNestedInput
+  }
+
+  export type RepertoireUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    side?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterCreateManyRepertoireInput = {
+    id?: string
+    name: string
+    eco?: string
+    variation?: string
+    rootId: string
+    startFen: string
+    nodes: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChapterUpdateWithoutRepertoireInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterUncheckedUpdateWithoutRepertoireInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChapterUncheckedUpdateManyWithoutRepertoireInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    eco?: StringFieldUpdateOperationsInput | string
+    variation?: StringFieldUpdateOperationsInput | string
+    rootId?: StringFieldUpdateOperationsInput | string
+    startFen?: StringFieldUpdateOperationsInput | string
+    nodes?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

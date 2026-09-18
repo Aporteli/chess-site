@@ -128,6 +128,29 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.RepertoireScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  side: 'side',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ChapterScalarFieldEnum = {
+  id: 'id',
+  repertoireId: 'repertoireId',
+  name: 'name',
+  eco: 'eco',
+  variation: 'variation',
+  rootId: 'rootId',
+  startFen: 'startFen',
+  nodes: 'nodes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.PlayScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -157,6 +180,10 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -167,9 +194,17 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Repertoire: 'Repertoire',
+  Chapter: 'Chapter',
   Play: 'Play',
   Puzzle: 'Puzzle'
 };

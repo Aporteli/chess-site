@@ -24,29 +24,56 @@ export default async function ProfilePage() {
 
   return (
     <AppShell activeKey="profile">
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <header className="mb-8 border-b border-border-subtle pb-5">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-gold">
-            Overview
-          </p>
-          <h1 className="mt-1 font-mono text-2xl font-semibold text-text-primary sm:text-3xl">
-            User Profile
-          </h1>
-          <p className="mt-1.5 text-[13.5px] text-text-secondary">
-            Your account details, saved games, and session management
-          </p>
-        </header>
-
-        {/* Grid Layout: მარცხნივ პროფილი/ინფო (1 სვეტი), მარჯვნივ თამაშები (2 სვეტი) */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <ProfileHeader user={session.user} playsCount={plays.length} />
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
+          <div>
+            <p className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-accent-gold">
+              Player profile
+            </p>
+            <h1 className="font-mono text-2xl font-semibold tracking-[-0.035em] text-text-primary sm:text-3xl">
+              Your chess space
+            </h1>
+            <p className="mt-1.5 max-w-xl text-[13px] leading-6 text-text-secondary">
+              Your account, saved games, and personal chess activity in one place.
+            </p>
           </div>
-          <div className="lg:col-span-2">
-            <SavedPlaysList plays={plays} />
+
+          <div className="hidden rounded-full border border-border-default bg-bg-surface/70 px-3 py-1.5 text-[11px] text-text-muted shadow-sm sm:block">
+            {plays.length} saved {plays.length === 1 ? "game" : "games"}
           </div>
         </div>
-      </div>
+
+        <div className="space-y-6">
+          <ProfileHeader user={session.user} playsCount={plays.length} />
+
+          <section
+            aria-labelledby="saved-games-heading"
+            className="overflow-hidden rounded-2xl border border-border-default bg-bg-surface shadow-panel"
+          >
+            <div className="flex flex-col gap-3 border-b border-border-subtle px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-gold">
+                  Library
+                </p>
+                <h2
+                  id="saved-games-heading"
+                  className="mt-1 font-mono text-base font-semibold tracking-tight text-text-primary"
+                >
+                  Saved games
+                </h2>
+              </div>
+
+              <span className="w-fit rounded-full border border-border-subtle bg-bg-elevated px-2.5 py-1 font-mono text-[10px] text-text-muted">
+                Latest first
+              </span>
+            </div>
+
+            <div className="p-1 sm:p-2">
+              <SavedPlaysList plays={plays} />
+            </div>
+          </section>
+        </div>
+      </main>
     </AppShell>
   );
 }

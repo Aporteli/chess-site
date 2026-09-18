@@ -8,12 +8,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  createdAt DateTime @default(now())
-  plays     Play[]
+  id          String        @id @default(uuid())
+  email       String        @unique
+  name        String?
+  password    String?
+  createdAt   DateTime      @default(now())
+
+  plays       Play[]
+  repertoires Repertoire[]
+}
+
+model Repertoire {
+  id          String      @id @default(uuid())
+  userId      String
+  name        String
+  side        String
+  description String      @default("")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapters    Chapter[]
+
+  @@index([userId, updatedAt])
+}
+
+model Chapter {
+  id           String      @id @default(uuid())
+  repertoireId String
+  name         String
+  eco          String      @default("")
+  variation    String      @default("")
+  rootId       String
+  startFen     String
+  nodes        Json
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  repertoire   Repertoire  @relation(fields: [repertoireId], references: [id], onDelete: Cascade)
+
+  @@index([repertoireId])
 }
 
 /// A saved chess game / play belonging to a user.
@@ -24,13 +58,13 @@ model Play {
   source     String   @default("analysis")
   white      String?
   black      String?
-  /// Chess result: "1-0", "0-1", "1/2-1/2", or "*" while in progress.
   result     String   @default("*")
   pgn        String   @default("")
   startFen   String   @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
   currentFen String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])

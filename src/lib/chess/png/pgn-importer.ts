@@ -1,10 +1,10 @@
-import { playSan, START_FEN } from "../fen";
-import { EVAL_FROM_NAG } from "../nags";
-import { addSanMove } from "../tree/tree-mutations";
-import { emptyChapter } from "../tree/chapter-factory";
-import { getNode } from "../tree/tree-navigation";
-import type { Chapter } from "../types";
-import { parsePgn, type ParsedGame, type ParsedMove } from "./pgnAST";
+import { playSan, START_FEN } from '../fen';
+import { EVAL_FROM_NAG } from '../nags';
+import { addSanMove } from '../tree/tree-mutations';
+import { emptyChapter } from '../tree/chapter-factory';
+import { getNode } from '../tree/tree-navigation';
+import type { Chapter } from '../types';
+import { parsePgn, type ParsedGame, type ParsedMove } from './pgnAST';
 
 function applySequence(chapter: Chapter, parentId: string, moves: ParsedMove[]): Chapter {
   let current = chapter;
@@ -32,10 +32,11 @@ function applySequence(chapter: Chapter, parentId: string, moves: ParsedMove[]):
 
 export function chapterFromGame(game: ParsedGame, fallbackName: string): Chapter {
   const startFen = game.headers.FEN || game.headers.Fen || START_FEN;
-  const name = game.headers.Opening || game.headers.White || game.headers.Event || fallbackName;
+  const name =
+    game.headers.ChapterName || game.headers.Opening || game.headers.White || game.headers.Event || fallbackName;
   let chapter = emptyChapter(name, {
-    eco: game.headers.ECO ?? "",
-    variation: game.headers.Variation ?? game.headers.Black ?? "",
+    eco: game.headers.ECO ?? '',
+    variation: game.headers.Variation ?? game.headers.Black ?? '',
     startFen,
   });
   if (game.moves[0] && !game.moves[0].comment && game.headers.Annotator) {
@@ -53,7 +54,7 @@ export function chapterFromGame(game: ParsedGame, fallbackName: string): Chapter
   return applySequence(chapter, chapter.rootId, game.moves);
 }
 
-export function importPgn(pgn: string, fallbackName = "Imported line"): Chapter[] {
+export function importPgn(pgn: string, fallbackName = 'Imported line'): Chapter[] {
   return parsePgn(pgn).map((game, i) =>
     chapterFromGame(game, game.headers.Opening ? fallbackName : `${fallbackName} ${i + 1}`),
   );

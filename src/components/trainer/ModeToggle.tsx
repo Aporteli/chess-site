@@ -1,13 +1,58 @@
 'use client';
 
-import { BookOpen, Dumbbell, Play } from 'lucide-react';
+import { BookOpen, Dumbbell } from 'lucide-react';
 import { useTrainer } from '@/lib/trainer/context';
 
 export function ModeToggle() {
-  const { mode, setMode, due } = useTrainer();
+  const {
+    mode,
+    setMode,
+    due,
+    store,
+    repertoire,
+    chapter,
+    selectChapter,
+    selectRepertoire,
+  } = useTrainer();
 
   return (
     <div className="space-y-2">
+      {store.repertoires.length > 1 && (
+        <label className="block">
+          <span className="mb-1 block font-mono text-[11px] text-text-muted">
+            Repertoire
+          </span>
+          <select
+            value={repertoire.id}
+            onChange={(e) => selectRepertoire(e.target.value)}
+            className="w-full rounded-xl border border-border-subtle bg-bg-surface px-3 py-2 text-[13px] text-text-primary outline-none"
+          >
+            {store.repertoires.map((rep) => (
+              <option key={rep.id} value={rep.id}>
+                {rep.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      <label className="block">
+        <span className="mb-1 block font-mono text-[11px] text-text-muted">
+          Chapter ({repertoire.chapters.length})
+        </span>
+        <select
+          value={chapter.id}
+          onChange={(e) => selectChapter(e.target.value)}
+          className="w-full rounded-xl border border-border-subtle bg-bg-surface px-3 py-2 text-[13px] text-text-primary outline-none"
+        >
+          {repertoire.chapters.map((ch) => (
+            <option key={ch.id} value={ch.id}>
+              {ch.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <div className="grid grid-cols-2 gap-1 rounded-xl border border-border-subtle bg-bg-surface p-1">
         <button
           onClick={() => setMode('study')}

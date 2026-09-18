@@ -35,6 +35,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      const email =
+        user?.email ??
+        (typeof token.email === "string" ? token.email : undefined);
+
+      if (email) {
+        const dbUser = await prisma.user.findUnique({ where: { email } });
+        if (dbUser) token.sub = dbUser.id;
+      }
+
+      return token;
+    },
     async signIn({ user, account }) {
       if (account?.provider !== "google") return true;
       if (!user.email) return true;

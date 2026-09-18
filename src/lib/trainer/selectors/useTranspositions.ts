@@ -20,6 +20,8 @@ export function useTranspositions({ chapter, repertoire, node }: ActiveEntities)
     }
     for (const g of global) {
       if (g.chapter.id === chapter.id) continue;
+      // Shared starting positions are other chapters, not transpositions.
+      if (!node.move && !g.node.move) continue;
       hits.push({
         chapterName: g.chapter.name,
         chapterId: g.chapter.id,

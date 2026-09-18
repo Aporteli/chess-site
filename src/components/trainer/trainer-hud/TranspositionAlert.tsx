@@ -16,8 +16,8 @@ export function TranspositionAlert() {
       <p className="mb-2 text-[12px] leading-relaxed text-text-secondary">
         This position is already in the repertoire via another move order.
       </p>
-      <ul className="space-y-1">
-        {t.transpositions.slice(0, 4).map((hit) => (
+      <ul className="max-h-40 space-y-1 overflow-y-auto thin-scrollbar">
+        {t.transpositions.map((hit) => (
           <li key={`${hit.chapterId}-${hit.nodeId}`}>
             <button
               onClick={() => t.openLocation(hit.chapterId, hit.nodeId)}

@@ -3,6 +3,13 @@
 // logic (chess.js / custom engine, Stockfish workers, PGN parsers) plugs
 // in behind these shapes later without the UI layer needing to change.
 
+export interface ImportExportActions {
+  importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
+  importLichessStudy: (pgn: string) => { ok: boolean; message: string };
+  exportActiveChapter: () => string;
+  exportActiveRepertoire: () => string;
+}
+
 export type Side = "white" | "black";
 
 export type MoveStatus = "correct" | "mistake" | "alternative" | "pending";
