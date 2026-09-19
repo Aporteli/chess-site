@@ -26,10 +26,8 @@ export function NavSearch({ isOpen, onToggle, onClose }: NavSearchProps) {
   const searchRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Click outside + ESC (hook already handles ESC → onClose)
   useClickOutside(searchRef as RefObject<HTMLElement>, isOpen, onClose);
 
-  // Auto focus when opened · reset query when closed
   useEffect(() => {
     if (isOpen) {
       searchInputRef.current?.focus();
@@ -53,21 +51,19 @@ export function NavSearch({ isOpen, onToggle, onClose }: NavSearchProps) {
   return (
     <div
       ref={searchRef}
-      // justify-end = pill hugs the right edge → input grows LEFTWARD.
-      // md:w-[260px] reserves the space so the navbar doesn't shift on expand.
       className="relative flex justify-end md:w-[260px] md:shrink-0"
     >
-      {/* ── Expanding pill ─────────────────────────────────── */}
+      {/* ── Expanding pill — h-[35px] matches BoardSettingsDropdown ── */}
       <div
         className={[
-          "flex items-center overflow-hidden rounded-lg border bg-[#2A2A2A]",
+          "flex h-[35px] items-center overflow-hidden rounded-lg border bg-[#2A2A2A]",
           "transition-[border-color,box-shadow] duration-200 ease-out",
           isOpen
             ? "border-[#769656] shadow-[0_0_0_3px_rgba(118,150,86,0.12)]"
             : "border-[#383838] hover:border-[#769656]",
         ].join(" ")}
       >
-        {/* Input — width animates 0 → open width, right edge stays fixed */}
+        {/* Input — h-full fills pill's content area, no py needed */}
         <input
           ref={searchInputRef}
           value={query}
@@ -86,23 +82,23 @@ export function NavSearch({ isOpen, onToggle, onClose }: NavSearchProps) {
           tabIndex={isOpen ? 0 : -1}
           aria-hidden={!isOpen}
           className={[
-            "min-w-0 bg-transparent text-[13px] text-white outline-none",
+            "h-full min-w-0 bg-transparent text-[13px] text-white outline-none",
             "placeholder:text-[#A0A0A0]",
             "transition-[width,padding,opacity] duration-300",
             "ease-[cubic-bezier(0.16,1,0.3,1)]",
             isOpen
-              ? "w-[160px] px-2.5 py-1.5 opacity-100 sm:w-[200px] md:w-[220px]"
-              : "w-0 px-0 py-1.5 opacity-0",
+              ? "w-[160px] px-2.5 opacity-100 sm:w-[200px] sm:px-3 md:w-[220px]"
+              : "w-0 px-0 opacity-0",
           ].join(" ")}
         />
 
-        {/* Trigger — icon stays anchored on the right */}
+        {/* Trigger — h-full fills pill's content area */}
         <button
           type="button"
           aria-label="Search"
           aria-expanded={isOpen}
           onClick={onToggle}
-          className="flex shrink-0 cursor-pointer items-center gap-2 px-2.5 py-1.5 text-[13px] font-medium text-[#A0A0A0] transition-colors hover:text-white sm:px-3"
+          className="flex h-full shrink-0 cursor-pointer items-center gap-2 px-2.5 text-[13px] font-medium text-[#A0A0A0] transition-colors hover:text-white sm:px-3"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
         </button>

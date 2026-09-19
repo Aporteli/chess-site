@@ -2,9 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Settings, ChevronUp, UserRound, Bell, Palette, Bot, Keyboard } from 'lucide-react';
+import {
+  Settings,
+  ChevronUp,
+  UserRound,
+  Bell,
+  Palette,
+  Bot,
+  Keyboard,
+  LogIn,
+  LogOut,
+} from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import type { NavKey } from '@/lib/types';
-import { KeyboardCheatsheet } from '@/components/trainer/trainer-hud/KeyboardCheatsheet'; 
+import { KeyboardCheatsheet } from '@/components/trainer/trainer-hud/KeyboardCheatsheet';
 
 interface SettingsItem {
   key: string;
@@ -12,7 +23,7 @@ interface SettingsItem {
   href?: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   comingSoon?: boolean;
-  action?: 'keyboard'; // ← ახალი: ლინკის ნაცვლად მოქმედება
+  action?: 'keyboard';
 }
 
 const settingsItems: SettingsItem[] = [
@@ -37,6 +48,10 @@ export function SidebarSettingsDropup({
   const [open, setOpen] = useState(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // ← სესიის სტატუსი (server session-ის წყალობით პირველივე render-ზე სწორია)
+  const { status } = useSession();
+  const isAuthed = status === 'authenticated';
 
   // გარეთ დაჭერის ან Escape-ისას დახურვა
   useEffect(() => {
@@ -79,6 +94,17 @@ export function SidebarSettingsDropup({
     setKeyboardOpen(true);
   };
 
+  const handleSignOut = async () => {
+    setOpen(false);
+    onCloseMobile();
+    await signOut({ callbackUrl: '/' });
+  };
+
+  const handleSignInClick = () => {
+    setOpen(false);
+    onCloseMobile();
+  };
+
   return (
     <>
       <div ref={containerRef} className="group relative">
@@ -107,7 +133,7 @@ export function SidebarSettingsDropup({
           )}
         </button>
 
-        {/* ჩაკეცილში tooltip, როცა dropup დახურულია */}
+        {/* ჩაკეცილში tooltip */}
         {collapsed && !open && (
           <span className="pointer-events-none absolute left-full top-1/2 z-10 ml-2 -translate-y-1/2 whitespace-nowrap rounded-md border border-[#383838] bg-[#1E1E1E] px-2 py-1 font-mono text-xs text-white opacity-0 shadow-2xl transition-opacity group-hover:opacity-100">
             Settings
@@ -147,7 +173,6 @@ export function SidebarSettingsDropup({
                 </>
               );
 
-              // მოქმედების ელემენტი (მაგ. Keyboard Shortcuts)
               if (s.action === 'keyboard') {
                 return (
                   <button
@@ -162,7 +187,6 @@ export function SidebarSettingsDropup({
                 );
               }
 
-              // გამორთული
               if (disabled) {
                 return (
                   <button key={s.key} disabled role="menuitem" className={itemCls}>
@@ -171,7 +195,6 @@ export function SidebarSettingsDropup({
                 );
               }
 
-              // ჩვეულებრივი ლინკი
               return (
                 <Link
                   key={s.key}
@@ -187,11 +210,42 @@ export function SidebarSettingsDropup({
                 </Link>
               );
             })}
+
+            {/* ── Divider ────────────────────────────────── */}
+            <div className="my-1 h-px bg-[#2A2A2A]" aria-hidden="true" />
+
+            {/* ── Auth item: Sign In / Sign Out ─────────── */}
+            {status === 'loading' ? (
+              // skeleton — იშვიათად ჩანს, რადგან server session პირველივე render-ზეა
+              <div
+                aria-hidden="true"
+                className="mx-1 h-9 animate-pulse rounded-md bg-[#2A2A2A]"
+              />
+            ) : isAuthed ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleSignOut}
+                className="flex w-full items-center gap-3 rounded-md px-2.5 py-2 font-mono text-[13px] text-[#A0A0A0] transition-colors text-left hover:bg-[#E63946]/10 hover:text-[#E63946]"
+              >
+                <LogOut className="h-[15px] w-[15px] shrink-0" strokeWidth={2} />
+                <span className="truncate">Sign out</span>
+              </button>
+            ) : (
+              <Link
+                href="/auth/signin"
+                role="menuitem"
+                onClick={handleSignInClick}
+                className="flex w-full items-center gap-3 rounded-md px-2.5 py-2 font-mono text-[13px] text-[#A0A0A0] transition-colors text-left hover:bg-[#2A2A2A] hover:text-white"
+              >
+                <LogIn className="h-[15px] w-[15px] shrink-0" strokeWidth={2} />
+                <span className="truncate">Sign in</span>
+              </Link>
+            )}
           </div>
         )}
       </div>
 
-      {/* Keyboard Cheatsheet მოდალი — sidebar-ის გარეთ, portal-ის მსგავსად ცალკე */}
       <KeyboardCheatsheet open={keyboardOpen} onClose={() => setKeyboardOpen(false)} />
     </>
   );
