@@ -85,6 +85,8 @@ export interface DrillActions {
   startPractice: (target?: Chapter) => void;
   scheduleOpponent: (fromNodeId: string, session: DrillSession) => void;
   finishPractice: (session: DrillSession, visited: string[]) => void;
+  /** Records a legal book move in drill mode and continues, rewinds, or auto-plays. */
+  acceptDrillMove: (playedChildId: string) => boolean;
   requestHint: () => void;
   revealSolution: () => void;
   nextLine: () => void;

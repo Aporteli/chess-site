@@ -3,7 +3,6 @@ import {
   getNode,
   isOurTurn,
   needsPromotion,
-  pathToNode,
   playMove,
   playSfx,
   sfxForMove,
@@ -22,6 +21,8 @@ export const createMoveSlice: TrainerSlice<MoveActions> = (set, get) => ({
       set({ promotion: { from, to } });
       return false;
     }
+
+    if (mode === 'drill' && drill?.transitioning) return false;
 
     if (mode === 'drill' && drill?.opponentThinking) {
       set({ premove: { from, to, promotion }, selectedSquare: null });
@@ -68,19 +69,7 @@ export const createMoveSlice: TrainerSlice<MoveActions> = (set, get) => ({
       return false;
     }
 
-    playSfx('success', useSettingsStore.getState().sound);
-    get().flashStatus('correct');
-    set({ path: pathToNode(chapter, existing.id), selectedSquare: null, promotion: null });
-
-    const nextSession = { ...drill, awaitingRetry: false };
-    set({ drill: nextSession });
-
-    if (existing.children.length === 0) {
-      get().finishPractice(nextSession, pathToNode(chapter, existing.id));
-    } else {
-      get().scheduleOpponent(existing.id, nextSession);
-    }
-    return true;
+    return get().acceptDrillMove(existing.id);
   },
 
   completePromotion: (piece) => {

@@ -55,6 +55,20 @@ export function usePrompt(
         text: 'Not the repertoire move. Find the book continuation — the position stays until you correct it.',
       };
     }
+    if (drill.alternativeState === 'repeat') {
+      return {
+        side: repertoire.side,
+        kind: 'info',
+        text: 'You already gave that move. Find another book option from this position.',
+      };
+    }
+    if (drill.alternativeState === 'more') {
+      return {
+        side: repertoire.side,
+        kind: 'question',
+        text: 'Correct — there is another book move from this position. Find it.',
+      };
+    }
     const you = repertoire.side === 'white' ? 'White' : 'Black';
     return {
       side: repertoire.side,

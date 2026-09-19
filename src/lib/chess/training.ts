@@ -1,5 +1,5 @@
 import type { Chapter, TreeNode } from "./types";
-import { childNodes } from "./tree/tree-navigation";
+import { childNodes, mainlineChild } from "./tree/tree-navigation";
 
 export function weightedChild(chapter: Chapter, nodeId: string): TreeNode | undefined {
   const kids = childNodes(chapter, nodeId);
@@ -122,4 +122,57 @@ export function findNearestUnvisitedFork(
   }
 
   return null;
+}
+
+/** Children whose subtrees still contain at least one unvisited leaf. */
+export function viableChildren(
+  chapter: Chapter,
+  nodeId: string,
+  completedLeaves: Set<string>,
+): TreeNode[] {
+  return childNodes(chapter, nodeId).filter((kid) => {
+    const leaves = getLeafIdsUnder(chapter, kid.id);
+    return leaves.some((leafId) => !completedLeaves.has(leafId));
+  });
+}
+
+export function unrecalledViableChildren(
+  chapter: Chapter,
+  nodeId: string,
+  completedLeaves: Set<string>,
+  recalledByFork: Record<string, string[]>,
+): TreeNode[] {
+  const recalled = new Set(recalledByFork[nodeId] ?? []);
+  return viableChildren(chapter, nodeId, completedLeaves).filter((kid) => !recalled.has(kid.id));
+}
+
+/** Next recalled child at this fork whose subtree is not fully completed. */
+export function nextRecalledContinuation(
+  chapter: Chapter,
+  forkId: string,
+  recalledByFork: Record<string, string[]>,
+  completedLeaves: Set<string>,
+): TreeNode | undefined {
+  for (const childId of recalledByFork[forkId] ?? []) {
+    const child = chapter.nodes[childId];
+    if (!child) continue;
+    const leaves = getLeafIdsUnder(chapter, childId);
+    if (leaves.some((id) => !completedLeaves.has(id))) return child;
+  }
+  return undefined;
+}
+
+/** Book move the user should play now: an unrecalled alternative, else the line/mainline child. */
+export function nextExpectedDrillMove(
+  chapter: Chapter,
+  nodeId: string,
+  line: string[],
+  completedLeaves: Set<string>,
+  recalledByFork: Record<string, string[]>,
+): TreeNode | undefined {
+  const unrecalled = unrecalledViableChildren(chapter, nodeId, completedLeaves, recalledByFork);
+  if (unrecalled.length > 0) {
+    return unrecalled.find((kid) => kid.isMainline) ?? unrecalled[0];
+  }
+  return nextLineNode(chapter, line, nodeId) ?? mainlineChild(chapter, nodeId);
 }

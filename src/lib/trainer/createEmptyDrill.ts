@@ -18,5 +18,8 @@ export function createEmptyDrill(filter: DrillFilter): DrillSession {
     sessionOver: false,
     line: [],
     completedLeaves: [],
+    recalledByFork: {},
+    alternativeState: 'none',
+    transitioning: false,
   };
 }

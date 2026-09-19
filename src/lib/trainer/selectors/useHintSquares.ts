@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { mainlineChild, type Chapter, type TrainerMode, type TreeNode } from '@/lib/chess';
+import type { Chapter, TrainerMode, TreeNode } from '@/lib/chess';
 import type { DrillSession } from '../types';
-import { nextLineNode } from '@/lib/chess/training';
+import { nextExpectedDrillMove } from '@/lib/chess/training';
 
 export function useHintSquares(
   mode: TrainerMode,
@@ -11,7 +11,13 @@ export function useHintSquares(
 ): { from?: string; to?: string } {
   return useMemo(() => {
     if (mode !== 'drill' || !drill || !chapter || !node || drill.hintLevel === 0) return {};
-    const expected = nextLineNode(chapter, drill.line, node.id) ?? mainlineChild(chapter, node.id);
+    const expected = nextExpectedDrillMove(
+      chapter,
+      node.id,
+      drill.line,
+      new Set(drill.completedLeaves),
+      drill.recalledByFork ?? {},
+    );
     if (!expected?.move) return {};
     if (drill.hintLevel === 1) return { from: expected.move.from };
     return { from: expected.move.from, to: expected.move.to };

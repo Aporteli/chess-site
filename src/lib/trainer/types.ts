@@ -17,6 +17,12 @@ export interface DrillSession {
   sessionOver: boolean;
   line: string[];
   completedLeaves: string[];
+  /** Fork node id → child node ids in the order the user recalled them. */
+  recalledByFork: Record<string, string[]>;
+  /** Prompt while the user is still listing their own book replies at a fork. */
+  alternativeState: 'none' | 'more' | 'repeat';
+  /** True while a recalled move is shown before rewinding or auto-continuing. */
+  transitioning: boolean;
 }
 
 /** A move waiting on a promotion-piece choice from the user. */
