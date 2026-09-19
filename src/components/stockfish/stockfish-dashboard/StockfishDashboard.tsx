@@ -48,7 +48,7 @@ export default function StockfishDashboard({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-0 shrink-0 flex-col gap-3 rounded-xl border border-border-subtle bg-bg-surface p-3">
+    <div className="flex min-h-0 shrink-0 flex-col gap-1.5 rounded-xl border border-border-subtle bg-bg-surface p-3">
       <div className="flex gap-2">
         <div className="min-w-0 flex-1">
           <Controls isAnalyzing={isAnalyzing} onStart={onStart} onStop={onStop} />

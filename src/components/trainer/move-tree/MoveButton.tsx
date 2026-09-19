@@ -24,17 +24,51 @@ export function MoveButton({
 
   return (
     <button
+      type="button"
       onClick={() => onJump(node.id)}
+      aria-current={isActive ? 'true' : undefined}
       className={[
-        'flex w-full items-center justify-start gap-1.5 px-2 py-1 font-mono text-[13px] transition-colors',
+        'group relative flex w-full items-center gap-1.5 rounded-md',
+        'px-2 py-1.5 font-mono text-[13px] leading-none',
+        'transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold/55',
+        'focus-visible:ring-offset-1 focus-visible:ring-offset-bg-deepest',
         isActive
-          ? 'bg-accent-teal text-bg-deepest font-bold'
+          ? 'bg-accent-teal/12 font-bold text-accent-teal-bright ring-1 ring-inset ring-accent-teal/25'
           : 'text-text-primary hover:bg-bg-elevated-hover',
-      ].join(' ')}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
-      <span>{node.move?.san}</span>
-      {formatNags(node.nags) && <span className="text-accent-gold font-sans text-xs">{formatNags(node.nags)}</span>}
-      <WinPip fen={parentFen} san={node.move?.san ?? ''} />
+      ].join(' ')}
+    >
+      {/* აქტიური მდგომარეობის მარცხენა აქცენტური ზოლი (Linear-სტილი) */}
+      <span
+        aria-hidden="true"
+        className={[
+          'absolute inset-y-1 left-0 w-[2px] rounded-full bg-accent-teal',
+          'origin-center',
+          isActive ? 'scale-y-100' : 'scale-y-0',
+        ].join(' ')}
+      />
+
+      {/* Mastery dot — ოდნავ დაშორებული, რომ ზოლი არ დაემთხვეს */}
+      <span
+        className={[
+          'ml-1 h-1.5 w-1.5 shrink-0 rounded-full transition-shadow',
+          dotColor,
+          isActive ? 'ring-1 ring-bg-deepest/50' : '',
+        ].join(' ')}
+      />
+
+      <span className="truncate">{node.move?.san}</span>
+
+      {formatNags(node.nags) && (
+        <span className="font-sans text-xs text-accent-gold">
+          {formatNags(node.nags)}
+        </span>
+      )}
+
+      {/* WinPip მარჯვნივ — ვიზუალური იერარქია ემთხვევა MoveHistory-ს */}
+      <span className="ml-auto flex shrink-0 items-center">
+        <WinPip fen={parentFen} san={node.move?.san ?? ''} />
+      </span>
     </button>
   );
 }
