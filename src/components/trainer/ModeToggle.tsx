@@ -17,7 +17,7 @@ export function ModeToggle() {
 
   return (
     <div className="space-y-2">
-      {store.repertoires.length > 1 && (
+      {store.repertoires.length > 0 && (
         <label className="block">
           <span className="mb-1 block font-mono text-[11px] text-text-muted">
             Repertoire

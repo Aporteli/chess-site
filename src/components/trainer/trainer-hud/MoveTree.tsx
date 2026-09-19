@@ -18,9 +18,9 @@ export function MoveTree() {
     <div className="flex flex-col rounded-xl border border-border-subtle bg-bg-surface p-3 font-sans">
       <MoveTreeHeader moveCount={moveCount} />
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 gap-x-4 rounded-lg bg-bg-elevated p-1.5 [[data-sidebar-collapsed=true]_&]:grid-cols-2">
         {turns.length === 0 && (
-          <p className="py-4 text-center text-xs text-text-muted">No moves yet. Make a move on the board.</p>
+          <p className="col-span-full py-4 text-center text-xs text-text-muted">No moves yet. Make a move on the board.</p>
         )}
 
         {turns.map((row) => (

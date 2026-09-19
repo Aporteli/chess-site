@@ -9,7 +9,6 @@ import { DrillFilters } from './DrillFilters';
 import { MoveTree } from './MoveTree';
 import { AnnotationEditor } from '../anotation-editor/AnnotationEditor';
 import { MasterReference } from '../Master-reference/MasterReference';
-import { TranspositionAlert } from './TranspositionAlert';
 import { BoardSettings } from '../settings/BoardSettings';
 import { OpeningHeaderCard } from './OpeningHeaderCard';
 
@@ -19,7 +18,6 @@ export const TrainerHud = memo(function TrainerHud() {
   return (
     <div className="flex min-h-0 flex-col gap-3">
       <OpeningHeaderCard />
-      <TranspositionAlert />
       <HintBox />
       {mode === 'drill' && <DrillFilters />}
       <SrsProgress />

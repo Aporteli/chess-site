@@ -11,6 +11,7 @@ import { loadEndgame } from '@/lib/tablebase/chess/card-nav';
 import { deleteAllKinds, deleteKind } from '@/lib/tablebase/chess/catalog-actions';
 import { VariationsDropdown } from '@/components/tablebase/chess/variations-panel/VariationsDropdown';
 import { usePathname } from 'next/navigation';
+import { Repertoire } from '@/components/trainer/repertoire/Repertoire';
 
 interface NavbarProps {
   onOpenMobileNav: () => void;
@@ -44,9 +45,8 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
             <Menu className="h-5 w-5" />
           </button>
 
-          {/* დესკტოპზე ხილული დროპდაუნები (sm-დან ზემოთ) */}
-             {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
-             {pathname === '/tablebase' && (
+          {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
+          {pathname === '/tablebase' && (
             <div className="hidden items-center gap-2 min-[931px]:flex">
               <EndgameGridList
                 filtered={filtered}
@@ -63,6 +63,54 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
 
           {/* მობილურისა და ტაბლეტის ინსტრუმენტების ღილაკი (ჩანს 930px-მდე) */}
           {pathname === '/tablebase' && (
+            <div className="relative max-[930px]:block hidden">
+              <button
+                type="button"
+                onClick={() => setMobileToolsOpen((v) => !v)}
+                className="flex h-8 items-center gap-1.5 rounded-md bg-[#2A2A2A] px-2.5 text-xs font-mono font-medium text-white hover:bg-[#383838] transition-colors">
+                <SlidersHorizontal className="size-3.5 text-[#769656]" />
+                <span>Tools</span>
+              </button>
+
+              {mobileToolsOpen && (
+                <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
+                  <div onClick={() => setMobileToolsOpen(false)}>
+                    <EndgameGridList
+                      filtered={filtered}
+                      currentIndex={index}
+                      building={building}
+                      onLoad={loadEndgame}
+                      onDelete={deleteKind}
+                      onAdd={() => setUploadOpen(true)}
+                      onDeleteAll={deleteAllKinds}
+                    />
+                  </div>
+                  <div onClick={() => setMobileToolsOpen(false)}>
+                    <VariationsDropdown />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
+          {pathname === '/trainer' && (
+            <div className="hidden items-center gap-2 min-[931px]:flex">
+              <EndgameGridList
+                filtered={filtered}
+                currentIndex={index}
+                building={building}
+                onLoad={loadEndgame}
+                onDelete={deleteKind}
+                onAdd={() => setUploadOpen(true)}
+                onDeleteAll={deleteAllKinds}
+              />
+              <VariationsDropdown />
+            </div>
+          )}
+
+          {/* მობილურისა და ტაბლეტის ინსტრუმენტების ღილაკი (ჩანს 930px-მდე) */}
+          {pathname === '/trainer' && (
             <div className="relative max-[930px]:block hidden">
               <button
                 type="button"

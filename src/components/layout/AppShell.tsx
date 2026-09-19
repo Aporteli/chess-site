@@ -26,8 +26,10 @@ export function AppShell({ activeKey, children }: AppShellProps) {
   }, []);
 
   return (
-    // Fixed-height app frame: the viewport never scrolls, `main` does.
-    <div className="flex h-dvh flex-col overflow-hidden bg-bg-deepest lg:flex-row">
+    <div
+      data-sidebar-collapsed={collapsed ? "true" : "false"}
+      className="flex h-dvh flex-col overflow-hidden bg-bg-deepest lg:flex-row"
+    >
       {/* Sidebar - in-flow rail on desktop, overlay on mobile */}
       <Sidebar
         activeKey={activeKey}

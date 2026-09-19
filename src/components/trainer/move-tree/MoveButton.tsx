@@ -26,10 +26,10 @@ export function MoveButton({
     <button
       onClick={() => onJump(node.id)}
       className={[
-        'inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-[13px] transition-all',
+        'flex w-full items-center justify-start gap-1.5 px-2 py-1 font-mono text-[13px] transition-colors',
         isActive
-          ? 'bg-accent-teal text-bg-deepest font-bold shadow-sm'
-          : 'text-text-primary hover:bg-bg-elevated hover:text-accent-teal-bright',
+          ? 'bg-accent-teal text-bg-deepest font-bold'
+          : 'text-text-primary hover:bg-bg-elevated-hover',
       ].join(' ')}>
       <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
       <span>{node.move?.san}</span>

@@ -16,19 +16,19 @@ export function SiblingRow({
   if (siblings.length === 0) return null;
 
   return (
-    <div className="mt-1 ml-8 flex flex-wrap items-center gap-1.5 border-t border-border-subtle/30 pt-1">
-      <span className="text-[10px] text-text-muted uppercase tracking-wider font-semibold">
-        {label}:
-      </span>
-      {siblings.map((alt) => (
-        <button
-          key={alt.id}
-          onClick={() => onJump(alt.id)}
-          className="rounded bg-bg-surface px-1.5 py-0.5 font-mono text-xs text-text-secondary hover:text-accent-teal hover:border-accent-teal/50 border border-border-subtle transition-colors"
-        >
-          {alt.move?.san}
-        </button>
-      ))}
+    <div className="mt-1 ml-6 flex min-w-0 items-center overflow-hidden rounded bg-bg-deepest">
+      <span className="shrink-0 px-2 py-1 text-xs text-text-muted">{label}</span>
+      <div className="flex min-w-0 flex-1 flex-wrap">
+        {siblings.map((alt) => (
+          <button
+            key={alt.id}
+            onClick={() => onJump(alt.id)}
+            className="px-2 py-1 font-mono text-[13px] text-text-primary hover:bg-bg-elevated transition-colors"
+          >
+            {alt.move?.san}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

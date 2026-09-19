@@ -1,0 +1,180 @@
+'use client';
+
+import { useState } from 'react';
+import { ChevronDown, GitBranch, Trash2, RefreshCw, Check, Loader2 } from 'lucide-react';
+import { endgameIcons } from '@/lib/tablebase/chess/catalog';
+import { fillDeck, handleNext, loadCard } from '@/lib/tablebase/chess/card-nav';
+import { deleteAllVariations, deleteVariation } from '@/lib/tablebase/chess/catalog-actions';
+import { lookupTablebase } from '@/lib/tablebase/chess/lookup';
+import { selectedKindOf, useTablebaseStore } from '@/stores/tablebase-store';
+
+const PIPELINE_COPY = {
+  generate: 'Generating...',
+  legal: 'Checking...',
+  analyze: 'Analyzing...',
+  store: 'Saving...',
+} as const;
+
+export function Repertoire() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const pipeline = useTablebaseStore((s) => s.pipeline);
+  const cards = useTablebaseStore((s) => s.deck.cards);
+  const activeId = useTablebaseStore((s) => s.activeCard?.id ?? null);
+  const error = useTablebaseStore((s) => s.error);
+  const loading = useTablebaseStore((s) => s.loading);
+  const fenValid = useTablebaseStore((s) => s.fenValid);
+  const fen = useTablebaseStore((s) => s.fen);
+  const kind = useTablebaseStore(selectedKindOf);
+
+  const building = pipeline !== 'idle';
+  const typed = cards.filter((c: any) => c.kind === kind);
+
+  const pipelineLabel =
+    pipeline === 'idle'
+      ? `${typed.length} ${endgameIcons(kind)}`
+      : PIPELINE_COPY[pipeline as keyof typeof PIPELINE_COPY];
+
+  return (
+    <div className="relative inline-block" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+      {/* 1. Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={`flex h-8 items-center gap-2 rounded-md px-2.5 font-mono text-xs transition-all duration-150 ${
+          isOpen
+            ? 'bg-[#383838] text-white'
+            : 'bg-[#2A2A2A] text-white hover:bg-[#383838]'
+        }`}>
+        <GitBranch className="size-3.5 text-[#769656]" />
+        <span className="font-semibold">Repertoire</span>
+        <span
+          className={`rounded transition-all duration-150 px-1.5 py-0.5 text-3xs font-medium ${
+            isOpen ? 'bg-[#4A7C59] text-white' : 'bg-[#1E1E1E] text-[#A0A0A0]'
+          }`}>
+          {pipelineLabel}
+        </span>
+        <ChevronDown
+          className={`size-3 transition-transform duration-200 text-[#A0A0A0] ${isOpen ? 'rotate-180 text-white' : ''}`}
+        />
+      </button>
+
+      {/* 2. Dropdown Panel */}
+      {isOpen && (
+        <div className="absolute left-0 top-full z-50 pt-1 w-72 animate-in fade-in-0 slide-in-from-top-1 duration-100">
+          <div className="flex flex-col overflow-hidden rounded-lg border border-[#383838] bg-[#1E1E1E] shadow-2xl">
+            {/* Quick Actions Header */}
+            <div className="flex flex-col gap-1.5 border-b border-[#383838] bg-[#2A2A2A] p-2">
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  disabled={building}
+                  onClick={() => handleNext()}
+                  className="flex h-7 flex-1 items-center justify-center rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
+                  {building ? <Loader2 className="size-3 animate-spin" /> : 'Next Card'}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={building}
+                  onClick={() => fillDeck()}
+                  className="flex h-7 flex-1 items-center justify-center rounded bg-[#383838] font-mono text-3xs text-white hover:bg-[#4A7C59] disabled:opacity-50 transition-colors">
+                  Fill Deck
+                </button>
+              </div>
+
+              <button
+                type="button"
+                disabled={loading || !fenValid || building}
+                onClick={() => {
+                  if (!fenValid) {
+                    useTablebaseStore.getState().setError('Invalid FEN');
+                    return;
+                  }
+                  void lookupTablebase(fen);
+                }}
+                className="flex h-7 w-full items-center justify-center gap-1.5 rounded bg-[#383838] font-mono text-3xs text-white hover:bg-[#4A7C59] disabled:opacity-40 transition-colors">
+                <RefreshCw className={`size-3 ${loading ? 'animate-spin' : ''}`} />
+                <span>{loading ? 'Looking up...' : 'Refresh Tablebase'}</span>
+              </button>
+
+              {error && <span className="font-mono text-3xs text-[#E63946] text-center">{error}</span>}
+            </div>
+
+            {/* Variations List */}
+            <div className="max-h-56 overflow-y-auto p-1 space-y-0.5">
+              {typed.length === 0 ? (
+                <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No {endgameIcons(kind)} cards yet</div>
+              ) : (
+                typed.map((card: any, i: number) => {
+                  const isSelected = activeId === card.id;
+                  const evalVal = card.evaluation;
+                  const evalFormatted =
+                    evalVal == null ? '—' : evalVal > 0 ? `+${evalVal.toFixed(2)}` : evalVal.toFixed(2);
+
+                  return (
+                    <div
+                      key={card.id}
+                      className={`group flex h-8 items-center justify-between rounded px-2 font-mono text-xs transition-colors ${
+                        isSelected
+                          ? 'bg-[#4A7C59] text-white font-semibold'
+                          : 'text-white hover:bg-[#2A2A2A]'
+                      }`}>
+                      <button
+                        type="button"
+                        disabled={building}
+                        onClick={() => {
+                          loadCard(
+                            card,
+                            cards.findIndex((c: any) => c.id === card.id),
+                          );
+                          setIsOpen(false);
+                        }}
+                        className="flex flex-1 items-center justify-between pr-2 text-left disabled:opacity-50">
+                        <div className="flex items-center gap-1.5">
+                          {isSelected ? (
+                            <Check className="size-3 text-white shrink-0" />
+                          ) : (
+                            <span className="w-3 text-3xs text-[#A0A0A0]">{i + 1}</span>
+                          )}
+                          <span>{endgameIcons(card.kind)}</span>
+                        </div>
+
+                        <span className="tabular-nums text-3xs font-medium opacity-90">{evalFormatted}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label="Delete variation"
+                        disabled={building}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteVariation(card.id);
+                        }}
+                        className="opacity-0 transition-opacity hover:text-[#E63946] group-hover:opacity-100 disabled:opacity-30">
+                        <Trash2 className="size-3" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between border-t border-[#383838] bg-[#2A2A2A] px-2 py-1">
+              <span className="font-mono text-3xs text-[#A0A0A0]">{typed.length} repertoire</span>
+              <button
+                type="button"
+                disabled={building || typed.length === 0}
+                onClick={() => deleteAllVariations()}
+                className="flex items-center gap-1 font-mono text-3xs text-[#A0A0A0] hover:text-[#E63946] disabled:opacity-30 transition-colors">
+                <Trash2 className="size-2.5" />
+                Clear All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
