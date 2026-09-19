@@ -102,7 +102,7 @@ export function VariationsDropdown() {
             </div>
 
             {/* Variations List */}
-            <div className="max-h-56 overflow-y-auto p-1 space-y-0.5">
+            <div className="thin-scrollbar max-h-64 overflow-y-auto p-1 ">
               {typed.length === 0 ? (
                 <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No {endgameIcons(kind)} cards yet</div>
               ) : (

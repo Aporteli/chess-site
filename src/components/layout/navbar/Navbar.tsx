@@ -12,6 +12,8 @@ import { deleteAllKinds, deleteKind } from '@/lib/tablebase/chess/catalog-action
 import { VariationsDropdown } from '@/components/tablebase/chess/variations-panel/VariationsDropdown';
 import { usePathname } from 'next/navigation';
 import { Repertoire } from '@/components/trainer/repertoire/Repertoire';
+import { useTrainerOptional } from '@/lib/trainer/context';
+import { Chapter } from '@/components/trainer/chapter/Chapter';
 
 interface NavbarProps {
   onOpenMobileNav: () => void;
@@ -22,6 +24,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const pathname = usePathname();
+
   const catalog = useTablebaseStore((s) => s.catalog);
   const query = useTablebaseStore((s) => s.endgameQuery);
   const index = useTablebaseStore((s) => s.endgameIndex);
@@ -33,10 +36,13 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
     !q || eg.id.toLowerCase().includes(q) || eg.icons.includes(q) ? [{ eg, i }] : [],
   );
 
+  const trainer = useTrainerOptional();
+  const showTrainerTools = pathname === '/trainer' && trainer !== null;
+
   return (
-    <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md ">
+    <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-3">
-        {/* 1. მარცხენა სექცია: მობილურის მენიუ + დესკტოპის დროპდაუნები */}
+        {/* 1. მარცხენა სექცია */}
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenMobileNav}
@@ -45,7 +51,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
             <Menu className="h-5 w-5" />
           </button>
 
-          {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
+          {/* Tablebase dropdowns (desktop) */}
           {pathname === '/tablebase' && (
             <div className="hidden items-center gap-2 min-[931px]:flex">
               <EndgameGridList
@@ -61,7 +67,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
             </div>
           )}
 
-          {/* მობილურისა და ტაბლეტის ინსტრუმენტების ღილაკი (ჩანს 930px-მდე) */}
+          {/* Tablebase tools (mobile) */}
           {pathname === '/tablebase' && (
             <div className="relative max-[930px]:block hidden">
               <button
@@ -93,24 +99,23 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
             </div>
           )}
 
-          {/* დესკტოპზე ხილული დროპდაუნები (931px-დან ზემოთ) */}
-          {pathname === '/trainer' && (
+          {/* Trainer dropdowns (desktop) — მხოლოდ /trainer-ზე */}
+          {showTrainerTools && trainer && (
             <div className="hidden items-center gap-2 min-[931px]:flex">
-              <EndgameGridList
-                filtered={filtered}
-                currentIndex={index}
-                building={building}
-                onLoad={loadEndgame}
-                onDelete={deleteKind}
-                onAdd={() => setUploadOpen(true)}
-                onDeleteAll={deleteAllKinds}
+              <Repertoire
+                store={trainer.store}
+                repertoire={trainer.repertoire}
+                selectRepertoire={trainer.selectRepertoire}
+                setRepertoireSide={trainer.setRepertoireSide}
+                onClearAll={() => trainer.deleteRepertoires(trainer.store.repertoires.map((r) => r.id))}
+                onDelete={trainer.deleteRepertoires}
               />
-              <VariationsDropdown />
+              <Chapter store={trainer.store} chapter={trainer.chapter} selectChapter={trainer.selectChapter} />
             </div>
           )}
 
-          {/* მობილურისა და ტაბლეტის ინსტრუმენტების ღილაკი (ჩანს 930px-მდე) */}
-          {pathname === '/trainer' && (
+          {/* Trainer tools (mobile) */}
+          {showTrainerTools && trainer && (
             <div className="relative max-[930px]:block hidden">
               <button
                 type="button"
@@ -120,23 +125,20 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
                 <span>Tools</span>
               </button>
 
-
-
               {mobileToolsOpen && (
                 <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
                   <div onClick={() => setMobileToolsOpen(false)}>
-                    <EndgameGridList
-                      filtered={filtered}
-                      currentIndex={index}
-                      building={building}
-                      onLoad={loadEndgame}
-                      onDelete={deleteKind}
-                      onAdd={() => setUploadOpen(true)}
-                      onDeleteAll={deleteAllKinds}
+                    <Repertoire
+                      store={trainer.store}
+                      repertoire={trainer.repertoire}
+                      selectRepertoire={trainer.selectRepertoire}
+                      setRepertoireSide={trainer.setRepertoireSide}
+                      onClearAll={() => trainer.deleteRepertoires(trainer.store.repertoires.map((r) => r.id))}
+                      onDelete={trainer.deleteRepertoires}
                     />
                   </div>
                   <div onClick={() => setMobileToolsOpen(false)}>
-                    <VariationsDropdown />
+                    <Chapter store={trainer.store} chapter={trainer.chapter} selectChapter={trainer.selectChapter} />
                   </div>
                 </div>
               )}
@@ -144,7 +146,7 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
           )}
         </div>
 
-        {/* 2. მარჯვენა სექცია: ძებნა, პარამეტრები, პროფილი */}
+        {/* 2. მარჯვენა სექცია */}
         <div className="flex items-center gap-1.5 sm:gap-3">
           <NavSearch
             isOpen={searchOpen}

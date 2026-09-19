@@ -98,7 +98,7 @@ export interface EditingActions {
 
 export interface ImportExportActions {
   importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
-  importLichessStudy: (pgn: string) => { ok: boolean; message: string };
+  importLichessStudy: (pgn: string, side?: Side) => { ok: boolean; message: string };
   exportActiveChapter: () => string;
   exportActiveRepertoire: () => string;
 }
@@ -106,8 +106,10 @@ export interface ImportExportActions {
 export interface LibraryActions {
   createChapter: (name: string) => void;
   createRepertoire: (name: string, side: Side) => void;
+  setRepertoireSide: (id: string, side: Side) => void;
   deleteChapter: (id: string) => void;
   deleteRepertoire: (id: string) => void;
+  deleteRepertoires: (ids: string[]) => Promise<void>;   // ← ახალი
   resetToSeed: () => void;
   loadCustomFen: (fen: string, name?: string) => boolean;
 }

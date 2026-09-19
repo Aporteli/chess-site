@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { BoardWrapper } from '@/components/board/BoardWrapper';
 import { TrainerHud } from '@/components/trainer/trainer-hud/TrainerHud';
 import { ModeToggle } from '@/components/trainer/ModeToggle';
@@ -51,6 +51,8 @@ function TrainerEnginePanel() {
 
 export function TrainerWorkspace() {
   const t = useTrainer();
+  const boardColumnRef = useRef<HTMLElement>(null);
+  const lastWheelAt = useRef(0);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -64,10 +66,10 @@ export function TrainerWorkspace() {
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         t.goForward();
-      } else if (e.key === 'Home') {
+      } else if (e.key === 'ArrowUp' || e.key === 'Home') {
         e.preventDefault();
         t.goStart();
-      } else if (e.key === 'End') {
+      } else if (e.key === 'ArrowDown' || e.key === 'End') {
         e.preventDefault();
         t.goEnd();
       } else if (e.key === 'f' || e.key === 'F') {
@@ -96,11 +98,29 @@ export function TrainerWorkspace() {
     return () => window.removeEventListener('keydown', onKey);
   }, [t]);
 
+  useEffect(() => {
+    const el = boardColumnRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      const now = performance.now();
+      if (now - lastWheelAt.current < 70) return;
+      lastWheelAt.current = now;
+      if (e.deltaY > 0) t.goForward();
+      else t.goBack();
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [t]);
+
   return (
     <StockfishProvider fen={t.fen}>
       <div className="flex h-full min-h-0 w-full flex-1 flex-col p-2">
         <div className="board-workspace w-full [--eval-gutter:1.375rem]">
-          <section className="board-column">
+          <section ref={boardColumnRef} className="board-column">
             <BoardWrapper />
           </section>
 

@@ -1,172 +1,249 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronDown, GitBranch, Trash2, RefreshCw, Check, Loader2 } from 'lucide-react';
-import { endgameIcons } from '@/lib/tablebase/chess/catalog';
-import { fillDeck, handleNext, loadCard } from '@/lib/tablebase/chess/card-nav';
-import { deleteAllVariations, deleteVariation } from '@/lib/tablebase/chess/catalog-actions';
-import { lookupTablebase } from '@/lib/tablebase/chess/lookup';
-import { selectedKindOf, useTablebaseStore } from '@/stores/tablebase-store';
+import { useRef, useState } from 'react';
+import { ChevronDown, BookMarked, Upload, Trash2, X } from 'lucide-react';
+import type { OpeningStore, Repertoire as RepertoireType } from '@/lib/chess';
+import type { Side } from '@/lib/types';
+import { PgnDialog } from '@/components/trainer/PgnDialog';
 
-const PIPELINE_COPY = {
-  generate: 'Generating...',
-  legal: 'Checking...',
-  analyze: 'Analyzing...',
-  store: 'Saving...',
-} as const;
-
-export function Repertoire() {
+export function Repertoire({
+  store,
+  repertoire,
+  selectRepertoire,
+  setRepertoireSide,
+  onClearAll,
+  onDelete,
+}: {
+  store: OpeningStore;
+  repertoire: RepertoireType;
+  selectRepertoire: (id: string) => void;
+  setRepertoireSide: (id: string, side: Side) => void;
+  onClearAll?: () => void;
+  onDelete?: (ids: string[]) => void | Promise<void>;
+}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [pgnOpen, setPgnOpen] = useState(false);
+  const [selectMode, setSelectMode] = useState(false);
+  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const holdTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const selectModeRef = useRef(false);
+  const suppressClickRef = useRef(false);
 
-  const pipeline = useTablebaseStore((s) => s.pipeline);
-  const cards = useTablebaseStore((s) => s.deck.cards);
-  const activeId = useTablebaseStore((s) => s.activeCard?.id ?? null);
-  const error = useTablebaseStore((s) => s.error);
-  const loading = useTablebaseStore((s) => s.loading);
-  const fenValid = useTablebaseStore((s) => s.fenValid);
-  const fen = useTablebaseStore((s) => s.fen);
-  const kind = useTablebaseStore(selectedKindOf);
+  const clearHold = () => {
+    if (holdTimeout.current) {
+      clearTimeout(holdTimeout.current);
+      holdTimeout.current = null;
+    }
+  };
 
-  const building = pipeline !== 'idle';
-  const typed = cards.filter((c: any) => c.kind === kind);
+  const exitSelectMode = () => {
+    clearHold();
+    selectModeRef.current = false;
+    suppressClickRef.current = false;
+    setSelectMode(false);
+    setCheckedIds([]);
+  };
 
-  const pipelineLabel =
-    pipeline === 'idle'
-      ? `${typed.length} ${endgameIcons(kind)}`
-      : PIPELINE_COPY[pipeline as keyof typeof PIPELINE_COPY];
+  const closeDropdown = () => {
+    setIsOpen(false);
+    exitSelectMode();
+  };
+
+  const handleHoldStart = (e: React.PointerEvent, id: string) => {
+    if (e.button !== 0 || selectModeRef.current) return;
+    clearHold();
+    holdTimeout.current = setTimeout(() => {
+      selectModeRef.current = true;
+      suppressClickRef.current = true;
+      setSelectMode(true);
+      setCheckedIds([id]);
+    }, 500);
+  };
+
+  const toggleChecked = (id: string) => {
+    setCheckedIds((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      if (next.length === 0) {
+        selectModeRef.current = false;
+        setSelectMode(false);
+      }
+      return next;
+    });
+  };
+
+  const handleItemClick = (id: string) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    if (selectModeRef.current) {
+      toggleChecked(id);
+      return;
+    }
+    selectRepertoire(id);
+    setIsOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (checkedIds.length === 0 || !onDelete) return;
+    const ids = [...checkedIds];
+    onDelete(ids);
+    exitSelectMode();
+  };
+
+  const isEmpty = store.repertoires.length === 0;
 
   return (
-    <div className="relative inline-block" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-      {/* 1. Trigger Button */}
+    <div
+      className="relative inline-block"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => {
+        if (selectModeRef.current) return;
+        closeDropdown();
+      }}>
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (isOpen) closeDropdown();
+          else setIsOpen(true);
+        }}
         className={`flex h-8 items-center gap-2 rounded-md px-2.5 font-mono text-xs transition-all duration-150 ${
-          isOpen
-            ? 'bg-[#383838] text-white'
-            : 'bg-[#2A2A2A] text-white hover:bg-[#383838]'
+          isOpen ? 'bg-[#383838] text-white' : 'bg-[#2A2A2A] text-white hover:bg-[#383838]'
         }`}>
-        <GitBranch className="size-3.5 text-[#769656]" />
-        <span className="font-semibold">Repertoire</span>
-        <span
-          className={`rounded transition-all duration-150 px-1.5 py-0.5 text-3xs font-medium ${
-            isOpen ? 'bg-[#4A7C59] text-white' : 'bg-[#1E1E1E] text-[#A0A0A0]'
-          }`}>
-          {pipelineLabel}
-        </span>
+        <BookMarked className="size-3.5 text-[#769656]" />
+        <span className="max-w-[140px] truncate font-semibold">{repertoire.name}</span>
         <ChevronDown
-          className={`size-3 transition-transform duration-200 text-[#A0A0A0] ${isOpen ? 'rotate-180 text-white' : ''}`}
+          className={`size-3 shrink-0 text-[#A0A0A0] transition-transform duration-200 ${
+            isOpen ? 'rotate-180 text-white' : ''
+          }`}
         />
       </button>
 
-      {/* 2. Dropdown Panel */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 pt-1 w-72 animate-in fade-in-0 slide-in-from-top-1 duration-100">
+        <div className="absolute left-0 top-full z-50 w-72 pt-1 animate-in fade-in-0 slide-in-from-top-1 duration-100">
           <div className="flex flex-col overflow-hidden rounded-lg border border-[#383838] bg-[#1E1E1E] shadow-2xl">
-            {/* Quick Actions Header */}
+            {/* ── Header: Import ან Select-mode actions ── */}
             <div className="flex flex-col gap-1.5 border-b border-[#383838] bg-[#2A2A2A] p-2">
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  disabled={building}
-                  onClick={() => handleNext()}
-                  className="flex h-7 flex-1 items-center justify-center rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
-                  {building ? <Loader2 className="size-3 animate-spin" /> : 'Next Card'}
-                </button>
-
-                <button
-                  type="button"
-                  disabled={building}
-                  onClick={() => fillDeck()}
-                  className="flex h-7 flex-1 items-center justify-center rounded bg-[#383838] font-mono text-3xs text-white hover:bg-[#4A7C59] disabled:opacity-50 transition-colors">
-                  Fill Deck
-                </button>
-              </div>
-
-              <button
-                type="button"
-                disabled={loading || !fenValid || building}
-                onClick={() => {
-                  if (!fenValid) {
-                    useTablebaseStore.getState().setError('Invalid FEN');
-                    return;
-                  }
-                  void lookupTablebase(fen);
-                }}
-                className="flex h-7 w-full items-center justify-center gap-1.5 rounded bg-[#383838] font-mono text-3xs text-white hover:bg-[#4A7C59] disabled:opacity-40 transition-colors">
-                <RefreshCw className={`size-3 ${loading ? 'animate-spin' : ''}`} />
-                <span>{loading ? 'Looking up...' : 'Refresh Tablebase'}</span>
-              </button>
-
-              {error && <span className="font-mono text-3xs text-[#E63946] text-center">{error}</span>}
+              {selectMode ? (
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={exitSelectMode}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#3A3A3A] font-mono text-3xs font-medium text-white hover:bg-[#4A4A4A] transition-colors">
+                    <X className="size-3" />
+                    <span>Cancel</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={checkedIds.length === 0}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#E63946] font-mono text-3xs font-medium text-white hover:bg-[#F04A57] disabled:opacity-40 transition-colors">
+                    <Trash2 className="size-3" />
+                    <span>Delete ({checkedIds.length})</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setPgnOpen(true)}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
+                    <Upload className="size-3" />
+                    <span>Import</span>
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Variations List */}
-            <div className="max-h-56 overflow-y-auto p-1 space-y-0.5">
-              {typed.length === 0 ? (
-                <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No {endgameIcons(kind)} cards yet</div>
+            {/* ── List ── */}
+            <div className="thin-scrollbar max-h-64 overflow-y-auto p-1">
+              {isEmpty ? (
+                <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">
+                  No repertoires yet
+                </div>
               ) : (
-                typed.map((card: any, i: number) => {
-                  const isSelected = activeId === card.id;
-                  const evalVal = card.evaluation;
-                  const evalFormatted =
-                    evalVal == null ? '—' : evalVal > 0 ? `+${evalVal.toFixed(2)}` : evalVal.toFixed(2);
+                store.repertoires.map((rep) => {
+                  const active = rep.id === repertoire.id;
+                  const checked = checkedIds.includes(rep.id);
 
                   return (
                     <div
-                      key={card.id}
-                      className={`group flex h-8 items-center justify-between rounded px-2 font-mono text-xs transition-colors ${
-                        isSelected
+                      key={rep.id}
+                      className={`group flex h-8 select-none items-center justify-between gap-2 rounded px-2 font-mono text-xs transition-colors ${
+                        active
                           ? 'bg-[#4A7C59] text-white font-semibold'
                           : 'text-white hover:bg-[#2A2A2A]'
-                      }`}>
-                      <button
-                        type="button"
-                        disabled={building}
-                        onClick={() => {
-                          loadCard(
-                            card,
-                            cards.findIndex((c: any) => c.id === card.id),
-                          );
-                          setIsOpen(false);
-                        }}
-                        className="flex flex-1 items-center justify-between pr-2 text-left disabled:opacity-50">
-                        <div className="flex items-center gap-1.5">
-                          {isSelected ? (
-                            <Check className="size-3 text-white shrink-0" />
-                          ) : (
-                            <span className="w-3 text-3xs text-[#A0A0A0]">{i + 1}</span>
-                          )}
-                          <span>{endgameIcons(card.kind)}</span>
-                        </div>
+                      }`}
+                      onPointerDown={(e) => handleHoldStart(e, rep.id)}
+                      onPointerUp={clearHold}
+                      onPointerCancel={clearHold}
+                      onClick={() => handleItemClick(rep.id)}
+                      onContextMenu={(e) => e.preventDefault()}>
+                      {selectMode ? (
+                        <input
+                          type="checkbox"
+                          className="accent-[#4A7C59] shrink-0"
+                          checked={checked}
+                          onChange={() => toggleChecked(rep.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ minWidth: 14, minHeight: 14 }}
+                        />
+                      ) : null}
 
-                        <span className="tabular-nums text-3xs font-medium opacity-90">{evalFormatted}</span>
-                      </button>
+                      <span className="min-w-0 flex-1 truncate text-left">{rep.name}</span>
 
-                      <button
-                        type="button"
-                        aria-label="Delete variation"
-                        disabled={building}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteVariation(card.id);
-                        }}
-                        className="opacity-0 transition-opacity hover:text-[#E63946] group-hover:opacity-100 disabled:opacity-30">
-                        <Trash2 className="size-3" />
-                      </button>
+                      <div
+                        className="flex shrink-0 gap-0.5"
+                        onClick={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          title="You start first (White)"
+                          onClick={() => setRepertoireSide(rep.id, 'white')}
+                          className={`rounded px-1 py-0.5 text-[10px] font-medium ${
+                            rep.side === 'white'
+                              ? active
+                                ? 'bg-white/20 text-white'
+                                : 'bg-[#4A7C59] text-white'
+                              : active
+                                ? 'text-white/60 hover:text-white'
+                                : 'text-[#A0A0A0] hover:text-white'
+                          }`}>
+                          Me
+                        </button>
+                        <button
+                          type="button"
+                          title="Opponent starts first (you are Black)"
+                          onClick={() => setRepertoireSide(rep.id, 'black')}
+                          className={`rounded px-1 py-0.5 text-[10px] font-medium ${
+                            rep.side === 'black'
+                              ? active
+                                ? 'bg-white/20 text-white'
+                                : 'bg-[#4A7C59] text-white'
+                              : active
+                                ? 'text-white/60 hover:text-white'
+                                : 'text-[#A0A0A0] hover:text-white'
+                          }`}>
+                          Opp
+                        </button>
+                      </div>
                     </div>
                   );
                 })
               )}
             </div>
 
-            {/* Footer */}
+            {/* ── Footer ── */}
             <div className="flex items-center justify-between border-t border-[#383838] bg-[#2A2A2A] px-2 py-1">
-              <span className="font-mono text-3xs text-[#A0A0A0]">{typed.length} repertoire</span>
+              <span className="font-mono text-3xs text-[#A0A0A0]">
+                {store.repertoires.length}{' '}
+                {store.repertoires.length === 1 ? 'repertoire' : 'repertoires'}
+              </span>
+
               <button
                 type="button"
-                disabled={building || typed.length === 0}
-                onClick={() => deleteAllVariations()}
+                disabled={isEmpty}
+                onClick={onClearAll}
                 className="flex items-center gap-1 font-mono text-3xs text-[#A0A0A0] hover:text-[#E63946] disabled:opacity-30 transition-colors">
                 <Trash2 className="size-2.5" />
                 Clear All
@@ -175,6 +252,7 @@ export function Repertoire() {
           </div>
         </div>
       )}
+      <PgnDialog open={pgnOpen} mode="import" onClose={() => setPgnOpen(false)} />
     </div>
   );
 }

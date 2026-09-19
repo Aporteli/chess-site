@@ -74,13 +74,15 @@ export interface TrainerContextValue {
   deleteCurrent: () => void;
   promoteCurrent: () => void;
   importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
-  importLichessStudy: (pgn: string) => { ok: boolean; message: string };
+  importLichessStudy: (pgn: string, side?: Side) => { ok: boolean; message: string };
   exportActiveChapter: () => string;
   exportActiveRepertoire: () => string;
   createChapter: (name: string) => void;
   createRepertoire: (name: string, side: Side) => void;
+  setRepertoireSide: (id: string, side: Side) => void;
   deleteChapter: (id: string) => void;
   deleteRepertoire: (id: string) => void;
+  deleteRepertoires: (ids: string[]) => Promise<void>;
   resetToSeed: () => void;
   setArrows: (arrows: Arrow[]) => void;
   toggleHighlight: (square: string) => void;
@@ -163,8 +165,10 @@ export function useTrainerValue(): TrainerContextValue | null {
     exportActiveRepertoire: state.exportActiveRepertoire,
     createChapter: state.createChapter,
     createRepertoire: state.createRepertoire,
+    setRepertoireSide: state.setRepertoireSide,
     deleteChapter: state.deleteChapter,
     deleteRepertoire: state.deleteRepertoire,
+    deleteRepertoires: state.deleteRepertoires,
     resetToSeed: state.resetToSeed,
     setArrows: state.setArrows,
     toggleHighlight: state.toggleHighlight,

@@ -86,7 +86,7 @@ export function EndgameGridList({
             </div>
 
             {/* List */}
-            <div className="max-h-60 overflow-y-auto p-1 space-y-0.5">
+            <div className="thin-scrollbar max-h-72 overflow-y-auto p-1 space-y-0.5">
               {filtered.length === 0 ? (
                 <div className="py-4 text-center font-mono text-3xs text-[#A0A0A0]">No matching endgames</div>
               ) : (
@@ -96,9 +96,7 @@ export function EndgameGridList({
                     <div
                       key={eg.id}
                       className={`group flex h-8 items-center justify-between rounded px-2 font-mono text-xs transition-colors ${
-                        isSelected
-                          ? 'bg-[#4A7C59] text-white font-semibold'
-                          : 'text-white hover:bg-[#2A2A2A]'
+                        isSelected ? 'bg-[#4A7C59] text-white font-semibold' : 'text-white hover:bg-[#2A2A2A]'
                       }`}>
                       <button
                         type="button"

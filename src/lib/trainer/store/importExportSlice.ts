@@ -97,7 +97,7 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
     }
   },
 
-  importLichessStudy: (pgn: string) => {
+  importLichessStudy: (pgn: string, side) => {
     const { repertoire } = deriveActive(get());
 
     try {
@@ -124,7 +124,7 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
       const nextRep = {
         id: uid('rep'),
         name: studyName,
-        side: repertoire?.side ?? 'white',
+        side: side ?? repertoire?.side ?? 'white',
         description: '',
         chapters: playableChapters,
         createdAt: now,

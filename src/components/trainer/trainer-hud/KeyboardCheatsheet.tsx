@@ -1,8 +1,8 @@
 'use client';
 
 const ROWS = [
-  ['← →', 'Step through the line'],
-  ['Home / End', 'Start or end of the mainline'],
+  ['← → / wheel', 'Step through the line'],
+  ['↑ ↓ / Home End', 'Start or end of the chapter'],
   ['F', 'Flip the board'],
   ['H', 'Hint (drill)'],
   ['Enter', 'Next line / solution'],

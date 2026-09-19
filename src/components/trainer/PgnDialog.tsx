@@ -50,6 +50,7 @@ export function PgnDialog({
   const [message, setMessage] = useState("");
   const [scope, setScope] = useState<"chapter" | "repertoire">("chapter");
   const [importType, setImportType] = useState<"pgn" | "study">("pgn");
+  const [playAs, setPlayAs] = useState<"white" | "black">("white");
   const [username, setUsername] = useState("");
   const [studyId, setStudyId] = useState("");
   const [studies, setStudies] = useState<LichessStudy[]>([]);
@@ -88,7 +89,7 @@ export function PgnDialog({
       };
     }
 
-    return t.importLichessStudy(pgn);
+    return t.importLichessStudy(pgn, playAs);
   };
 
   const loadStudies = async () => {
@@ -253,6 +254,36 @@ export function PgnDialog({
             </>
           ) : (
             <>
+              <div className="mb-3">
+                <p className="mb-1.5 font-mono text-[11px] text-text-muted">Who starts first</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPlayAs("white")}
+                    className={[
+                      "rounded-md px-3 py-1.5 text-[11px]",
+                      playAs === "white"
+                        ? "bg-accent-gold-dim text-accent-gold-bright"
+                        : "text-text-muted",
+                    ].join(" ")}
+                  >
+                    Me (White)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPlayAs("black")}
+                    className={[
+                      "rounded-md px-3 py-1.5 text-[11px]",
+                      playAs === "black"
+                        ? "bg-accent-gold-dim text-accent-gold-bright"
+                        : "text-text-muted",
+                    ].join(" ")}
+                  >
+                    Opponent (I am Black)
+                  </button>
+                </div>
+              </div>
+
               <div className="mb-3 flex gap-2">
                 <button
                   onClick={() => setImportType("pgn")}
@@ -374,6 +405,7 @@ export function PgnDialog({
                   return;
                 }
 
+                t.setRepertoireSide(t.repertoire.id, playAs);
                 const result = t.importPgnText(text, true);
                 setMessage(result.message);
 

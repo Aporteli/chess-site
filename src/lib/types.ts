@@ -5,7 +5,7 @@
 
 export interface ImportExportActions {
   importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
-  importLichessStudy: (pgn: string) => { ok: boolean; message: string };
+  importLichessStudy: (pgn: string, side?: Side) => { ok: boolean; message: string };
   exportActiveChapter: () => string;
   exportActiveRepertoire: () => string;
 }
