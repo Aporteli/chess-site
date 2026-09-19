@@ -120,6 +120,8 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
                 <span>Tools</span>
               </button>
 
+
+
               {mobileToolsOpen && (
                 <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
                   <div onClick={() => setMobileToolsOpen(false)}>
