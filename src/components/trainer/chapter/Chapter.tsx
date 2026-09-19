@@ -115,17 +115,7 @@ export function Chapter({
       {isOpen && (
         <div className="absolute left-0 top-full z-50 w-72 pt-1 animate-in fade-in-0 slide-in-from-top-1 duration-100">
           <div className="flex flex-col overflow-hidden rounded-lg border border-[#383838] bg-[#1E1E1E] shadow-2xl">
-            <div className="flex flex-col gap-1.5 border-b border-[#383838] bg-[#2A2A2A] p-2">
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={onImport}
-                  className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
-                  <Upload className="size-3" />
-                  <span>Import</span>
-                </button>
-              </div>
-            </div>
+
 
             <div className="thin-scrollbar max-h-64 overflow-y-auto p-1">
               {isEmpty ? (

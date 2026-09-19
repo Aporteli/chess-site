@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ChevronDown, BookMarked, Upload, Trash2, X } from 'lucide-react';
+import { ChevronDown, BookMarked, Upload, Trash2, X, Download } from 'lucide-react';
 import type { OpeningStore, Repertoire as RepertoireType } from '@/lib/chess';
 import type { Side } from '@/lib/types';
 import { PgnDialog } from '@/components/trainer/PgnDialog';
@@ -28,6 +28,7 @@ export function Repertoire({
   const holdTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectModeRef = useRef(false);
   const suppressClickRef = useRef(false);
+  const [pgn, setPgn] = useState<'import' | 'export' | null>(null);
 
   const clearHold = () => {
     if (holdTimeout.current) {
@@ -146,10 +147,17 @@ export function Repertoire({
                 <div className="flex gap-1.5">
                   <button
                     type="button"
-                    onClick={() => setPgnOpen(true)}
+                    onClick={() => setPgn('import')}
                     className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
                     <Upload className="size-3" />
                     <span>Import</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPgn('export')}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded bg-[#769656] font-mono text-3xs font-medium text-white hover:bg-[#81B64C] disabled:opacity-50 transition-colors">
+                    <Download className="size-3" />
+                    <span>Export</span>
                   </button>
                 </div>
               )}
@@ -158,9 +166,7 @@ export function Repertoire({
             {/* ── List ── */}
             <div className="thin-scrollbar max-h-64 overflow-y-auto p-1">
               {isEmpty ? (
-                <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">
-                  No repertoires yet
-                </div>
+                <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No repertoires yet</div>
               ) : (
                 store.repertoires.map((rep) => {
                   const active = rep.id === repertoire.id;
@@ -170,9 +176,7 @@ export function Repertoire({
                     <div
                       key={rep.id}
                       className={`group flex h-8 select-none items-center justify-between gap-2 rounded px-2 font-mono text-xs transition-colors ${
-                        active
-                          ? 'bg-[#4A7C59] text-white font-semibold'
-                          : 'text-white hover:bg-[#2A2A2A]'
+                        active ? 'bg-[#4A7C59] text-white font-semibold' : 'text-white hover:bg-[#2A2A2A]'
                       }`}
                       onPointerDown={(e) => handleHoldStart(e, rep.id)}
                       onPointerUp={clearHold}
@@ -236,8 +240,7 @@ export function Repertoire({
             {/* ── Footer ── */}
             <div className="flex items-center justify-between border-t border-[#383838] bg-[#2A2A2A] px-2 py-1">
               <span className="font-mono text-3xs text-[#A0A0A0]">
-                {store.repertoires.length}{' '}
-                {store.repertoires.length === 1 ? 'repertoire' : 'repertoires'}
+                {store.repertoires.length} {store.repertoires.length === 1 ? 'repertoire' : 'repertoires'}
               </span>
 
               <button
@@ -252,7 +255,7 @@ export function Repertoire({
           </div>
         </div>
       )}
-      <PgnDialog open={pgnOpen} mode="import" onClose={() => setPgnOpen(false)} />
+      <PgnDialog open={pgn !== null} mode={pgn ?? 'import'} onClose={() => setPgn(null)} />
     </div>
   );
 }

@@ -16,7 +16,7 @@ export const TrainerHud = memo(function TrainerHud() {
   const { mode } = useTrainer();
 
   return (
-    <div className="flex min-h-0 flex-col gap-3">
+    <div className="flex h-full min-h-0 flex-col gap-3 overflow-y-auto thin-scrollbar">
       <OpeningHeaderCard />
       <HintBox />
       {mode === 'drill' && <DrillFilters />}

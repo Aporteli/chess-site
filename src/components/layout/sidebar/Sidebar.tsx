@@ -5,6 +5,7 @@ import type { NavKey, NavItem } from '@/lib/types';
 import { SidebarBrand } from '@/components/layout/sidebar/SidebarBrand';
 import { SidebarNavItem } from '@/components/layout/sidebar/SidebarNavItem';
 import { SidebarCollapseToggle } from '@/components/layout/sidebar/SidebarCollapseToggle';
+import { SidebarSettingsDropup } from '@/components/layout/sidebar/SidebarSettingsDropup';
 
 type NavEntry = {
   key: NavKey;
@@ -28,9 +29,7 @@ export const navItems: NavItem[] = allNavEntries.filter((entry) =>
   ['trainer', 'puzzles', 'analysis', 'courses', 'tablebase'].includes(entry.key),
 );
 
-export const secondaryNavItems: NavItem[] = allNavEntries.filter((entry) =>
-  ['profile', 'settings'].includes(entry.key),
-);
+export const secondaryNavItems: NavItem[] = allNavEntries.filter((entry) => ['profile'].includes(entry.key));
 
 const HREF: Partial<Record<NavKey, string>> = Object.fromEntries(
   allNavEntries.filter((entry) => entry.href).map((entry) => [entry.key, entry.href!]),
@@ -98,6 +97,8 @@ export function Sidebar({ activeKey, collapsed, onToggleCollapsed, mobileOpen, o
               onCloseMobile={onCloseMobile}
             />
           ))}
+
+          <SidebarSettingsDropup activeKey={activeKey} collapsed={collapsed} onCloseMobile={onCloseMobile} />
         </div>
       </aside>
     </>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Download, Upload, X } from "lucide-react";
 import { useTrainer } from "@/lib/trainer/context";
 
@@ -57,7 +58,23 @@ export function PgnDialog({
   const [isImporting, setIsImporting] = useState(false);
   const [isListing, setIsListing] = useState(false);
 
-  if (!open) return null;
+  // Portal მხოლოდ კლიენტზე — SSR-ის დროს document არ არსებობს
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Escape-ით დახურვა
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open || !mounted) return null;
 
   const exported =
     scope === "chapter"
@@ -209,9 +226,15 @@ export function PgnDialog({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-xl rounded-2xl border border-border-default bg-bg-surface shadow-panel">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-2xl border border-border-default bg-bg-surface shadow-panel"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
           <h2 className="font-mono text-[17px] text-text-primary">
             {mode === "import" ? "Import PGN" : "Export PGN"}
@@ -430,6 +453,7 @@ export function PgnDialog({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

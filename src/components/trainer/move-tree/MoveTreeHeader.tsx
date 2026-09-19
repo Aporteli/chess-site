@@ -1,9 +1,6 @@
 export function MoveTreeHeader({ moveCount }: { moveCount: number }) {
   return (
-    <div className="mb-2.5 flex items-baseline justify-between border-b border-border-subtle pb-2">
-      <h3 className="font-mono text-[15px] font-semibold text-text-primary">
-        Repertoire Line
-      </h3>
+    <div className="pb-1 pl-1 flex items-baseline justify-between border-b border-border-subtle">
       <span className="font-mono text-[11px] text-text-muted">
         {moveCount} moves in tree
       </span>

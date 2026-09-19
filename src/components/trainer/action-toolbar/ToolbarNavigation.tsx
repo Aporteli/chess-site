@@ -28,7 +28,7 @@ export function ToolbarNavigation({
   ];
 
   return (
-    <div className="mt-3 flex items-center justify-center gap-0.5 rounded-lg border border-border-subtle bg-bg-elevated/60 p-1">
+    <div className=" flex items-center justify-center gap-0.5 rounded-lg border border-border-subtle bg-bg-elevated/60">
       {navItems.map(({ icon: Icon, label, run }) => (
         <button
           key={label}

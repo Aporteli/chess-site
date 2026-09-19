@@ -9,7 +9,7 @@ export function ActionToolbar() {
   const inLine = drilling && t.drill && !t.drill.lineComplete;
 
   return (
-    <div className="rounded-xl border border-border-subtle bg-bg-surface p-3">
+    <div className="rounded-xl border border-border-subtle bg-bg-surface">
       <ToolbarNavigation
         onGoStart={t.goStart}
         onGoBack={t.goBack}

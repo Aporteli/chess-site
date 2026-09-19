@@ -10,7 +10,6 @@ import { MOVE_NAGS } from '@/lib/chess';
 import { useTrainer } from '@/lib/trainer/context';
 import { StockfishProvider, useStockfishEngine } from '@/components/stockfish/StockfishContext';
 import StockfishDashboard from '@/components/stockfish/stockfish-dashboard/StockfishDashboard';
-import { HudActionButtons } from './trainer-hud/HudActionButtons';
 import { ActionToolbar } from './action-toolbar/ActionToolbar';
 import { useSettingsStore } from '@/stores/settings-store';
 
@@ -133,12 +132,11 @@ export function TrainerWorkspace() {
               <TrainerEnginePanel />
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto thin-scrollbar">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <TrainerHud />
             </div>
 
             <div className="shrink-0 space-y-2">
-              <HudActionButtons />
               <ActionToolbar />
             </div>
           </div>
