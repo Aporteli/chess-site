@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, LogOut, Plus, Share2, TriangleAlert, Users } from 'lucide-react';
+import { Check, LogOut, Plus, Search, Share2, TriangleAlert, Users, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ConnectionStatus, GameStatus, MultiplayerSession, PlayerColor } from '@/lib/multiplayer/types';
 
@@ -19,6 +19,7 @@ const CONNECTION_TONE: Record<ConnectionStatus, string> = {
 
 const STATUS_LABEL: Record<GameStatus, string> = {
   idle: 'No active game',
+  searching: 'Finding an opponent',
   connecting: 'Connecting to room',
   waiting: 'Waiting for opponent',
   'your-turn': 'Your turn',
@@ -28,6 +29,7 @@ const STATUS_LABEL: Record<GameStatus, string> = {
 
 const STATUS_TONE: Record<GameStatus, string> = {
   idle: 'border-border-subtle bg-bg-elevated text-text-muted',
+  searching: 'border-accent-gold/40 bg-accent-gold-dim text-accent-gold-bright',
   connecting: 'border-accent-gold/40 bg-accent-gold-dim text-accent-gold-bright',
   waiting: 'border-accent-gold/40 bg-accent-gold-dim text-accent-gold-bright',
   'your-turn': 'border-accent-teal/40 bg-accent-teal-dim text-accent-teal-bright',
@@ -74,11 +76,23 @@ interface MultiplayerPanelProps {
   session: MultiplayerSession;
   gameStatus: GameStatus;
   turn: PlayerColor;
+  isSearching: boolean;
   onCreateGame: () => void;
+  onFindOpponent: () => void;
+  onCancelSearch: () => void;
   onLeaveGame: () => void;
 }
 
-export function MultiplayerPanel({ session, gameStatus, turn, onCreateGame, onLeaveGame }: MultiplayerPanelProps) {
+export function MultiplayerPanel({
+  session,
+  gameStatus,
+  turn,
+  isSearching,
+  onCreateGame,
+  onFindOpponent,
+  onCancelSearch,
+  onLeaveGame,
+}: MultiplayerPanelProps) {
   const [copied, setCopied] = useState(false);
   const { gameId, playerColor, opponentPresent, connection, error } = session;
 
@@ -168,32 +182,64 @@ export function MultiplayerPanel({ session, gameStatus, turn, onCreateGame, onLe
         />
       </div>
 
-      <div className="mt-3 rounded-lg border border-border-subtle bg-bg-elevated px-2.5 py-2">
-        <p className="font-mono text-micro uppercase tracking-wider text-text-muted">Game ID</p>
-        <div className="mt-1 flex items-center gap-2">
-          <code className="min-w-0 flex-1 truncate font-mono text-sm text-accent-gold-bright">{gameId ?? '—'}</code>
+      {!gameId && (
+        <div className="mt-3 rounded-lg border border-border-subtle bg-bg-elevated px-2.5 py-2">
+          <p className="font-mono text-xs text-text-primary">Play Online</p>
+          <p className="mt-1 font-mono text-micro text-text-muted">
+            {isSearching ? 'Searching for an available player…' : 'Match with another online player.'}
+          </p>
           <button
             type="button"
-            disabled={!gameId}
-            onClick={shareLink}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border-default bg-bg-surface px-2 py-1 font-mono text-[11px] text-text-secondary transition hover:border-accent-gold/50 hover:text-accent-gold-bright disabled:opacity-40">
-            {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
-            {copied ? 'Copied' : 'Share link'}
+            onClick={isSearching ? onCancelSearch : onFindOpponent}
+            className={cn(
+              'mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-md border px-2.5 py-1.5 font-mono text-xs transition',
+              isSearching
+                ? 'border-accent-garnet/40 bg-accent-garnet-dim text-accent-garnet-bright hover:border-accent-garnet/70'
+                : 'border-accent-teal/40 bg-accent-teal-dim text-accent-teal-bright hover:border-accent-teal',
+            )}>
+            {isSearching ? (
+              <>
+                <X className="h-3.5 w-3.5" />
+                Cancel search
+              </>
+            ) : (
+              <>
+                <Search className="h-3.5 w-3.5" />
+                Find Opponent
+              </>
+            )}
           </button>
         </div>
-        <p className="mt-1.5 flex items-center gap-1.5 font-mono text-micro text-text-muted">
-          <Users className="h-3 w-3" />
-          {opponentPresent ? 'Opponent connected' : 'Send the link to invite an opponent'}
-        </p>
-      </div>
+      )}
+
+      {gameId && (
+        <div className="mt-3 rounded-lg border border-border-subtle bg-bg-elevated px-2.5 py-2">
+          <p className="font-mono text-micro uppercase tracking-wider text-text-muted">Game ID</p>
+          <div className="mt-1 flex items-center gap-2">
+            <code className="min-w-0 flex-1 truncate font-mono text-sm text-accent-gold-bright">{gameId}</code>
+            <button
+              type="button"
+              onClick={shareLink}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border-default bg-bg-surface px-2 py-1 font-mono text-[11px] text-text-secondary transition hover:border-accent-gold/50 hover:text-accent-gold-bright">
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+              {copied ? 'Copied' : 'Share link'}
+            </button>
+          </div>
+          <p className="mt-1.5 flex items-center gap-1.5 font-mono text-micro text-text-muted">
+            <Users className="h-3 w-3" />
+            {opponentPresent ? 'Opponent connected' : 'Send the link to invite an opponent'}
+          </p>
+        </div>
+      )}
 
       <div className="mt-3 flex items-center gap-2">
         <button
           type="button"
+          disabled={isSearching}
           onClick={onCreateGame}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-accent-teal/40 bg-accent-teal-dim px-2.5 py-1.5 font-mono text-xs text-accent-teal-bright transition hover:border-accent-teal">
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-accent-teal/40 bg-accent-teal-dim px-2.5 py-1.5 font-mono text-xs text-accent-teal-bright transition hover:border-accent-teal disabled:opacity-40">
           <Plus className="h-3.5 w-3.5" />
-          New game
+          New private game
         </button>
         <button
           type="button"

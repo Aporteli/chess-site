@@ -4,6 +4,7 @@ export type ConnectionStatus = "offline" | "connecting" | "connected";
 
 export type GameStatus =
   | "idle"
+  | "searching"
   | "connecting"
   | "waiting"
   | "your-turn"

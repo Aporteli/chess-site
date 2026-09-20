@@ -22,7 +22,9 @@ export function MultiplayerWorkspace() {
   const isMyTurn = game.playerColor !== null && game.turn === game.playerColor;
 
   const gameStatus: GameStatus =
-    !game.gameId && !game.error
+    game.isSearching
+      ? 'searching'
+      : !game.gameId && !game.error
       ? 'idle'
       : game.error && game.connection !== 'connected'
         ? 'error'
@@ -58,7 +60,10 @@ export function MultiplayerWorkspace() {
             session={session}
             gameStatus={gameStatus}
             turn={game.turn}
+            isSearching={game.isSearching}
             onCreateGame={game.createGame}
+            onFindOpponent={game.findOpponent}
+            onCancelSearch={game.cancelSearch}
             onLeaveGame={game.leaveGame}
           />
           <MoveHistory moves={game.moves} />
