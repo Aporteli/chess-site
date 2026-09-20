@@ -266,6 +266,7 @@ body {
   gap: 0.5rem;
 }
 
+
 /* Portrait: square from column width. Landscape overrides with cqh below. */
 .board-column .wood-frame {
   align-self: center;

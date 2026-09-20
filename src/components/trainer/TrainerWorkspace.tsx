@@ -121,6 +121,11 @@ export function TrainerWorkspace() {
         <div className="board-workspace w-full [--eval-gutter:1.375rem]">
           <section ref={boardColumnRef} className="board-column">
             <BoardWrapper />
+            <div className="shrink-0 space-y-2 mt-2 block sm:hidden">
+              <ActionToolbar />
+            </div>
+       
+       
           </section>
 
           <div className="board-panel thin-scrollbar landscape:overflow-hidden!">
@@ -136,9 +141,10 @@ export function TrainerWorkspace() {
               <TrainerHud />
             </div>
 
-            <div className="shrink-0 space-y-2">
+            <div className="shrink-0 space-y-2 hidden lg:block">
               <ActionToolbar />
             </div>
+       
           </div>
         </div>
       </div>
