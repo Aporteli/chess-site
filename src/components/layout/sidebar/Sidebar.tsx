@@ -1,6 +1,6 @@
 'use client';
 
-import { Swords, Puzzle, ScanSearch, Library, Settings, UserRound, TableIcon } from 'lucide-react';
+import { Swords, Puzzle, ScanSearch, Library, Settings, UserRound, TableIcon, Users } from 'lucide-react';
 import type { NavKey, NavItem } from '@/lib/types';
 import { SidebarBrand } from '@/components/layout/sidebar/SidebarBrand';
 import { SidebarNavItem } from '@/components/layout/sidebar/SidebarNavItem';
@@ -18,6 +18,7 @@ type NavEntry = {
 const allNavEntries: NavEntry[] = [
   { key: 'trainer', label: 'Openings / Trainer', href: '/trainer', icon: Swords },
   { key: 'puzzles', label: 'Puzzles', href: '/puzzles', icon: Puzzle },
+  { key: 'multiplayer', label: 'Multiplayer', href: '/multiplayer', icon: Users },
   { key: 'analysis', label: 'Analysis Board', href: '/analysis', icon: ScanSearch },
   { key: 'courses', label: 'Courses & Repertoire', href: '/courses', icon: Library },
   { key: 'tablebase', label: 'Tablebase', href: '/tablebase', icon: TableIcon },
@@ -26,7 +27,7 @@ const allNavEntries: NavEntry[] = [
 ];
 
 export const navItems: NavItem[] = allNavEntries.filter((entry) =>
-  ['trainer', 'puzzles', 'analysis', 'courses', 'tablebase'].includes(entry.key),
+  ['trainer', 'puzzles', 'multiplayer', 'analysis', 'courses', 'tablebase'].includes(entry.key),
 );
 
 export const secondaryNavItems: NavItem[] = allNavEntries.filter((entry) => ['profile'].includes(entry.key));

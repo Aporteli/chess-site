@@ -49,6 +49,7 @@ export interface TrainerPrompt {
 export type NavKey =
   | "trainer"
   | "puzzles"
+  | "multiplayer"
   | "analysis"
   | "courses"
   | "profile"
