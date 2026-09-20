@@ -9,6 +9,7 @@ import {
 import { createRepertoireOnServer } from '@/lib/chess/repertoire-api';
 
 import { deriveActive } from './deriveActive';
+import { upsertRepertoireSummary } from './libraryIndex';
 import type { ImportExportActions, TrainerSlice } from './types';
 
 export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, get) => ({
@@ -46,6 +47,7 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
               nextRep,
             ),
           },
+          library: upsertRepertoireSummary(state.library, nextRep),
         }));
 
         set({
@@ -68,18 +70,18 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
         };
       }
 
+      const mergedRep = replaceChapter(repertoire, {
+        ...merged,
+        id: chapter.id,
+        name: chapter.name,
+      });
+
       set((state) => ({
         store: {
           ...state.store,
-          repertoires: replaceRepertoire(
-            state.store.repertoires,
-            replaceChapter(repertoire, {
-              ...merged,
-              id: chapter.id,
-              name: chapter.name,
-            }),
-          ),
+          repertoires: replaceRepertoire(state.store.repertoires, mergedRep),
         },
+        library: upsertRepertoireSummary(state.library, mergedRep),
       }));
 
       set({
@@ -137,6 +139,7 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
           ...state.store,
           repertoires: [...state.store.repertoires, nextRep],
         },
+        library: upsertRepertoireSummary(state.library, nextRep),
         repId: nextRep.id,
         chapterId: firstChapter.id,
         path: [firstChapter.rootId],

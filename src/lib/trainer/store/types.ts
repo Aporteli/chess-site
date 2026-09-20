@@ -6,6 +6,7 @@ import type {
   DrillFilter,
   OpeningStore,
   Repertoire,
+  RepertoireSummary,
   TrainerMode,
   TreeNode,
 } from '@/lib/chess';
@@ -15,6 +16,9 @@ import type { DrillSession, PendingPromo, Premove } from '../types';
 /** Everything that is plain, persisted-or-derivable state — no methods. */
 export interface TrainerRawState {
   ready: boolean;
+  /** Index of every repertoire the user owns. Loaded ones also live in `store`. */
+  library: RepertoireSummary[];
+  /** Only the repertoires whose chapter trees are in memory; lazy loading keeps this small. */
   store: OpeningStore;
   repId: string;
   chapterId: string;
@@ -58,9 +62,14 @@ export interface StatusActions {
 }
 
 export interface HydrationActions {
-  /** Loads repertoires from the API and session/settings from localStorage. */
-  hydrate: () => void;
-  /** Saves the open-file session immediately; debounced PUT of repertoire trees to the DB. */
+  /**
+   * Loads the repertoire index plus the open (or first) repertoire's trees.
+   * `full` loads every repertoire instead — used by views that need library-wide stats.
+   */
+  hydrate: (options?: { full?: boolean }) => void;
+  /** Fetches one repertoire's chapter trees on demand and makes it active. */
+  loadRepertoire: (id: string) => Promise<void>;
+  /** Saves the open-file session immediately; debounced PUT of loaded repertoire trees to the DB. */
   persist: () => void;
 }
 

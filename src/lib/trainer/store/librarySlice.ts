@@ -10,9 +10,11 @@ import {
 import {
   createRepertoireOnServer,
   deleteRepertoiresOnServer,
+  updateRepertoireSideOnServer,
 } from '@/lib/chess/repertoire-api';
 import { emptyChapter } from '@/lib/chess/tree/chapter-factory';
 import { deriveActive } from './deriveActive';
+import { toRepertoireSummary, upsertRepertoireSummary } from './libraryIndex';
 import type { LibraryActions, TrainerSlice } from './types';
 
 function selectRepertoireState(rep: Repertoire) {
@@ -33,7 +35,10 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
     if (!repertoire) return;
     const ch = emptyChapter(name);
     const next: Repertoire = { ...repertoire, chapters: [...repertoire.chapters, ch], updatedAt: Date.now() };
-    set((state) => ({ store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, next) } }));
+    set((state) => ({
+      store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, next) },
+      library: upsertRepertoireSummary(state.library, next),
+    }));
     set({ chapterId: ch.id, path: [ch.rootId] });
   },
 
@@ -48,7 +53,10 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    set((state) => ({ store: { ...state.store, repertoires: [...state.store.repertoires, rep] } }));
+    set((state) => ({
+      store: { ...state.store, repertoires: [...state.store.repertoires, rep] },
+      library: upsertRepertoireSummary(state.library, rep),
+    }));
     set(selectRepertoireState(rep));
     void createRepertoireOnServer(rep).catch((err) => {
       console.warn('[createRepertoire] POST failed.', err);
@@ -64,6 +72,7 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
           ? replaceRepertoire(state.store.repertoires, repertoire)
           : [...state.store.repertoires, repertoire],
       },
+      library: upsertRepertoireSummary(state.library, repertoire),
       ...selectRepertoireState(repertoire),
       selectedSquare: null,
       arrows: [],
@@ -73,13 +82,26 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
   },
 
   setRepertoireSide: (id, side) => {
-    const { store, repId, mode } = get();
+    const { store, library, repId, mode } = get();
     const rep = store.repertoires.find((r) => r.id === id);
-    if (!rep || rep.side === side) return;
+
+    if (!rep) {
+      // Chapter trees are not in memory — update the index and persist just the side.
+      const summary = library.find((entry) => entry.id === id);
+      if (!summary || summary.side === side) return;
+      set({ library: library.map((entry) => (entry.id === id ? { ...entry, side } : entry)) });
+      void updateRepertoireSideOnServer(id, side).catch((err) => {
+        console.warn('[setRepertoireSide] PATCH failed.', err);
+      });
+      return;
+    }
+
+    if (rep.side === side) return;
 
     const nextRep: Repertoire = { ...rep, side, updatedAt: Date.now() };
     set((state) => ({
       store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, nextRep) },
+      library: upsertRepertoireSummary(state.library, nextRep),
     }));
 
     if (repId === id) {
@@ -95,7 +117,10 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
     if (!repertoire || repertoire.chapters.length <= 1) return;
     const nextChapters = repertoire.chapters.filter((c) => c.id !== id);
     const next: Repertoire = { ...repertoire, chapters: nextChapters, updatedAt: Date.now() };
-    set((state) => ({ store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, next) } }));
+    set((state) => ({
+      store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, next) },
+      library: upsertRepertoireSummary(state.library, next),
+    }));
     if (get().chapterId === id) {
       set({ chapterId: nextChapters[0]!.id, path: [nextChapters[0]!.rootId] });
     }
@@ -106,13 +131,17 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
   },
 
   deleteRepertoires: async (ids) => {
-    const { store, repId } = get();
+    const { store, library, repId } = get();
     const idSet = new Set(ids);
-    const next = store.repertoires.filter((r) => !idSet.has(r.id));
+    const nextLoaded = store.repertoires.filter((r) => !idSet.has(r.id));
+    const nextLibrary = library.filter((entry) => !idSet.has(entry.id));
 
-    set({ store: { ...store, repertoires: next } });
+    set({
+      store: { ...store, repertoires: nextLoaded },
+      library: nextLibrary,
+    });
 
-    if (next.length === 0) {
+    if (nextLibrary.length === 0) {
       set({
         repId: '',
         chapterId: '',
@@ -121,8 +150,9 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
         drill: null,
       });
     } else if (idSet.has(repId)) {
-      const first = next[0]!;
-      set(selectRepertoireState(first));
+      const inMemory = nextLoaded[0];
+      if (inMemory) set(selectRepertoireState(inMemory));
+      else void get().loadRepertoire(nextLibrary[0]!.id);
     }
 
     try {
@@ -133,11 +163,12 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
   },
 
   resetToSeed: () => {
-    const existingIds = get().store.repertoires.map((r) => r.id);
+    const existingIds = get().library.map((r) => r.id);
     const fresh = createSeedStore();
     const first = fresh.repertoires[0]!;
     set({
       store: fresh,
+      library: fresh.repertoires.map(toRepertoireSummary),
       ...selectRepertoireState(first),
     });
 
@@ -165,7 +196,10 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
 
     const ch = emptyChapter(name, { startFen });
     const nextRep: Repertoire = { ...repertoire, chapters: [...repertoire.chapters, ch], updatedAt: Date.now() };
-    set((state) => ({ store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, nextRep) } }));
+    set((state) => ({
+      store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, nextRep) },
+      library: upsertRepertoireSummary(state.library, nextRep),
+    }));
     set({
       chapterId: ch.id,
       path: [ch.rootId],

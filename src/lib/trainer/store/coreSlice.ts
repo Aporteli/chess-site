@@ -5,6 +5,7 @@ import type { CoreActions, TrainerRawState, TrainerSlice } from './types';
 
 export const initialCoreState: TrainerRawState = {
   ready: false,
+  library: [],
   store: { version: 1, repertoires: [] },
   repId: '',
   chapterId: '',

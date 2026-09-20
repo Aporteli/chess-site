@@ -103,11 +103,11 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
           {showTrainerTools && trainer && (
             <div className="hidden items-center gap-2 min-[931px]:flex">
               <Repertoire
-                store={trainer.store}
+                repertoires={trainer.library}
                 repertoire={trainer.repertoire}
                 selectRepertoire={trainer.selectRepertoire}
                 setRepertoireSide={trainer.setRepertoireSide}
-                onClearAll={() => trainer.deleteRepertoires(trainer.store.repertoires.map((r) => r.id))}
+                onClearAll={() => trainer.deleteRepertoires(trainer.library.map((r) => r.id))}
                 onDelete={trainer.deleteRepertoires}
               />
               <Chapter store={trainer.store} chapter={trainer.chapter} selectChapter={trainer.selectChapter} />
@@ -129,11 +129,11 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
                 <div className="absolute left-0 top-full z-50 mt-1 flex w-64 flex-col gap-2 rounded-lg bg-[#1E1E1E] p-2 border border-[#383838] shadow-2xl">
                   <div onClick={() => setMobileToolsOpen(false)}>
                     <Repertoire
-                      store={trainer.store}
+                      repertoires={trainer.library}
                       repertoire={trainer.repertoire}
                       selectRepertoire={trainer.selectRepertoire}
                       setRepertoireSide={trainer.setRepertoireSide}
-                      onClearAll={() => trainer.deleteRepertoires(trainer.store.repertoires.map((r) => r.id))}
+                      onClearAll={() => trainer.deleteRepertoires(trainer.library.map((r) => r.id))}
                       onDelete={trainer.deleteRepertoires}
                     />
                   </div>

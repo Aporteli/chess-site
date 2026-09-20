@@ -4,7 +4,11 @@ import type { Chapter } from "@/lib/chess/types";
 import type { Side } from "@/lib/types";
 import { toMillis } from "@/lib/repertoire-map";
 
-export { toClientChapter, toClientRepertoire } from "@/lib/repertoire-map";
+export {
+  toClientChapter,
+  toClientRepertoire,
+  toClientRepertoireSummary,
+} from "@/lib/repertoire-map";
 
 function asNodes(value: unknown): Chapter["nodes"] {
   if (typeof value === "object" && value !== null && !Array.isArray(value)) {

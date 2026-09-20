@@ -7,7 +7,11 @@ export const createNavigationSlice: TrainerSlice<NavigationActions> = (set, get)
   selectRepertoire: (id) => {
     const { store } = get();
     const rep = store.repertoires.find((r) => r.id === id);
-    if (!rep) return;
+    if (!rep) {
+      // Its chapter trees are not in memory yet — fetch just this one.
+      void get().loadRepertoire(id);
+      return;
+    }
     const ch = rep.chapters[0];
     set({
       repId: id,

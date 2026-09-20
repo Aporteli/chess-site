@@ -1,4 +1,4 @@
-import type { Chapter, Repertoire } from "@/lib/chess/types";
+import type { Chapter, Repertoire, RepertoireSummary } from "@/lib/chess/types";
 import type { Side } from "@/lib/types";
 
 function toMillis(value: Date | string | number): number {
@@ -59,6 +59,21 @@ export function toClientRepertoire(row: {
     chapters: row.chapters.map(toClientChapter),
     createdAt: toMillis(row.createdAt),
     updatedAt: toMillis(row.updatedAt),
+  };
+}
+
+/** Maps a repertoire row that was queried without its chapters (Prisma `_count`). */
+export function toClientRepertoireSummary(row: {
+  id: string;
+  name: string;
+  side: string;
+  chapterCount: number;
+}): RepertoireSummary {
+  return {
+    id: row.id,
+    name: row.name,
+    side: asSide(row.side),
+    chapterCount: Number.isFinite(row.chapterCount) ? row.chapterCount : 0,
   };
 }
 

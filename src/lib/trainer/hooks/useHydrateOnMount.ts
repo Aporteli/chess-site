@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTrainerStore } from '../store';
 
-export function useHydrateOnMount() {
+export function useHydrateOnMount(full = false) {
   const hydrate = useTrainerStore((s) => s.hydrate);
   const persist = useTrainerStore((s) => s.persist);
   const ready = useTrainerStore((s) => s.ready);
@@ -11,7 +11,7 @@ export function useHydrateOnMount() {
 
   // Load persisted data once on mount.
   useEffect(() => {
-    hydrate();
+    hydrate({ full });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -6,25 +6,59 @@ import {
   chapterWriteData,
   parseRepertoireInput,
   toClientRepertoire,
+  toClientRepertoireSummary,
 } from "@/lib/repertoire";
 
-export async function GET() {
+/**
+ * Without params this returns the lightweight repertoire index (no node JSON),
+ * which is what the app needs to render lists and the trainer's pickers.
+ * `?include=chapters` returns the full trees for callers that show library-wide
+ * statistics (the Courses page).
+ */
+export async function GET(request: Request) {
   const user = await getDbUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const repertoires = await prisma.repertoire.findMany({
-    where: { userId: user.id },
-    include: {
-      chapters: {
-        orderBy: { createdAt: "asc" },
+  const full =
+    new URL(request.url).searchParams.get("include") === "chapters";
+
+  if (full) {
+    const repertoires = await prisma.repertoire.findMany({
+      where: { userId: user.id },
+      include: {
+        chapters: {
+          orderBy: { createdAt: "asc" },
+        },
       },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return NextResponse.json(repertoires.map(toClientRepertoire));
+  }
+
+  const rows = await prisma.repertoire.findMany({
+    where: { userId: user.id },
+    select: {
+      id: true,
+      name: true,
+      side: true,
+      _count: { select: { chapters: true } },
     },
     orderBy: { updatedAt: "desc" },
   });
 
-  return NextResponse.json(repertoires.map(toClientRepertoire));
+  return NextResponse.json(
+    rows.map((row) =>
+      toClientRepertoireSummary({
+        id: row.id,
+        name: row.name,
+        side: row.side,
+        chapterCount: row._count.chapters,
+      }),
+    ),
+  );
 }
 
 export async function POST(request: Request) {

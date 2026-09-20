@@ -5,12 +5,16 @@ import {
   readPersistedStore,
   saveSession,
   type Repertoire,
+  type RepertoireSummary,
 } from '@/lib/chess';
 import {
   createRepertoireOnServer,
+  fetchRepertoire,
+  fetchRepertoireSummaries,
   fetchRepertoires,
   putRepertoireOnServer,
 } from '@/lib/chess/repertoire-api';
+import { toRepertoireSummary } from './libraryIndex';
 import type { HydrationActions, TrainerSlice } from './types';
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
@@ -24,31 +28,33 @@ function rememberPersisted(repertoires: Repertoire[]) {
   }
 }
 
-function applyLoaded(repertoires: Repertoire[]) {
+/** Replaces same-id entries and appends the rest, so already-loaded trees survive a hydrate. */
+function mergeLoaded(current: Repertoire[], incoming: Repertoire[]): Repertoire[] {
+  const next = [...current];
+  for (const repertoire of incoming) {
+    const index = next.findIndex((r) => r.id === repertoire.id);
+    if (index === -1) next.push(repertoire);
+    else next[index] = repertoire;
+  }
+  return next;
+}
+
+/** The repertoire + chapter the session pointed at, falling back to the first available. */
+function pickSession(repertoires: Repertoire[]) {
   const session = loadSession();
-  const first = repertoires.find((r) => r.id === session?.repertoireId) ?? repertoires[0];
-  const firstChapter = first?.chapters.find((c) => c.id === session?.chapterId) ?? first?.chapters[0];
+  const repertoire = repertoires.find((r) => r.id === session?.repertoireId) ?? repertoires[0];
+  const chapter =
+    repertoire?.chapters.find((c) => c.id === session?.chapterId) ?? repertoire?.chapters[0];
+  return { repertoire, chapter };
+}
 
-  skipNextPersist = true;
-  rememberPersisted(repertoires);
-
-  return {
-    store: { version: 1 as const, repertoires },
-    settings: loadSettings(),
-    ...(first && firstChapter
-      ? {
-          repId: first.id,
-          chapterId: firstChapter.id,
-          path: [firstChapter.rootId],
-          flipped: first.side === 'black',
-        }
-      : {
-          repId: '',
-          chapterId: '',
-          path: [] as string[],
-        }),
-    ready: true,
-  };
+async function fetchRepertoireDetail(id: string): Promise<Repertoire | null> {
+  try {
+    return await fetchRepertoire(id);
+  } catch (err) {
+    console.warn('[repertoire] Failed to load repertoire.', err);
+    return null;
+  }
 }
 
 async function migrateLocalStore(local: { repertoires: Repertoire[] }): Promise<Repertoire[]> {
@@ -64,29 +70,94 @@ async function migrateLocalStore(local: { repertoires: Repertoire[] }): Promise<
 }
 
 export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) => ({
-  hydrate: () => {
+  hydrate: ({ full = false } = {}) => {
     void (async () => {
-      let repertoires: Repertoire[] = [];
+      let library: RepertoireSummary[] = [];
+      let loaded: Repertoire[] = [];
       let loadedFromApi = false;
+
       try {
-        repertoires = await fetchRepertoires();
+        if (full) {
+          loaded = await fetchRepertoires();
+          library = loaded.map(toRepertoireSummary);
+        } else {
+          library = await fetchRepertoireSummaries();
+        }
         loadedFromApi = true;
       } catch {
-        repertoires = [];
+        library = [];
+        loaded = [];
       }
 
+      // One-time migration of repertoire data that predates server storage.
       const local = readPersistedStore();
-      if (loadedFromApi && repertoires.length === 0 && local) {
-        repertoires = await migrateLocalStore(local);
-        clearPersistedStore();
+      if (loadedFromApi && library.length === 0 && local) {
+        loaded = await migrateLocalStore(local);
+        library = loaded.map(toRepertoireSummary);
       } else if (loadedFromApi) {
         clearPersistedStore();
       } else if (local) {
-        repertoires = local.repertoires;
+        loaded = local.repertoires;
+        library = local.repertoires.map(toRepertoireSummary);
       }
 
-      set(applyLoaded(repertoires));
+      // Lazy mode: only the open repertoire needs its chapter trees in memory.
+      if (loadedFromApi && !full && library.length > 0) {
+        const session = loadSession();
+        const targetId =
+          library.find((entry) => entry.id === session?.repertoireId)?.id ?? library[0]!.id;
+        const inMemory = get().store.repertoires.find((r) => r.id === targetId);
+        const detail = inMemory ?? (await fetchRepertoireDetail(targetId));
+        loaded = detail ? [detail] : [];
+      }
+
+      const { repertoire, chapter } = pickSession(loaded);
+      const nextLoaded = full ? loaded : mergeLoaded(get().store.repertoires, loaded);
+
+      skipNextPersist = true;
+      rememberPersisted(nextLoaded);
+
+      set({
+        library,
+        store: { version: 1, repertoires: nextLoaded },
+        settings: loadSettings(),
+        ready: true,
+        ...(repertoire && chapter
+          ? {
+              repId: repertoire.id,
+              chapterId: chapter.id,
+              path: [chapter.rootId],
+              flipped: repertoire.side === 'black',
+            }
+          : { repId: '', chapterId: '', path: [] }),
+      });
     })();
+  },
+
+  loadRepertoire: async (id) => {
+    const { store, library } = get();
+    if (store.repertoires.some((r) => r.id === id)) return;
+    if (!library.some((entry) => entry.id === id)) return;
+
+    const repertoire = await fetchRepertoireDetail(id);
+    if (!repertoire) return;
+
+    const chapter = repertoire.chapters[0];
+    const nextLoaded = mergeLoaded(store.repertoires, [repertoire]);
+
+    skipNextPersist = true;
+    rememberPersisted(nextLoaded);
+
+    set({
+      store: { version: 1, repertoires: nextLoaded },
+      repId: repertoire.id,
+      ...(chapter ? { chapterId: chapter.id, path: [chapter.rootId] } : {}),
+      flipped: repertoire.side === 'black',
+      mode: 'study',
+      drill: null,
+    });
+
+    if (chapter) saveSession({ repertoireId: repertoire.id, chapterId: chapter.id });
   },
 
   persist: () => {

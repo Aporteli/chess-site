@@ -1,6 +1,7 @@
 import { replaceRepertoire, type Repertoire } from '@/lib/chess';
 import type { Side } from '@/lib/types';  
 import { deriveActive } from './deriveActive';
+import { upsertRepertoireSummary } from './libraryIndex';
 import type { BoardMarksActions, TrainerSlice } from './types';
 
 export const createBoardMarksSlice: TrainerSlice<BoardMarksActions> = (set, get) => ({
@@ -23,7 +24,10 @@ export const createBoardMarksSlice: TrainerSlice<BoardMarksActions> = (set, get)
     set({ flipped: nextSide === 'black' });
 
     const nextRep: Repertoire = { ...repertoire, side: nextSide, updatedAt: Date.now() };
-    set((state) => ({ store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, nextRep) } }));
+    set((state) => ({
+      store: { ...state.store, repertoires: replaceRepertoire(state.store.repertoires, nextRep) },
+      library: upsertRepertoireSummary(state.library, nextRep),
+    }));
 
     if (get().mode === 'drill') {
       setTimeout(() => get().startPractice(), 50);

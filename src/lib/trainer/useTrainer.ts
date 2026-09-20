@@ -5,6 +5,7 @@ import type {
   DrillFilter,
   OpeningStore,
   Repertoire,
+  RepertoireSummary,
   TrainerMode,
   TreeNode,
 } from '@/lib/chess';
@@ -24,6 +25,8 @@ import type { DrillSession, PendingPromo, Premove, TranspositionHit } from './ty
 export interface TrainerContextValue {
   ready: boolean;
   store: OpeningStore;
+  /** Index of every repertoire; `store` only holds the ones whose trees are in memory. */
+  library: RepertoireSummary[];
   repertoire: Repertoire;
   chapter: Chapter;
   node: TreeNode;
@@ -111,6 +114,7 @@ export function useTrainerValue(): TrainerContextValue | null {
   return {
     ready: state.ready,
     store: state.store,
+    library: state.library,
     repertoire,
     chapter,
     node,

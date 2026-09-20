@@ -45,7 +45,7 @@ export function RepertoireBar() {
       )}
 
       <div className="flex flex-col gap-1">
-        {t.store.repertoires.map((rep) => (
+        {t.library.map((rep) => (
           <button
             key={rep.id}
             onClick={() => t.selectRepertoire(rep.id)}

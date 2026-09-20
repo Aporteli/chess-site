@@ -4,7 +4,7 @@ import { TrainerGate, TrainerProvider } from "@/lib/trainer/context";
 
 export default function CoursesPage() {
   return (
-    <TrainerProvider>
+    <TrainerProvider full>
       <AppShell activeKey="courses">
         <TrainerGate allowEmpty>
           <RepertoireLibrary />

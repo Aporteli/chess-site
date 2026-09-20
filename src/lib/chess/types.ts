@@ -78,6 +78,17 @@ export interface Repertoire {
   updatedAt: number;
 }
 
+/**
+ * Index-card view of a repertoire: enough to render lists/dropdowns without
+ * loading its chapter trees (which can be tens of megabytes of node JSON).
+ */
+export interface RepertoireSummary {
+  id: string;
+  name: string;
+  side: Side;
+  chapterCount: number;
+}
+
 export interface OpeningStore {
   version: 1;
   repertoires: Repertoire[];

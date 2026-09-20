@@ -2,20 +2,20 @@
 
 import { useRef, useState } from 'react';
 import { ChevronDown, BookMarked, Upload, Trash2, X, Download } from 'lucide-react';
-import type { OpeningStore, Repertoire as RepertoireType } from '@/lib/chess';
+import type { RepertoireSummary, Repertoire as RepertoireType } from '@/lib/chess';
 import type { Side } from '@/lib/types';
 import { PgnDialog } from '@/components/trainer/PgnDialog';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export function Repertoire({
-  store,
+  repertoires,
   repertoire,
   selectRepertoire,
   setRepertoireSide,
   onClearAll,
   onDelete,
 }: {
-  store: OpeningStore;
+  repertoires: RepertoireSummary[];
   repertoire: RepertoireType;
   selectRepertoire: (id: string) => void;
   setRepertoireSide: (id: string, side: Side) => void;
@@ -110,7 +110,7 @@ export function Repertoire({
 
   const cancelConfirm = () => setConfirmKind(null);
 
-  const isEmpty = store.repertoires.length === 0;
+  const isEmpty = repertoires.length === 0;
 
   return (
     <div
@@ -186,7 +186,7 @@ export function Repertoire({
               {isEmpty ? (
                 <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No repertoires yet</div>
               ) : (
-                store.repertoires.map((rep) => {
+                repertoires.map((rep) => {
                   const active = rep.id === repertoire.id;
                   const checked = checkedIds.includes(rep.id);
 
@@ -258,7 +258,7 @@ export function Repertoire({
             {/* ── Footer ── */}
             <div className="flex items-center justify-between border-t border-[#383838] bg-[#2A2A2A] px-2 py-1">
               <span className="font-mono text-3xs text-[#A0A0A0]">
-                {store.repertoires.length} {store.repertoires.length === 1 ? 'repertoire' : 'repertoires'}
+                {repertoires.length} {repertoires.length === 1 ? 'repertoire' : 'repertoires'}
               </span>
 
               <button

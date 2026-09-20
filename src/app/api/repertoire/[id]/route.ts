@@ -9,6 +9,68 @@ import {
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+/** Loads a single repertoire with its chapter trees (used for lazy loading). */
+export async function GET(_request: Request, context: RouteContext) {
+  const user = await getDbUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+
+  const repertoire = await prisma.repertoire.findFirst({
+    where: { id, userId: user.id },
+    include: {
+      chapters: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+
+  if (!repertoire) {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+
+  return NextResponse.json(toClientRepertoire(repertoire));
+}
+
+/** Side-only update; safe for repertoires whose chapter trees are not loaded client-side. */
+export async function PATCH(request: Request, context: RouteContext) {
+  const user = await getDbUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const body: unknown = await request.json();
+    const side = (body as { side?: unknown } | null)?.side;
+    if (side !== "white" && side !== "black") {
+      return NextResponse.json({ error: "Invalid side." }, { status: 400 });
+    }
+
+    const existing = await prisma.repertoire.findFirst({
+      where: { id, userId: user.id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+
+    await prisma.repertoire.update({ where: { id }, data: { side } });
+
+    return NextResponse.json({ id, side });
+  } catch (error) {
+    console.error("Failed to update repertoire side:", error);
+    return NextResponse.json(
+      { error: "Failed to update repertoire." },
+      { status: 500 },
+    );
+  }
+}
+
 export async function PUT(request: Request, context: RouteContext) {
   const user = await getDbUser();
   if (!user) {
