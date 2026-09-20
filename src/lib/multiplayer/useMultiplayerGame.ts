@@ -127,6 +127,10 @@ export function useMultiplayerGame(): MultiplayerGame {
         const message = parseServerMessage(event.data);
         if (!message) return;
 
+        if (message.type === 'error' && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: 'state' } satisfies ClientMessage));
+        }
+
         setSnapshot((prev) => {
           switch (message.type) {
             case 'connected':
@@ -280,7 +284,7 @@ export function useMultiplayerGame(): MultiplayerGame {
       if (!active || active.socket.readyState !== WebSocket.OPEN) return false;
       if (!playerColor || turn !== playerColor) return false;
 
-      // Local validation only decides what to send; the room stays authoritative.
+      // Apply valid moves immediately; the room response remains authoritative.
       const probe = new Chess(fen);
       let promotion: string | undefined;
       try {
@@ -295,6 +299,12 @@ export function useMultiplayerGame(): MultiplayerGame {
       };
 
       active.socket.send(JSON.stringify(message));
+      setSnapshot((prev) => ({
+        ...prev,
+        fen: probe.fen(),
+        turn: colorFromTurn(probe.turn()),
+        error: null,
+      }));
       return true;
     },
     [fen, playerColor, turn],
