@@ -49,6 +49,8 @@ function PlayerRow({ color, name, isYou, isToMove }: PlayerRowProps) {
         'flex items-center gap-2.5 rounded-lg border px-2.5 py-2',
         isToMove ? 'border-accent-teal/40 bg-accent-teal-dim' : 'border-border-subtle bg-bg-elevated',
       )}>
+
+        
       <span
         className={cn(
           'h-4 w-4 shrink-0 rounded-full border',
