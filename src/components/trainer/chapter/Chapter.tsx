@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { ChevronDown, FileText, Upload, Trash2 } from 'lucide-react';
 import type { Chapter as ChapterType, OpeningStore } from '@/lib/chess';
 import { nodeCount } from '@/lib/chess';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export function Chapter({
   store,
@@ -26,6 +27,10 @@ export function Chapter({
   const holdTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectModeRef = useRef(false);
   const suppressClickRef = useRef(false);
+
+  // დადასტურების state — ან მთლიანი clearAll, ან კონკრეტული chapter
+  const [confirmKind, setConfirmKind] = useState<'delete' | 'clearAll' | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const repertoire = store.repertoires.find((r) => r.chapters.some((c) => c.id === chapter.id));
   const chapters = repertoire?.chapters ?? [];
@@ -86,6 +91,37 @@ export function Chapter({
     setIsOpen(false);
   };
 
+  // ── დადასტურების ლოგიკა ──
+  const requestDeleteChapter = (id: string) => {
+    setPendingDeleteId(id);
+    setConfirmKind('delete');
+  };
+
+  const requestClearAll = () => {
+    if (isEmpty || !onClearAll) return;
+    setConfirmKind('clearAll');
+  };
+
+  const confirmAction = () => {
+    if (confirmKind === 'delete' && pendingDeleteId) {
+      onDeleteChapter?.(pendingDeleteId);
+    } else if (confirmKind === 'clearAll') {
+      onClearAll?.();
+    }
+    setConfirmKind(null);
+    setPendingDeleteId(null);
+  };
+
+  const cancelConfirm = () => {
+    setConfirmKind(null);
+    setPendingDeleteId(null);
+  };
+
+  // დასახელება დიალოგისთვის — ვიპოვოთ chapter-ის სახელი id-ით
+  const pendingChapter = pendingDeleteId
+    ? chapters.find((c) => c.id === pendingDeleteId)
+    : null;
+
   return (
     <div
       className="relative inline-block"
@@ -115,8 +151,6 @@ export function Chapter({
       {isOpen && (
         <div className="absolute left-0 top-full z-50 w-72 pt-1 animate-in fade-in-0 slide-in-from-top-1 duration-100">
           <div className="flex flex-col overflow-hidden rounded-lg border border-[#383838] bg-[#1E1E1E] shadow-2xl">
-
-
             <div className="thin-scrollbar max-h-64 overflow-y-auto p-1">
               {isEmpty ? (
                 <div className="py-6 text-center font-mono text-3xs text-[#A0A0A0]">No chapters yet</div>
@@ -174,7 +208,7 @@ export function Chapter({
                             aria-label="Delete chapter"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onDeleteChapter?.(ch.id);
+                              requestDeleteChapter(ch.id);
                             }}
                             className="opacity-0 transition-opacity hover:text-[#E63946] group-hover:opacity-100">
                             <Trash2 className="size-3" />
@@ -195,7 +229,7 @@ export function Chapter({
               <button
                 type="button"
                 disabled={isEmpty}
-                onClick={onClearAll}
+                onClick={requestClearAll}
                 className="flex items-center gap-1 font-mono text-3xs text-[#A0A0A0] hover:text-[#E63946] disabled:opacity-30 transition-colors">
                 <Trash2 className="size-2.5" />
                 Clear All
@@ -204,6 +238,24 @@ export function Chapter({
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmKind !== null}
+        title={
+          confirmKind === 'clearAll'
+            ? 'Clear all chapters?'
+            : `Delete "${pendingChapter?.name ?? 'chapter'}"?`
+        }
+        body={
+          confirmKind === 'clearAll'
+            ? 'This will permanently delete every chapter in this repertoire. This action cannot be undone.'
+            : 'This chapter and all its moves will be permanently deleted. This action cannot be undone.'
+        }
+        confirmLabel={confirmKind === 'clearAll' ? 'Clear All' : 'Delete'}
+        cancelLabel="Cancel"
+        onConfirm={confirmAction}
+        onCancel={cancelConfirm}
+      />
     </div>
   );
 }

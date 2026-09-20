@@ -5,6 +5,7 @@ import { ChevronDown, BookMarked, Upload, Trash2, X, Download } from 'lucide-rea
 import type { OpeningStore, Repertoire as RepertoireType } from '@/lib/chess';
 import type { Side } from '@/lib/types';
 import { PgnDialog } from '@/components/trainer/PgnDialog';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export function Repertoire({
   store,
@@ -29,6 +30,7 @@ export function Repertoire({
   const selectModeRef = useRef(false);
   const suppressClickRef = useRef(false);
   const [pgn, setPgn] = useState<'import' | 'export' | null>(null);
+  const [confirmKind, setConfirmKind] = useState<'delete' | 'clearAll' | null>(null);
 
   const clearHold = () => {
     if (holdTimeout.current) {
@@ -87,10 +89,26 @@ export function Repertoire({
 
   const handleDelete = () => {
     if (checkedIds.length === 0 || !onDelete) return;
-    const ids = [...checkedIds];
-    onDelete(ids);
-    exitSelectMode();
+    setConfirmKind('delete');
   };
+
+  const handleClearAll = () => {
+    if (isEmpty || !onClearAll) return;
+    setConfirmKind('clearAll');
+  };
+
+  const confirmAction = () => {
+    if (confirmKind === 'delete') {
+      const ids = [...checkedIds];
+      onDelete?.(ids);
+      exitSelectMode();
+    } else if (confirmKind === 'clearAll') {
+      onClearAll?.();
+    }
+    setConfirmKind(null);
+  };
+
+  const cancelConfirm = () => setConfirmKind(null);
 
   const isEmpty = store.repertoires.length === 0;
 
@@ -246,7 +264,7 @@ export function Repertoire({
               <button
                 type="button"
                 disabled={isEmpty}
-                onClick={onClearAll}
+                onClick={handleClearAll}
                 className="flex items-center gap-1 font-mono text-3xs text-[#A0A0A0] hover:text-[#E63946] disabled:opacity-30 transition-colors">
                 <Trash2 className="size-2.5" />
                 Clear All
@@ -255,7 +273,26 @@ export function Repertoire({
           </div>
         </div>
       )}
+
       <PgnDialog open={pgn !== null} mode={pgn ?? 'import'} onClose={() => setPgn(null)} />
+
+      <ConfirmDialog
+        open={confirmKind !== null}
+        title={
+          confirmKind === 'clearAll'
+            ? 'Clear all repertoires?'
+            : `Delete ${checkedIds.length} repertoire${checkedIds.length === 1 ? '' : 's'}?`
+        }
+        body={
+          confirmKind === 'clearAll'
+            ? 'This will permanently delete every repertoire. This action cannot be undone.'
+            : 'The selected repertoire(s) will be permanently deleted. This action cannot be undone.'
+        }
+        confirmLabel={confirmKind === 'clearAll' ? 'Clear All' : 'Delete'}
+        cancelLabel="Cancel"
+        onConfirm={confirmAction}
+        onCancel={cancelConfirm}
+      />
     </div>
   );
 }
