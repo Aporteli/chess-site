@@ -28,7 +28,7 @@ export function EvalBar({ flipped }: { flipped: boolean }) {
       {/* თეთრის პოზიციის ბარი */}
       <div
         className="w-full bg-[#FFFFFF] transition-all duration-300"
-        style={{ height: `${flipped ? 100 - whiteBarHeight : whiteBarHeight}%` }}
+        style={{ height: `${whiteBarHeight}%` }}
       />
       
       {/* ცენტრალური ხაზი (0.0) */}
