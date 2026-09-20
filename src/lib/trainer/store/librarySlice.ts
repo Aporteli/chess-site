@@ -1,7 +1,31 @@
-import { chessFromFen, fenTurn, replaceRepertoire, resetStore, saveSession, uid, type Repertoire } from '@/lib/chess';
+import {
+  chessFromFen,
+  createSeedStore,
+  fenTurn,
+  replaceRepertoire,
+  saveSession,
+  uid,
+  type Repertoire,
+} from '@/lib/chess';
+import {
+  createRepertoireOnServer,
+  deleteRepertoiresOnServer,
+} from '@/lib/chess/repertoire-api';
 import { emptyChapter } from '@/lib/chess/tree/chapter-factory';
 import { deriveActive } from './deriveActive';
 import type { LibraryActions, TrainerSlice } from './types';
+
+function selectRepertoireState(rep: Repertoire) {
+  const chapter = rep.chapters[0];
+  return {
+    repId: rep.id,
+    chapterId: chapter?.id ?? '',
+    path: chapter ? [chapter.rootId] : [],
+    flipped: rep.side === 'black' as const,
+    mode: 'study' as const,
+    drill: null,
+  };
+}
 
 export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
   createChapter: (name) => {
@@ -25,7 +49,27 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
       updatedAt: Date.now(),
     };
     set((state) => ({ store: { ...state.store, repertoires: [...state.store.repertoires, rep] } }));
-    set({ repId: rep.id, chapterId: ch.id, path: [ch.rootId], flipped: side === 'black' });
+    set(selectRepertoireState(rep));
+    void createRepertoireOnServer(rep).catch((err) => {
+      console.warn('[createRepertoire] POST failed.', err);
+    });
+  },
+
+  ingestRepertoire: (repertoire) => {
+    const chapter = repertoire.chapters[0];
+    set((state) => ({
+      store: {
+        ...state.store,
+        repertoires: state.store.repertoires.some((r) => r.id === repertoire.id)
+          ? replaceRepertoire(state.store.repertoires, repertoire)
+          : [...state.store.repertoires, repertoire],
+      },
+      ...selectRepertoireState(repertoire),
+      selectedSquare: null,
+      arrows: [],
+      userHighlights: {},
+    }));
+    if (chapter) saveSession({ repertoireId: repertoire.id, chapterId: chapter.id });
   },
 
   setRepertoireSide: (id, side) => {
@@ -58,66 +102,55 @@ export const createLibrarySlice: TrainerSlice<LibraryActions> = (set, get) => ({
   },
 
   deleteRepertoire: (id) => {
-    const { store, repId } = get();
-    if (store.repertoires.length <= 1) return;
-    const next = store.repertoires.filter((r) => r.id !== id);
-    set({ store: { ...store, repertoires: next } });
-    if (repId === id) {
-      set({ repId: next[0]!.id, chapterId: next[0]!.chapters[0]!.id, path: [next[0]!.chapters[0]!.rootId] });
-    }
+    void get().deleteRepertoires([id]);
   },
 
   deleteRepertoires: async (ids) => {
     const { store, repId } = get();
     const idSet = new Set(ids);
-
     const next = store.repertoires.filter((r) => !idSet.has(r.id));
 
-    // ბოლო repertoire-ს არ ვშლით — თუ ყველა მოინიშნა, seed-ზე ვბრუნდებით
-    if (next.length === 0) {
-      get().resetToSeed();
-    } else {
-      // 1. optimistic UI update
-      set({ store: { ...store, repertoires: next } });
+    set({ store: { ...store, repertoires: next } });
 
-      if (idSet.has(repId)) {
-        const first = next[0]!;
-        set({
-          repId: first.id,
-          chapterId: first.chapters[0]!.id,
-          path: [first.chapters[0]!.rootId],
-          flipped: first.side === 'black',
-          mode: 'study',
-          drill: null,
-        });
-      }
+    if (next.length === 0) {
+      set({
+        repId: '',
+        chapterId: '',
+        path: [],
+        mode: 'study',
+        drill: null,
+      });
+    } else if (idSet.has(repId)) {
+      const first = next[0]!;
+      set(selectRepertoireState(first));
     }
 
-    // 2. DB-დან წაშლა (fire-and-forget + rollback on failure)
     try {
-      const res = await fetch('/api/repertoires', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids }),
-      });
-      if (!res.ok) {
-        console.warn(`[deleteRepertoires] DB delete returned ${res.status}. Local change kept.`);
-      }
+      await deleteRepertoiresOnServer(ids);
     } catch (err) {
       console.warn('[deleteRepertoires] DB delete failed. Local change kept.', err);
     }
   },
 
   resetToSeed: () => {
-    const fresh = resetStore();
+    const existingIds = get().store.repertoires.map((r) => r.id);
+    const fresh = createSeedStore();
+    const first = fresh.repertoires[0]!;
     set({
       store: fresh,
-      repId: fresh.repertoires[0]!.id,
-      chapterId: fresh.repertoires[0]!.chapters[0]!.id,
-      path: [fresh.repertoires[0]!.chapters[0]!.rootId],
-      mode: 'study',
-      drill: null,
+      ...selectRepertoireState(first),
     });
+
+    void (async () => {
+      try {
+        if (existingIds.length > 0) await deleteRepertoiresOnServer(existingIds);
+        for (const repertoire of fresh.repertoires) {
+          await createRepertoireOnServer(repertoire);
+        }
+      } catch (err) {
+        console.warn('[resetToSeed] DB sync failed.', err);
+      }
+    })();
   },
 
   loadCustomFen: (customFen, name = 'Book Position') => {

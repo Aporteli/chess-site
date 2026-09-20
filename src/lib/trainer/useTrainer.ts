@@ -83,6 +83,7 @@ export interface TrainerContextValue {
   deleteChapter: (id: string) => void;
   deleteRepertoire: (id: string) => void;
   deleteRepertoires: (ids: string[]) => Promise<void>;
+  ingestRepertoire: (repertoire: Repertoire) => void;
   resetToSeed: () => void;
   setArrows: (arrows: Arrow[]) => void;
   toggleHighlight: (square: string) => void;
@@ -169,6 +170,7 @@ export function useTrainerValue(): TrainerContextValue | null {
     deleteChapter: state.deleteChapter,
     deleteRepertoire: state.deleteRepertoire,
     deleteRepertoires: state.deleteRepertoires,
+    ingestRepertoire: state.ingestRepertoire,
     resetToSeed: state.resetToSeed,
     setArrows: state.setArrows,
     toggleHighlight: state.toggleHighlight,

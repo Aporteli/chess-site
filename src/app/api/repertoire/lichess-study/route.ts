@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { importPgn } from "@/lib/chess";
+import { toClientRepertoire } from "@/lib/repertoire";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(repertoire, { status: 201 });
+    return NextResponse.json(toClientRepertoire(repertoire), { status: 201 });
   } catch (error) {
     console.error("Lichess Study import failed:", error);
 

@@ -6,6 +6,7 @@ import {
   replaceRepertoire,
   uid,
 } from '@/lib/chess';
+import { createRepertoireOnServer } from '@/lib/chess/repertoire-api';
 
 import { deriveActive } from './deriveActive';
 import type { ImportExportActions, TrainerSlice } from './types';
@@ -146,6 +147,10 @@ export const createImportExportSlice: TrainerSlice<ImportExportActions> = (set, 
         userHighlights: {},
         flipped: nextRep.side === 'black',
       }));
+
+      void createRepertoireOnServer(nextRep).catch((err) => {
+        console.warn('[importLichessStudy] POST failed.', err);
+      });
 
       return {
         ok: true,

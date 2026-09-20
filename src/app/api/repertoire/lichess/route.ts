@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { importPgn } from "@/lib/chess";
 import { Prisma } from "@/generated/prisma";
+import { toClientRepertoire } from "@/lib/repertoire";
 
 type LichessStudySummary = {
   id: string;
@@ -171,11 +172,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const studyName =
+      /\[StudyName "([^"]+)"\]/.exec(pgn)?.[1] ??
+      (playableChapters[0]?.name || "Lichess Study");
+
+    const requestedSide =
+      "side" in record && (record.side === "white" || record.side === "black")
+        ? record.side
+        : "white";
+
     const repertoire = await prisma.repertoire.create({
       data: {
         userId: dbUser.id,
-        name: playableChapters[0]?.name || "Lichess Study",
-        side: "white",
+        name: studyName,
+        side: requestedSide,
         description: username
           ? `Imported from Lichess study ${studyId} (${username})`
           : `Imported from Lichess study ${studyId}`,
@@ -198,7 +208,10 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ pgn, repertoire }, { status: 201 });
+    return NextResponse.json(
+      { pgn, repertoire: toClientRepertoire(repertoire) },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Lichess import failed:", error);
 

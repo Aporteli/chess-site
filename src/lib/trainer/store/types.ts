@@ -58,9 +58,9 @@ export interface StatusActions {
 }
 
 export interface HydrationActions {
-  /** Loads persisted store/session/settings from storage once, on startup. */
+  /** Loads repertoires from the API and session/settings from localStorage. */
   hydrate: () => void;
-  /** Persists store + session after every change (debounced for the big store write). */
+  /** Saves the open-file session immediately; debounced PUT of repertoire trees to the DB. */
   persist: () => void;
 }
 
@@ -111,7 +111,8 @@ export interface LibraryActions {
   setRepertoireSide: (id: string, side: Side) => void;
   deleteChapter: (id: string) => void;
   deleteRepertoire: (id: string) => void;
-  deleteRepertoires: (ids: string[]) => Promise<void>;   // ← ახალი
+  deleteRepertoires: (ids: string[]) => Promise<void>;
+  ingestRepertoire: (repertoire: Repertoire) => void;
   resetToSeed: () => void;
   loadCustomFen: (fen: string, name?: string) => boolean;
 }

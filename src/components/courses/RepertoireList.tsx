@@ -13,7 +13,6 @@ export function RepertoireList({ repertoires, onDelete, onSelect }: RepertoireLi
         <RepertoireCard
           key={rep.id}
           rep={rep}
-          isOnlyOne={repertoires.length <= 1}
           onDelete={onDelete}
           onSelect={onSelect}
         />

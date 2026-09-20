@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getDbUser } from "@/lib/current-user";
+import { emptyChapter } from "@/lib/chess/tree/chapter-factory";
+import {
+  chapterWriteData,
+  parseRepertoireInput,
+  toClientRepertoire,
+} from "@/lib/repertoire";
 
 export async function GET() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
+  const user = await getDbUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const repertoires = await prisma.repertoire.findMany({
-    where: { userId: session.user.id },
+    where: { userId: user.id },
     include: {
       chapters: {
         orderBy: { createdAt: "asc" },
@@ -19,30 +24,44 @@ export async function GET() {
     orderBy: { updatedAt: "desc" },
   });
 
-  return NextResponse.json(repertoires);
+  return NextResponse.json(repertoires.map(toClientRepertoire));
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
+  const user = await getDbUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const body = await request.json();
+    const input = parseRepertoireInput(await request.json());
+    if (!input) {
+      return NextResponse.json({ error: "Invalid repertoire." }, { status: 400 });
+    }
+
+    const chapters = input.chapters?.length ? input.chapters : [emptyChapter("Main line")];
 
     const repertoire = await prisma.repertoire.create({
       data: {
-        userId: session.user.id,
-        name: body.name,
-        side: body.side,
-        description: body.description ?? "",
+        ...(input.id ? { id: input.id } : {}),
+        userId: user.id,
+        name: input.name,
+        side: input.side,
+        description: input.description,
+        chapters: {
+          create: chapters.map(chapterWriteData),
+        },
+      },
+      include: {
+        chapters: {
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
-    return NextResponse.json(repertoire, { status: 201 });
-  } catch {
+    return NextResponse.json(toClientRepertoire(repertoire), { status: 201 });
+  } catch (error) {
+    console.error("Failed to create repertoire:", error);
     return NextResponse.json(
       { error: "Failed to create repertoire." },
       { status: 400 },
@@ -51,9 +70,8 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
+  const user = await getDbUser();
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -68,7 +86,7 @@ export async function DELETE(request: Request) {
     }
 
     const result = await prisma.repertoire.deleteMany({
-      where: { id: { in: ids }, userId: session.user.id },
+      where: { id: { in: ids }, userId: user.id },
     });
 
     return NextResponse.json({ deleted: result.count });

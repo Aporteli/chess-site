@@ -3,19 +3,33 @@ import type { OpeningStore } from "./types";
 
 const KEY = "movetrainer:store:v1";
 
-export function loadStore(): OpeningStore {
-  if (typeof window === "undefined") return createSeedStore();
+/** Reads repertoire data previously stored in localStorage. Null if none. Does not seed. */
+export function readPersistedStore(): OpeningStore | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(KEY);
-    if (!raw) return createSeedStore();
+    if (!raw) return null;
     const parsed = JSON.parse(raw) as OpeningStore;
-    if (parsed?.version !== 1 || !Array.isArray(parsed.repertoires)) {
-      return createSeedStore();
+    if (parsed?.version !== 1 || !Array.isArray(parsed.repertoires) || parsed.repertoires.length === 0) {
+      return null;
     }
     return parsed;
   } catch {
-    return createSeedStore();
+    return null;
   }
+}
+
+export function clearPersistedStore() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function loadStore(): OpeningStore {
+  return readPersistedStore() ?? createSeedStore();
 }
 
 export function saveStore(store: OpeningStore) {
@@ -28,9 +42,7 @@ export function saveStore(store: OpeningStore) {
 }
 
 export function resetStore(): OpeningStore {
-  const fresh = createSeedStore();
-  saveStore(fresh);
-  return fresh;
+  return createSeedStore();
 }
 
 const SETTINGS_KEY = "movetrainer:settings:v1";

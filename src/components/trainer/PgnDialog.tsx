@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Download, Upload, X } from "lucide-react";
-import { useTrainer } from "@/lib/trainer/context";
+import { useTrainerStore } from "@/lib/trainer/store";
+import { toClientRepertoire } from "@/lib/repertoire-map";
 
 type LichessStudy = {
   id: string;
@@ -46,7 +47,7 @@ export function PgnDialog({
   mode: "import" | "export";
   onClose: () => void;
 }) {
-  const t = useTrainer();
+  const t = useTrainerStore();
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
   const [scope, setScope] = useState<"chapter" | "repertoire">("chapter");
@@ -88,6 +89,7 @@ export function PgnDialog({
       body: JSON.stringify({
         username,
         studyId: id,
+        side: playAs,
       }),
     });
 
@@ -95,6 +97,23 @@ export function PgnDialog({
 
     if (!response.ok) {
       return { ok: false as const, message: readApiError(data, "Import failed.") };
+    }
+
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "repertoire" in data &&
+      typeof data.repertoire === "object" &&
+      data.repertoire !== null
+    ) {
+      const imported = toClientRepertoire(
+        data.repertoire as Parameters<typeof toClientRepertoire>[0],
+      );
+      t.ingestRepertoire({ ...imported, side: playAs });
+      return {
+        ok: true as const,
+        message: `Imported ${imported.chapters.length} chapter${imported.chapters.length > 1 ? "s" : ""}.`,
+      };
     }
 
     const pgn = readPgn(data);
@@ -428,7 +447,7 @@ export function PgnDialog({
                   return;
                 }
 
-                t.setRepertoireSide(t.repertoire.id, playAs);
+                if (t.repId) t.setRepertoireSide(t.repId, playAs);
                 const result = t.importPgnText(text, true);
                 setMessage(result.message);
 

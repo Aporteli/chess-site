@@ -6,7 +6,7 @@ export default function CoursesPage() {
   return (
     <TrainerProvider>
       <AppShell activeKey="courses">
-        <TrainerGate>
+        <TrainerGate allowEmpty>
           <RepertoireLibrary />
         </TrainerGate>
       </AppShell>

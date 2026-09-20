@@ -4,12 +4,11 @@ import { collectTrainable, isDue, nodeCount } from "@/lib/chess";
 
 interface RepertoireCardProps {
   rep: any;
-  isOnlyOne: boolean;
   onDelete: (id: string) => void;
   onSelect: (id: string) => void;
 }
 
-export function RepertoireCard({ rep, isOnlyOne, onDelete, onSelect }: RepertoireCardProps) {
+export function RepertoireCard({ rep, onDelete, onSelect }: RepertoireCardProps) {
   const moves = rep.chapters.reduce((s: number, ch: any) => s + nodeCount(ch), 0);
   const due = rep.chapters.reduce(
     (s: number, ch: any) =>
@@ -33,8 +32,7 @@ export function RepertoireCard({ rep, isOnlyOne, onDelete, onSelect }: Repertoir
         </div>
         <button
           onClick={() => onDelete(rep.id)}
-          disabled={isOnlyOne}
-          className="grid h-8 w-8 place-items-center rounded-md text-text-muted hover:text-accent-garnet-bright disabled:opacity-30"
+          className="grid h-8 w-8 place-items-center rounded-md text-text-muted hover:text-accent-garnet-bright"
           aria-label="Delete repertoire"
         >
           <Trash2 className="h-4 w-4" />
