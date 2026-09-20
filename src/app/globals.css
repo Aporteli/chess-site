@@ -212,12 +212,11 @@ body {
   display: flex;
   min-width: 0;
   min-height: 0;
-  flex: 1;
+  flex: 1 0 auto;
   flex-direction: column;
   gap: 0.75rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  container-type: size;
+  overflow: visible;
+  container-type: inline-size;
 }
 
 @media (min-width: 1024px) {
@@ -237,17 +236,17 @@ body {
   flex-direction: column;
 }
 
-/* Stacked: board uses leftover height; the panel can scroll. */
+/* Stacked portrait: board sizes to width; the page scrolls so the HUD stays visible. */
 .board-column {
-  flex: 1 1 0;
-  container-type: size;
+  flex: none;
+  container-type: inline-size;
 }
 
 .board-panel {
-  flex: 0 1 auto;
+  flex: 1 0 auto;
   gap: 0.2rem;
-  max-height: 40%;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 /* A square that never outgrows the room available to it. */
@@ -259,7 +258,7 @@ body {
 
 .board-stage {
   display: flex;
-  height: 100%;
+  height: auto;
   min-height: 0;
   width: 100%;
   align-items: center;
@@ -267,14 +266,13 @@ body {
   gap: 0.5rem;
 }
 
-/* Size from the board column, so a wide tablet cannot make the square taller than the gap above the panel. */
+/* Portrait: square from column width. Landscape overrides with cqh below. */
 .board-column .wood-frame {
   align-self: center;
   box-sizing: border-box;
-  width: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
-  height: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
+  width: min(100%, calc(100cqi - var(--eval-gutter, 0px)));
+  height: auto;
   max-width: 100%;
-  max-height: 100%;
   aspect-ratio: 1 / 1;
   flex: none;
   overflow: hidden;
@@ -290,9 +288,13 @@ body {
 /* Landscape: board uses the full screen height; panel sits beside it (phones included). */
 @media (orientation: landscape) {
   .board-workspace {
+    flex: 1 1 0;
     flex-direction: row;
     align-items: stretch;
     gap: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    container-type: size;
   }
 
   .board-column,
@@ -307,6 +309,7 @@ body {
     height: min(100%, var(--board-size));
     width: min(100%, calc(var(--board-size) + var(--eval-gutter, 0px)));
     flex: none;
+    container-type: size;
   }
 
   .board-panel {
@@ -315,6 +318,16 @@ body {
     min-width: 0;
     flex: 1 1 0;
     overflow-y: auto;
+  }
+
+  .board-stage {
+    height: 100%;
+  }
+
+  .board-column .wood-frame {
+    width: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
+    height: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
+    max-height: 100%;
   }
 }
 

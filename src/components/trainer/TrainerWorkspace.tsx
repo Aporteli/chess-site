@@ -117,13 +117,13 @@ export function TrainerWorkspace() {
 
   return (
     <StockfishProvider fen={t.fen}>
-      <div className="flex h-full min-h-0 w-full flex-1 flex-col p-2">
+      <div className="flex min-h-full w-full flex-1 flex-col p-2 landscape:h-full landscape:min-h-0">
         <div className="board-workspace w-full [--eval-gutter:1.375rem]">
           <section ref={boardColumnRef} className="board-column">
             <BoardWrapper />
           </section>
 
-          <div className="board-panel thin-scrollbar overflow-hidden!">
+          <div className="board-panel thin-scrollbar landscape:overflow-hidden!">
             <div className="shrink-0">
               <ModeToggle />
             </div>
@@ -132,7 +132,7 @@ export function TrainerWorkspace() {
               <TrainerEnginePanel />
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col overflow-visible landscape:overflow-hidden">
               <TrainerHud />
             </div>
 
