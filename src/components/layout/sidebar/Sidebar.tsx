@@ -28,7 +28,7 @@ const allNavEntries: NavEntry[] = [
 ];
 
 export const navItems: NavItem[] = allNavEntries.filter((entry) =>
-  ['trainer', 'puzzles', 'multiplayer', 'analysis', 'courses', 'tablebase'].includes(entry.key),
+  ['trainer', 'puzzles', 'multiplayer', 'analysis', 'courses', 'tablebase', 'live'].includes(entry.key),
 );
 
 export const secondaryNavItems: NavItem[] = allNavEntries.filter((entry) => ['profile'].includes(entry.key));

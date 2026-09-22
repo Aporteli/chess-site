@@ -20,7 +20,7 @@ export function MoveTree() {
         <MoveTreeHeader moveCount={moveCount} />
       </div>
 
-      <div className="thin-scrollbar grid min-h-0 content-start grid-cols-1 gap-x-4 overflow-x-hidden overflow-y-visible rounded-lg bg-bg-elevated p-1.5 lg:[[data-sidebar-collapsed=true]_&]:grid-cols-2 landscape:flex-1 landscape:overflow-y-auto">
+      <div className="thin-scrollbar grid min-h-0 content-start grid-cols-1 gap-x-4 overflow-x-hidden overflow-y-visible rounded-b-lg bg-bg-elevated p-1.5 lg:[[data-sidebar-collapsed=true]_&]:grid-cols-2 landscape:flex-1 landscape:overflow-y-auto">
         {turns.length === 0 && (
           <p className="col-span-full py-4 text-center text-xs text-text-muted">
             No moves yet. Make a move on the board.

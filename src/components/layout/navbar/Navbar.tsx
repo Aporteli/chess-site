@@ -14,7 +14,9 @@ import { usePathname } from 'next/navigation';
 import { Repertoire } from '@/components/trainer/repertoire/Repertoire';
 import { useTrainerOptional } from '@/lib/trainer/context';
 import { Chapter } from '@/components/trainer/chapter/Chapter';
-
+import { BoardTourSelector } from '@/components/live/components/BoardTourSelector';
+import { useLiveBroadcastOptional } from '@/components/live/LiveBroadcastContext';
+import { BoardRoundSelector } from '@/components/live/components/BoardRoundSelector';
 interface NavbarProps {
   onOpenMobileNav: () => void;
 }
@@ -38,12 +40,15 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
 
   const trainer = useTrainerOptional();
   const showTrainerTools = pathname === '/trainer' && trainer !== null;
+  const showLiveTools = pathname === '/live';
+
+  const live = useLiveBroadcastOptional();
 
   return (
     <header className="sticky top-0 z-30 shrink-0 bg-[#1E1E1E] border-b border-[#383838] backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-3">
         {/* 1. მარცხენა სექცია */}
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
           <button
             onClick={onOpenMobileNav}
             aria-label="Open navigation"
@@ -144,10 +149,36 @@ export function Navbar({ onOpenMobileNav }: NavbarProps) {
               )}
             </div>
           )}
+
+          {showLiveTools && live && !live.loadingBroadcasts && live.broadcasts.length > 0 && (
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span
+                className={`size-2 shrink-0 rounded-full ${live.streamConnected ? 'bg-[#769656] animate-pulse' : 'bg-[#E63946]'}`}
+              />
+              <BoardTourSelector
+                broadcasts={live.broadcasts}
+                selectedBroadcastIndex={live.selectedBroadcastIndex}
+                selectedBroadcast={live.selectedBroadcast}
+                onSelectBroadcast={live.selectBroadcast}
+                selectedRoundId={live.selectedRoundId}
+                streamConnected={live.streamConnected}
+                onSelectRound={live.selectRound}
+              />
+              <BoardRoundSelector
+                broadcasts={live.broadcasts}
+                selectedBroadcastIndex={live.selectedBroadcastIndex}
+                selectedBroadcast={live.selectedBroadcast}
+                selectedRoundId={live.selectedRoundId}
+                onSelectRound={live.selectRound}
+                streamConnected={live.streamConnected}
+                onSelectBroadcast={live.selectBroadcast}
+              />
+            </div>
+          )}
         </div>
 
         {/* 2. მარჯვენა სექცია */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <NavSearch
             isOpen={searchOpen}
             onToggle={() => {

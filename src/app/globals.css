@@ -197,6 +197,9 @@ body {
 #puzzle-board,
 [data-boardid='multiplayer-board'],
 #multiplayer-board,
+[data-boardid='live-board'],
+#live-board,
+#live-board-board,
 [data-boardid='pv-preview-board'],
 #pv-preview-board {
   width: 100% !important;
@@ -270,7 +273,8 @@ body {
 
 
 /* Portrait: square from column width. Landscape overrides with cqh below. */
-.board-column .wood-frame {
+.board-column .wood-frame,
+.board-column .board-frame {
   align-self: center;
   box-sizing: border-box;
   width: min(100%, calc(100cqi - var(--eval-gutter, 0px)));
@@ -281,7 +285,8 @@ body {
   overflow: hidden;
 }
 
-.board-column .wood-frame > * {
+.board-column .wood-frame > *,
+.board-column .board-frame > * {
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -327,7 +332,8 @@ body {
     height: 100%;
   }
 
-  .board-column .wood-frame {
+  .board-column .wood-frame,
+  .board-column .board-frame {
     width: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
     height: min(100cqh, calc(100cqi - var(--eval-gutter, 0px)));
     max-height: 100%;
