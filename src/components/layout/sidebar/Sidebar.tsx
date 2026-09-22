@@ -1,6 +1,6 @@
 'use client';
 
-import { Swords, Puzzle, ScanSearch, Library, Settings, UserRound, TableIcon, Users } from 'lucide-react';
+import { Swords, Puzzle, ScanSearch, Library, Settings, UserRound, TableIcon, Users, Tv } from 'lucide-react';
 import type { NavKey, NavItem } from '@/lib/types';
 import { SidebarBrand } from '@/components/layout/sidebar/SidebarBrand';
 import { SidebarNavItem } from '@/components/layout/sidebar/SidebarNavItem';
@@ -24,6 +24,7 @@ const allNavEntries: NavEntry[] = [
   { key: 'tablebase', label: 'Tablebase', href: '/tablebase', icon: TableIcon },
   { key: 'profile', label: 'Profile', href: '/profile', icon: UserRound },
   { key: 'settings', label: 'Settings', icon: Settings },
+  { key: 'live', label: 'Live', href: '/live', icon: Tv },
 ];
 
 export const navItems: NavItem[] = allNavEntries.filter((entry) =>

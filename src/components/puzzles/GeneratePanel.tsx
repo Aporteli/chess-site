@@ -17,11 +17,11 @@ export function GeneratePanel() {
 
   return (
     <div className="rounded-xl border border-border-subtle bg-bg-surface p-4 shadow-panel">
-      <h2 className="font-mono text-lg text-accent-gold-bright">Generate</h2>
+      {/* <h2 className="font-mono text-lg text-accent-gold-bright">Generate</h2> */}
       
 
       <form onSubmit={handleSubmit} className="mt-3 space-y-3">
-        <label className="flex flex-col gap-1.5">
+        {/* <label className="flex flex-col gap-1.5">
           <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-text-muted">
             FEN
           </span>
@@ -35,10 +35,10 @@ export function GeneratePanel() {
             autoComplete="off"
             spellCheck={false}
           />
-        </label>
+        </label> */}
 
         <div className="flex flex-wrap items-end gap-3">
-          <label className="flex min-w-[8rem] flex-1 flex-col gap-1.5">
+          {/* <label className="flex min-w-[8rem] flex-1 flex-col gap-1.5">
             <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-text-muted">
               Side to move
             </span>
@@ -51,7 +51,7 @@ export function GeneratePanel() {
               <option value="w">White</option>
               <option value="b">Black</option>
             </select>
-          </label>
+          </label> */}
 
           <button
             type="submit"
