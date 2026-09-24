@@ -2,10 +2,7 @@ import { MoveButton } from "./MoveButton";
 import { SiblingRow } from "./SiblingRow";
 import type { TurnRow } from "./types";
 
-/**
- * One complete turn row: turn number, mainline white/black moves
- * and the alternative siblings for each side.
- */
+
 export function TurnRowView({
   row,
   activeNodeId,

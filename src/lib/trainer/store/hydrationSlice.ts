@@ -18,37 +18,55 @@ import { toRepertoireSummary } from './libraryIndex';
 import type { HydrationActions, TrainerSlice } from './types';
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
-let skipNextPersist = false;
 const lastSent = new Map<string, string>();
+const pendingPuts = new Map<string, Repertoire>();
+const putsInFlight = new Set<string>();
 
-function rememberPersisted(repertoires: Repertoire[]) {
-  lastSent.clear();
+function rememberServerSnapshot(repertoires: Repertoire[]) {
   for (const repertoire of repertoires) {
     lastSent.set(repertoire.id, JSON.stringify(repertoire));
   }
+}
+
+function drainPut(id: string) {
+  if (putsInFlight.has(id)) return;
+  const repertoire = pendingPuts.get(id);
+  if (!repertoire) return;
+  pendingPuts.delete(id);
+
+  const payload = JSON.stringify(repertoire);
+  if (lastSent.get(id) === payload) return;
+
+  putsInFlight.add(id);
+  void putRepertoireOnServer(repertoire)
+    .then(() => {
+      lastSent.set(id, payload);
+    })
+    .catch(() => {
+      lastSent.delete(id);
+    })
+    .finally(() => {
+      putsInFlight.delete(id);
+      if (pendingPuts.has(id)) drainPut(id);
+    });
 }
 
 function pushDirtyRepertoires(repertoires: Repertoire[]) {
   for (const repertoire of repertoires) {
     const payload = JSON.stringify(repertoire);
     if (lastSent.get(repertoire.id) === payload) continue;
-    void putRepertoireOnServer(repertoire)
-      .then(() => {
-        lastSent.set(repertoire.id, payload);
-      })
-      .catch(() => {
-        lastSent.delete(repertoire.id);
-      });
+    pendingPuts.set(repertoire.id, repertoire);
+    drainPut(repertoire.id);
   }
 }
 
-/** Replaces same-id entries and appends the rest, so already-loaded trees survive a hydrate. */
+/** Incoming trees fill gaps; in-memory trees that were edited more recently win. */
 function mergeLoaded(current: Repertoire[], incoming: Repertoire[]): Repertoire[] {
   const next = [...current];
   for (const repertoire of incoming) {
     const index = next.findIndex((r) => r.id === repertoire.id);
     if (index === -1) next.push(repertoire);
-    else next[index] = repertoire;
+    else if (next[index]!.updatedAt <= repertoire.updatedAt) next[index] = repertoire;
   }
   return next;
 }
@@ -116,6 +134,7 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
       }
 
       // Lazy mode: only the open repertoire needs its chapter trees in memory.
+      let snapshotFromServer = full && loadedFromApi;
       if (loadedFromApi && !full && library.length > 0) {
         const session = loadSession();
         const targetId =
@@ -123,13 +142,19 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
         const inMemory = get().store.repertoires.find((r) => r.id === targetId);
         const detail = inMemory ?? (await fetchRepertoireDetail(targetId));
         loaded = detail ? [detail] : [];
+        snapshotFromServer = !inMemory && Boolean(detail);
       }
 
       const { repertoire, chapter } = pickSession(loaded);
-      const nextLoaded = full ? loaded : mergeLoaded(get().store.repertoires, loaded);
+      const prev = get();
+      const nextLoaded = full ? loaded : mergeLoaded(prev.store.repertoires, loaded);
+      if (snapshotFromServer) rememberServerSnapshot(loaded);
 
-      skipNextPersist = true;
-      rememberPersisted(nextLoaded);
+      const keepNav =
+        prev.ready &&
+        Boolean(repertoire && chapter) &&
+        prev.repId === repertoire!.id &&
+        prev.chapterId === chapter!.id;
 
       set({
         library,
@@ -140,8 +165,7 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
           ? {
               repId: repertoire.id,
               chapterId: chapter.id,
-              path: [chapter.rootId],
-              flipped: repertoire.side === 'black',
+              ...(keepNav ? {} : { path: [chapter.rootId], flipped: repertoire.side === 'black' }),
             }
           : { repId: '', chapterId: '', path: [] }),
       });
@@ -159,8 +183,7 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
     const chapter = repertoire.chapters[0];
     const nextLoaded = mergeLoaded(store.repertoires, [repertoire]);
 
-    skipNextPersist = true;
-    rememberPersisted(nextLoaded);
+    rememberServerSnapshot([repertoire]);
 
     set({
       store: { version: 1, repertoires: nextLoaded },
@@ -178,11 +201,6 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
     const { repId, chapterId } = get();
     if (repId && chapterId) saveSession({ repertoireId: repId, chapterId });
 
-    if (skipNextPersist) {
-      skipNextPersist = false;
-      return;
-    }
-
     if (persistTimer) clearTimeout(persistTimer);
     persistTimer = setTimeout(() => {
       persistTimer = null;
@@ -194,17 +212,10 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
     const { repId, chapterId } = get();
     if (repId && chapterId) saveSession({ repertoireId: repId, chapterId });
 
-    const hadTimer = persistTimer !== null;
     if (persistTimer) {
       clearTimeout(persistTimer);
       persistTimer = null;
     }
-
-    if (skipNextPersist && !hadTimer) {
-      skipNextPersist = false;
-      return;
-    }
-    skipNextPersist = false;
     pushDirtyRepertoires(get().store.repertoires);
   },
 });

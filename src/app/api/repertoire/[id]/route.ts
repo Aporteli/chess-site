@@ -92,68 +92,73 @@ export async function PUT(request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const repertoire = await prisma.$transaction(async (tx) => {
-      const saved = existing
-        ? await tx.repertoire.update({
-            where: { id },
-            data: {
-              name: input.name,
-              side: input.side,
-              description: input.description,
-            },
-          })
-        : await tx.repertoire.create({
-            data: {
-              id,
-              userId: user.id,
-              name: input.name,
-              side: input.side,
-              description: input.description,
-            },
-          });
+    const savedId = await prisma.$transaction(
+      async (tx) => {
+        const saved = existing
+          ? await tx.repertoire.update({
+              where: { id },
+              data: {
+                name: input.name,
+                side: input.side,
+                description: input.description,
+              },
+            })
+          : await tx.repertoire.create({
+              data: {
+                id,
+                userId: user.id,
+                name: input.name,
+                side: input.side,
+                description: input.description,
+              },
+            });
 
-      if (input.chapters) {
-        const current = await tx.chapter.findMany({
-          where: { repertoireId: id },
-          select: { id: true },
-        });
-        const incomingIds = new Set(input.chapters.map((chapter) => chapter.id));
-        const removed = current.filter((chapter) => !incomingIds.has(chapter.id)).map((chapter) => chapter.id);
-        if (removed.length > 0) {
-          await tx.chapter.deleteMany({
-            where: { id: { in: removed }, repertoireId: id },
+        if (input.chapters) {
+          const current = await tx.chapter.findMany({
+            where: { repertoireId: id },
+            select: { id: true, updatedAt: true },
           });
+          const currentUpdatedAt = new Map(current.map((chapter) => [chapter.id, chapter.updatedAt.getTime()]));
+          const incomingIds = new Set(input.chapters.map((chapter) => chapter.id));
+          const removed = current.filter((chapter) => !incomingIds.has(chapter.id)).map((chapter) => chapter.id);
+          if (removed.length > 0) {
+            await tx.chapter.deleteMany({
+              where: { id: { in: removed }, repertoireId: id },
+            });
+          }
+
+          for (const chapter of input.chapters) {
+            const previousUpdatedAt = currentUpdatedAt.get(chapter.id);
+            if (previousUpdatedAt !== undefined && previousUpdatedAt >= chapter.updatedAt) continue;
+
+            const data = chapterWriteData(chapter);
+            if (previousUpdatedAt !== undefined) {
+              await tx.chapter.update({
+                where: { id: chapter.id },
+                data: {
+                  name: data.name,
+                  eco: data.eco,
+                  variation: data.variation,
+                  rootId: data.rootId,
+                  startFen: data.startFen,
+                  nodes: data.nodes,
+                  updatedAt: data.updatedAt,
+                },
+              });
+            } else {
+              await tx.chapter.create({
+                data: { ...data, repertoireId: saved.id },
+              });
+            }
+          }
         }
 
-        for (const chapter of input.chapters) {
-          const data = chapterWriteData(chapter);
-          await tx.chapter.upsert({
-            where: { id: chapter.id },
-            create: { ...data, repertoireId: saved.id },
-            update: {
-              name: data.name,
-              eco: data.eco,
-              variation: data.variation,
-              rootId: data.rootId,
-              startFen: data.startFen,
-              nodes: data.nodes,
-              updatedAt: data.updatedAt,
-            },
-          });
-        }
-      }
+        return saved.id;
+      },
+      { timeout: 60_000 },
+    );
 
-      return tx.repertoire.findUniqueOrThrow({
-        where: { id: saved.id },
-        include: {
-          chapters: {
-            orderBy: { createdAt: "asc" },
-          },
-        },
-      });
-    });
-
-    return NextResponse.json(toClientRepertoire(repertoire));
+    return NextResponse.json({ id: savedId });
   } catch (error) {
     console.error("Failed to update repertoire:", error);
     return NextResponse.json(

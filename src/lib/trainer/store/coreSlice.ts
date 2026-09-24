@@ -24,8 +24,7 @@ export const initialCoreState: TrainerRawState = {
 };
 
 export const createCoreSlice: TrainerSlice<CoreActions> = (set, get) => ({
-  setStore: (updater) =>
-    set((state) => ({ store: typeof updater === 'function' ? updater(state.store) : updater })),
+  setStore: (updater) => set((state) => ({ store: typeof updater === 'function' ? updater(state.store) : updater })),
   setRepId: (id) => set({ repId: id }),
   setChapterId: (id) => set({ chapterId: id }),
   setPath: (path) => set({ path }),
@@ -39,8 +38,7 @@ export const createCoreSlice: TrainerSlice<CoreActions> = (set, get) => ({
     })),
   setPromotion: (p) => set({ promotion: p }),
   setPremove: (p) => set({ premove: p }),
-  setDrill: (updater) =>
-    set((state) => ({ drill: typeof updater === 'function' ? updater(state.drill) : updater })),
+  setDrill: (updater) => set((state) => ({ drill: typeof updater === 'function' ? updater(state.drill) : updater })),
   setFilter: (filter) => set({ filter }),
 
   updateChapter: (next, nextPath) => {
