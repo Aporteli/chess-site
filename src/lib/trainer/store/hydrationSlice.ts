@@ -28,6 +28,20 @@ function rememberPersisted(repertoires: Repertoire[]) {
   }
 }
 
+function pushDirtyRepertoires(repertoires: Repertoire[]) {
+  for (const repertoire of repertoires) {
+    const payload = JSON.stringify(repertoire);
+    if (lastSent.get(repertoire.id) === payload) continue;
+    void putRepertoireOnServer(repertoire)
+      .then(() => {
+        lastSent.set(repertoire.id, payload);
+      })
+      .catch(() => {
+        lastSent.delete(repertoire.id);
+      });
+  }
+}
+
 /** Replaces same-id entries and appends the rest, so already-loaded trees survive a hydrate. */
 function mergeLoaded(current: Repertoire[], incoming: Repertoire[]): Repertoire[] {
   const next = [...current];
@@ -171,15 +185,26 @@ export const createHydrationSlice: TrainerSlice<HydrationActions> = (set, get) =
 
     if (persistTimer) clearTimeout(persistTimer);
     persistTimer = setTimeout(() => {
-      const latest = get().store;
-      for (const repertoire of latest.repertoires) {
-        const payload = JSON.stringify(repertoire);
-        if (lastSent.get(repertoire.id) === payload) continue;
-        lastSent.set(repertoire.id, payload);
-        void putRepertoireOnServer(repertoire).catch(() => {
-          lastSent.delete(repertoire.id);
-        });
-      }
+      persistTimer = null;
+      pushDirtyRepertoires(get().store.repertoires);
     }, 400);
+  },
+
+  persistNow: () => {
+    const { repId, chapterId } = get();
+    if (repId && chapterId) saveSession({ repertoireId: repId, chapterId });
+
+    const hadTimer = persistTimer !== null;
+    if (persistTimer) {
+      clearTimeout(persistTimer);
+      persistTimer = null;
+    }
+
+    if (skipNextPersist && !hadTimer) {
+      skipNextPersist = false;
+      return;
+    }
+    skipNextPersist = false;
+    pushDirtyRepertoires(get().store.repertoires);
   },
 });

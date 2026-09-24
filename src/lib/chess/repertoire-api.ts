@@ -2,6 +2,8 @@ import { toClientRepertoire, toClientRepertoireSummary } from "@/lib/repertoire-
 import type { Side } from "@/lib/types";
 import type { Repertoire, RepertoireSummary } from "./types";
 
+const noStore: RequestInit = { cache: "no-store" };
+
 async function readError(response: Response, fallback: string): Promise<string> {
   const data: unknown = await response.json().catch(() => null);
   if (
@@ -17,7 +19,7 @@ async function readError(response: Response, fallback: string): Promise<string> 
 
 /** Lightweight index of the user's repertoires — no chapter node trees. */
 export async function fetchRepertoireSummaries(): Promise<RepertoireSummary[]> {
-  const response = await fetch("/api/repertoire");
+  const response = await fetch("/api/repertoire", noStore);
   if (!response.ok) {
     throw new Error(await readError(response, "Failed to load repertoires."));
   }
@@ -31,7 +33,7 @@ export async function fetchRepertoireSummaries(): Promise<RepertoireSummary[]> {
 
 /** Single repertoire including its chapter trees. */
 export async function fetchRepertoire(id: string): Promise<Repertoire> {
-  const response = await fetch(`/api/repertoire/${encodeURIComponent(id)}`);
+  const response = await fetch(`/api/repertoire/${encodeURIComponent(id)}`, noStore);
   if (!response.ok) {
     throw new Error(await readError(response, "Failed to load repertoire."));
   }
@@ -42,7 +44,7 @@ export async function fetchRepertoire(id: string): Promise<Repertoire> {
 
 /** Every repertoire with its chapter trees. Only for views that need library-wide stats. */
 export async function fetchRepertoires(): Promise<Repertoire[]> {
-  const response = await fetch("/api/repertoire?include=chapters");
+  const response = await fetch("/api/repertoire?include=chapters", noStore);
   if (!response.ok) {
     throw new Error(await readError(response, "Failed to load repertoires."));
   }
@@ -70,6 +72,7 @@ export async function createRepertoireOnServer(repertoire: Repertoire): Promise<
 export async function putRepertoireOnServer(repertoire: Repertoire): Promise<void> {
   const response = await fetch(`/api/repertoire/${encodeURIComponent(repertoire.id)}`, {
     method: "PUT",
+    cache: "no-store",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(repertoire),
   });

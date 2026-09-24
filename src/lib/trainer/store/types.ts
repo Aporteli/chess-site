@@ -71,6 +71,8 @@ export interface HydrationActions {
   loadRepertoire: (id: string) => Promise<void>;
   /** Saves the open-file session immediately; debounced PUT of loaded repertoire trees to the DB. */
   persist: () => void;
+  /** Cancels the persist debounce and PUTs dirty trees now (pagehide / unload). */
+  persistNow: () => void;
 }
 
 export interface NavigationActions {

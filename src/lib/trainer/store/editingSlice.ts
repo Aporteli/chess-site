@@ -14,6 +14,7 @@ export const createEditingSlice: TrainerSlice<EditingActions> = (set, get) => ({
     if (!chapter || !node?.parentId) return;
     const result = deleteSubtree(chapter, node.id);
     get().updateChapter(result.chapter, pathToNode(result.chapter, result.focusId));
+    get().persistNow();
   },
 
   deleteNode: (id) => {
@@ -23,6 +24,7 @@ export const createEditingSlice: TrainerSlice<EditingActions> = (set, get) => ({
     if (!target?.parentId) return;
     const result = deleteSubtree(chapter, id);
     get().updateChapter(result.chapter, pathToNode(result.chapter, result.focusId));
+    get().persistNow();
   },
 
 

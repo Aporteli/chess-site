@@ -20,4 +20,14 @@ export function useHydrateOnMount(full = false) {
     if (!ready) return;
     persist();
   }, [store, ready, repId, chapterId, persist]);
+
+  useEffect(() => {
+    const flush = () => useTrainerStore.getState().persistNow();
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', flush);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      window.removeEventListener('beforeunload', flush);
+    };
+  }, []);
 }

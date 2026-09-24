@@ -31,7 +31,9 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  return NextResponse.json(toClientRepertoire(repertoire));
+  return NextResponse.json(toClientRepertoire(repertoire), {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
 
 /** Side-only update; safe for repertoires whose chapter trees are not loaded client-side. */
