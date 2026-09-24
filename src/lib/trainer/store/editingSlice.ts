@@ -16,6 +16,16 @@ export const createEditingSlice: TrainerSlice<EditingActions> = (set, get) => ({
     get().updateChapter(result.chapter, pathToNode(result.chapter, result.focusId));
   },
 
+  deleteNode: (id) => {
+    const { chapter } = deriveActive(get());
+    if (!chapter) return;
+    const target = chapter.nodes[id];
+    if (!target?.parentId) return;
+    const result = deleteSubtree(chapter, id);
+    get().updateChapter(result.chapter, pathToNode(result.chapter, result.focusId));
+  },
+
+
   promoteCurrent: () => {
     const { chapter, node } = deriveActive(get());
     if (!chapter || !node) return;

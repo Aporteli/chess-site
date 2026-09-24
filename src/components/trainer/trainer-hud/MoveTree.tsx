@@ -28,8 +28,14 @@ export function MoveTree() {
         )}
 
         {turns.map((row) => (
-          <TurnRowView key={row.turnNumber} row={row} activeNodeId={t.node.id} onJump={t.goToNode} />
-        ))}
+          <TurnRowView
+          key={row.turnNumber}
+          row={row}
+          activeNodeId={t.node.id}
+          onJump={t.goToNode}
+          onDelete={t.deleteNode}
+        />
+      ))}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { formatNags, masteryPct, type TreeNode } from '@/lib/chess';
 import { WinPip } from './WinPip';
 
@@ -6,12 +7,22 @@ export function MoveButton({
   parentFen,
   isActive,
   onJump,
+  onDelete,
 }: {
   node: TreeNode;
   parentFen: string;
   isActive: boolean;
   onJump: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const close = () => setMenu(null);
+    window.addEventListener('click', close);
+    return () => window.removeEventListener('click', close);
+  }, [menu]);
+
   const pct = masteryPct(node.srs);
   const dotColor =
     node.srs.attempts === 0
@@ -21,12 +32,15 @@ export function MoveButton({
         : pct > 0.4
           ? 'bg-accent-teal'
           : 'bg-accent-garnet';
-
   return (
+    <>
     <button
-      type="button"
-      onClick={() => onJump(node.id)}
-      aria-current={isActive ? 'true' : undefined}
+    type="button"
+    onClick={() => onJump(node.id)}
+    onContextMenu={(e) => {
+      e.preventDefault();
+      setMenu({ x: e.clientX, y: e.clientY });
+    }}
       className={[
         'group relative flex w-full items-center gap-1.5 rounded-md',
         'px-2 py-1.5 font-mono text-[13px] leading-none',
@@ -70,5 +84,25 @@ export function MoveButton({
         <WinPip fen={parentFen} san={node.move?.san ?? ''} />
       </span>
     </button>
+    {menu && (
+        <div
+          role="menu"
+          className="fixed z-50 min-w-[8rem] rounded-md border border-border-subtle bg-bg-surface py-1 shadow-lg"
+          style={{ left: menu.x, top: menu.y }}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            className="w-full px-3 py-1.5 text-left text-sm text-text-primary hover:bg-bg-elevated-hover"
+            onClick={() => {
+              onDelete(node.id);
+              setMenu(null);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
+    </>
   );
 }

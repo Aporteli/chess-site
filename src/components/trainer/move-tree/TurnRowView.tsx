@@ -10,10 +10,12 @@ export function TurnRowView({
   row,
   activeNodeId,
   onJump,
+  onDelete,
 }: {
   row: TurnRow;
   activeNodeId: string;
   onJump: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   return (
     <div className="px-1 py-1">
@@ -29,6 +31,7 @@ export function TurnRowView({
             parentFen={row.whiteParentFen ?? ""}
             isActive={activeNodeId === row.white.id}
             onJump={onJump}
+            onDelete={onDelete}
           />
         ) : (
           <span />
@@ -40,6 +43,7 @@ export function TurnRowView({
             parentFen={row.blackParentFen ?? ""}
             isActive={activeNodeId === row.black.id}
             onJump={onJump}
+            onDelete={onDelete}
           />
         ) : (
           <span />
@@ -47,10 +51,10 @@ export function TurnRowView({
       </div>
 
       {/* თეთრების ალტერნატივები */}
-      <SiblingRow label="or White" siblings={row.whiteSiblings ?? []} onJump={onJump} />
+      <SiblingRow label="or White" siblings={row.whiteSiblings ?? []} onJump={onJump} onDelete={onDelete} />
 
       {/* შავების ალტერნატივები */}
-      <SiblingRow label="or Black" siblings={row.blackSiblings ?? []} onJump={onJump} />
+      <SiblingRow label="or Black" siblings={row.blackSiblings ?? []} onJump={onJump} onDelete={onDelete} />
     </div>
   );
 }

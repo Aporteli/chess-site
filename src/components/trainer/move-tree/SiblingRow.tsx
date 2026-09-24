@@ -8,10 +8,12 @@ export function SiblingRow({
   label,
   siblings,
   onJump,
+  onDelete,
 }: {
   label: string;
   siblings: TreeNode[];
   onJump: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   if (siblings.length === 0) return null;
 

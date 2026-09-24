@@ -104,6 +104,7 @@ export interface DrillActions {
 export interface EditingActions {
   updateCurrent: (patch: Partial<Pick<TreeNode, 'comment' | 'annotation' | 'nags' | 'eval' | 'weight'>>) => void;
   deleteCurrent: () => void;
+  deleteNode: (id: string) => void;
   promoteCurrent: () => void;
 }
 

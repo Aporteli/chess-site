@@ -75,6 +75,7 @@ export interface TrainerContextValue {
   nextLine: () => void;
   updateCurrent: (patch: Partial<Pick<TreeNode, 'comment' | 'annotation' | 'nags' | 'eval' | 'weight'>>) => void;
   deleteCurrent: () => void;
+  deleteNode: (id: string) => void;
   promoteCurrent: () => void;
   importPgnText: (pgn: string, asNewChapter?: boolean) => { ok: boolean; message: string };
   importLichessStudy: (pgn: string, side?: Side) => { ok: boolean; message: string };
@@ -163,6 +164,7 @@ export function useTrainerValue(): TrainerContextValue | null {
     nextLine: state.nextLine,
     updateCurrent: state.updateCurrent,
     deleteCurrent: state.deleteCurrent,
+    deleteNode: state.deleteNode,
     promoteCurrent: state.promoteCurrent,
     importPgnText: state.importPgnText,
     importLichessStudy: state.importLichessStudy,
