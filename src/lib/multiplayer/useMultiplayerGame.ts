@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Chess } from 'chess.js';
+import { Chess, type Move } from 'chess.js';
+import { needsPromotion } from '@/lib/chess/fen';
+import { playMoveSfx, playSfx, sfxForMove } from '@/lib/chess/audio';
 import {
   colorFromTurn,
   parseServerMessage,
@@ -18,6 +20,18 @@ const JOIN_FAILED =
   'Could not join the room. It may already have two players, or the server is unreachable.';
 const CONNECTION_LOST = 'Connection closed. Create or rejoin a game to continue.';
 const MATCHMAKING_FAILED = 'Could not find an opponent. Please try again.';
+
+function playSanSfx(san: string): void {
+  playSfx(
+    sfxForMove({
+      capture: san.includes('x'),
+      castle: san.startsWith('O-O-O') ? 'q' : san.startsWith('O-O') ? 'k' : null,
+      check: san.includes('+') || san.includes('#'),
+      mate: san.includes('#'),
+      promotion: san.includes('='),
+    }),
+  );
+}
 
 export function buildSocketUrl(gameId: string): string {
   const url = new URL(process.env.NEXT_PUBLIC_MULTIPLAYER_WS_URL ?? DEFAULT_WS_URL);
@@ -69,6 +83,7 @@ interface GameSnapshot {
   fen: string;
   turn: PlayerColor;
   moves: string[];
+  lastMove: { from: string; to: string } | null;
   opponentPresent: boolean;
   error: string | null;
 }
@@ -79,6 +94,7 @@ const IDLE_SNAPSHOT: GameSnapshot = {
   fen: START_FEN,
   turn: 'white',
   moves: [],
+  lastMove: null,
   opponentPresent: false,
   error: null,
 };
@@ -90,7 +106,7 @@ export interface MultiplayerGame extends GameSnapshot {
   findOpponent: () => void;
   cancelSearch: () => void;
   leaveGame: () => void;
-  sendMove: (from: string, to: string) => boolean;
+  sendMove: (from: string, to: string, promotion?: Move['promotion']) => boolean;
 }
 
 export function useMultiplayerGame(): MultiplayerGame {
@@ -104,7 +120,9 @@ export function useMultiplayerGame(): MultiplayerGame {
   const socketRef = useRef<{ gameId: string; socket: WebSocket } | null>(null);
   const matchmakingSocketRef = useRef<WebSocket | null>(null);
   const playerIdRef = useRef<string | null>(null);
+  const playerColorRef = useRef<PlayerColor | null>(null);
   const closeTimerRef = useRef<number | null>(null);
+  playerColorRef.current = snapshot.playerColor;
 
   useEffect(() => {
     if (!gameId) return;
@@ -131,15 +149,25 @@ export function useMultiplayerGame(): MultiplayerGame {
           socket.send(JSON.stringify({ type: 'state' } satisfies ClientMessage));
         }
 
+        if (
+          message.type === 'move' &&
+          playerColorRef.current &&
+          message.color !== playerColorRef.current
+        ) {
+          playSanSfx(message.move.san);
+        }
+
         setSnapshot((prev) => {
           switch (message.type) {
             case 'connected':
+              playerColorRef.current = message.color;
               return {
                 ...prev,
                 connection: 'connected',
                 playerColor: message.color,
                 fen: message.fen,
                 turn: colorFromTurn(message.turn),
+                lastMove: null,
                 // Black is only ever assigned once White holds the room.
                 opponentPresent: message.color === 'black',
                 error: null,
@@ -152,6 +180,7 @@ export function useMultiplayerGame(): MultiplayerGame {
                 fen: message.fen,
                 turn: colorFromTurn(message.turn),
                 moves: [...prev.moves, message.move.san],
+                lastMove: { from: message.move.from, to: message.move.to },
                 opponentPresent: prev.opponentPresent || message.color !== prev.playerColor,
                 error: null,
               };
@@ -241,6 +270,9 @@ export function useMultiplayerGame(): MultiplayerGame {
         typeof message.message === 'string'
       ) {
         const errorMessage = message.message;
+        matchmakingSocketRef.current = null;
+        closeSocket(socket);
+        setIsSearching(false);
         setSnapshot((prev) => ({ ...prev, error: errorMessage }));
       }
     };
@@ -271,6 +303,7 @@ export function useMultiplayerGame(): MultiplayerGame {
   const leaveGame = useCallback(() => {
     closeSocket(socketRef.current?.socket);
     socketRef.current = null;
+    playerColorRef.current = null;
     syncUrl(null);
     setGameId(null);
     setSnapshot(IDLE_SNAPSHOT);
@@ -279,30 +312,33 @@ export function useMultiplayerGame(): MultiplayerGame {
   const { fen, playerColor, turn } = snapshot;
 
   const sendMove = useCallback(
-    (from: string, to: string) => {
+    (from: string, to: string, promotion?: Move['promotion']) => {
       const active = socketRef.current;
       if (!active || active.socket.readyState !== WebSocket.OPEN) return false;
       if (!playerColor || turn !== playerColor) return false;
+      if (needsPromotion(fen, from, to) && !promotion) return false;
 
       // Apply valid moves immediately; the room response remains authoritative.
       const probe = new Chess(fen);
-      let promotion: string | undefined;
+      let move: Move;
       try {
-        promotion = probe.move({ from, to, promotion: 'q' }).promotion;
+        move = probe.move({ from, to, promotion: promotion ?? 'q' });
       } catch {
         return false;
       }
 
       const message: ClientMessage = {
         type: 'move',
-        move: { from, to, ...(promotion ? { promotion } : {}) },
+        move: { from, to, ...(move.promotion ? { promotion: move.promotion } : {}) },
       };
 
       active.socket.send(JSON.stringify(message));
+      playMoveSfx(probe, move);
       setSnapshot((prev) => ({
         ...prev,
         fen: probe.fen(),
         turn: colorFromTurn(probe.turn()),
+        lastMove: { from, to },
         error: null,
       }));
       return true;

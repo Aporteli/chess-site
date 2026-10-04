@@ -16,9 +16,7 @@ import type { DrillSession, PendingPromo, Premove } from '../types';
 /** Everything that is plain, persisted-or-derivable state — no methods. */
 export interface TrainerRawState {
   ready: boolean;
-  /** Index of every repertoire the user owns. Loaded ones also live in `store`. */
   library: RepertoireSummary[];
-  /** Only the repertoires whose chapter trees are in memory; lazy loading keeps this small. */
   store: OpeningStore;
   repId: string;
   chapterId: string;
